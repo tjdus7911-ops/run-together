@@ -59,11 +59,21 @@ public final class PleosBridge {
             public void onSelected(VehicleGear value) {
                 gear.accept(value == null ? "GEAR_UNKNOWN" : value.name());
             }
+
+            @Override
+            public void onFailed(Exception error) {
+                Log.w(TAG, "vehicle listener failed", error);
+            }
         };
         final FuelPercentListener fuelListener = new FuelPercentListener() {
             @Override
             public void onFuelPercentUpdated(Integer value) {
                 fuelPercent.accept(value);
+            }
+
+            @Override
+            public void onFailed(Exception error) {
+                Log.w(TAG, "vehicle listener failed", error);
             }
         };
         final EvBatteryStateOfChargeListener socListener = new EvBatteryStateOfChargeListener() {
@@ -71,17 +81,32 @@ public final class PleosBridge {
             public void onEvBatteryStateOfChargeUpdated(Integer value) {
                 evStateOfCharge.accept(value);
             }
+
+            @Override
+            public void onFailed(Exception error) {
+                Log.w(TAG, "vehicle listener failed", error);
+            }
         };
         final RangeRemainingListener rangeListener = new RangeRemainingListener() {
             @Override
             public void onRangeRemainingChanged(Float value) {
                 rangeRemaining.accept(value);
             }
+
+            @Override
+            public void onFailed(Exception error) {
+                Log.w(TAG, "vehicle listener failed", error);
+            }
         };
         final DrivingTimeListener timeListener = new DrivingTimeListener() {
             @Override
             public void onDrivingTimeUpdated(Integer value) {
                 tripDrivingTime.accept(value);
+            }
+
+            @Override
+            public void onFailed(Exception error) {
+                Log.w(TAG, "vehicle listener failed", error);
             }
         };
 
