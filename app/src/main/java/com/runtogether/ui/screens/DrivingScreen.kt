@@ -756,9 +756,12 @@ private fun StepDot(passed: Boolean, next: Boolean, destination: Boolean) {
 
 // ---------------- 내 메시지 ----------------
 
-/** 내 메시지 고르기: 큰 버튼 최대 6개(3×2), 스크롤 없음. 누르면 바로 모임에 보낸다. 고치기는 휴대폰에서. */
+/**
+ * 내 메시지 고르기: 큰 버튼 최대 6개(3×2), 스크롤 없음. 누르면 바로 모임에 보낸다. 고치기는 휴대폰에서.
+ * 화면이 좁거나 낮으면 [MessageGrid] 규칙대로 열을 줄이거나 한 줄짜리 간단 목록으로 바꾼다.
+ */
 @Composable
-private fun MyMessagePanel(state: DriveUiState, actions: AppActions, modifier: Modifier) {
+internal fun MyMessagePanel(state: DriveUiState, actions: AppActions, modifier: Modifier) {
     val shape = RoundedCornerShape(24.dp)
     Column(
         modifier
@@ -788,51 +791,91 @@ private fun MyMessagePanel(state: DriveUiState, actions: AppActions, modifier: M
             Text("휴대폰 ‘같이 달려’ 앱 → 내 메시지에서 6개까지 만들 수 있어요", style = RtType.Body, color = RtColors.Sub)
             return@Column
         }
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            messages.chunked(3).forEach { row ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    row.forEach { m ->
-                        MessageButton(
-                            m,
-                            sent = state.sentMessageId == m.id,
-                            cooling = m.id in state.coolingMessageIds && state.sentMessageId != m.id,
-                            onClick = { actions.onSendMyMessage(m.id) },
-                            modifier = Modifier.weight(1f),
-                        )
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val grid = MessageGrid.of(messages.size, maxWidth.value, maxHeight.value)
+            val gap = grid.gapDp.dp
+            Column(verticalArrangement = Arrangement.spacedBy(gap)) {
+                messages.take(grid.visible).chunked(grid.columns).forEach { row ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
+                        row.forEach { m ->
+                            MessageButton(
+                                m,
+                                sent = state.sentMessageId == m.id,
+                                cooling = m.id in state.coolingMessageIds && state.sentMessageId != m.id,
+                                onClick = { actions.onSendMyMessage(m.id) },
+                                modifier = Modifier.weight(1f),
+                                compact = grid.compact,
+                            )
+                        }
+                        repeat(grid.columns - row.size) { Spacer(Modifier.weight(1f)) }
                     }
-                    repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                }
+                val hidden = messages.size - grid.visible
+                if (hidden > 0) {
+                    Text(
+                        "자리가 좁아 ${hidden}개는 보이지 않아요 · 자주 쓰는 문장은 휴대폰에서 앞으로 옮겨 두세요",
+                        style = RtType.Caption,
+                        color = RtColors.Sub,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             }
         }
     }
 }
 
+/** 큰 버튼(아이콘 + 두 줄 문장, 100dp) 또는 간단 목록 한 줄(76dp). 보낸 뒤에는 ‘보냈어요’, 30초 제한 중에는 흐리게. */
 @Composable
-private fun MessageButton(m: QuickMessage, sent: Boolean, cooling: Boolean, onClick: () -> Unit, modifier: Modifier) {
-    val shape = RoundedCornerShape(18.dp)
+private fun MessageButton(
+    m: QuickMessage,
+    sent: Boolean,
+    cooling: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier,
+    compact: Boolean = false,
+) {
+    val shape = RoundedCornerShape(if (compact) 16.dp else 18.dp)
     Row(
         modifier
-            .height(100.dp)
+            .height((if (compact) MessageGrid.COMPACT_ROW_DP else MessageGrid.ROW_DP).dp)
             .alpha(if (cooling) 0.45f else 1f)
             .clip(shape)
             .background(if (sent) RtColors.AccentSoft else RtColors.Card)
             .border(if (sent) 2.dp else 1.dp, if (sent) RtColors.Accent else RtColors.Line, shape)
             .clickable(enabled = !sent && !cooling, onClickLabel = m.text, role = Role.Button, onClick = onClick)
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = if (compact) 12.dp else 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)).background(if (sent) RtColors.Accent else RtColors.Raised),
+            Modifier
+                .size(if (compact) 40.dp else 48.dp)
+                .clip(RoundedCornerShape(if (compact) 12.dp else 14.dp))
+                .background(if (sent) RtColors.Accent else RtColors.Raised),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(if (sent) Icons.Outlined.Check else iconOf(m.icon), contentDescription = null, tint = if (sent) Color.White else RtColors.Ink, modifier = Modifier.size(26.dp))
+            Icon(
+                if (sent) Icons.Outlined.Check else iconOf(m.icon),
+                contentDescription = null,
+                tint = if (sent) Color.White else RtColors.Ink,
+                modifier = Modifier.size(if (compact) 22.dp else 26.dp),
+            )
         }
-        Spacer(Modifier.width(14.dp))
-        Column(Modifier.weight(1f)) {
-            Text(m.text, fontSize = 20.sp, fontWeight = FontWeight.Bold, lineHeight = 25.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        Spacer(Modifier.width(if (compact) 12.dp else 14.dp))
+        if (compact) {
+            // 간단 목록: 문장 한 줄 + 오른쪽 끝에 짧은 상태
+            Text(m.text, fontSize = 19.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
             when {
                 sent -> Text("보냈어요", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = RtColors.AccentText)
-                cooling -> Text("잠시 뒤 다시 보낼 수 있어요", fontSize = 13.sp, color = RtColors.Sub, maxLines = 1)
+                cooling -> Text("잠시 뒤", fontSize = 13.sp, color = RtColors.Sub)
+            }
+        } else {
+            Column(Modifier.weight(1f)) {
+                Text(m.text, fontSize = 20.sp, fontWeight = FontWeight.Bold, lineHeight = 25.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                when {
+                    sent -> Text("보냈어요", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = RtColors.AccentText)
+                    cooling -> Text("잠시 뒤 다시 보낼 수 있어요", fontSize = 13.sp, color = RtColors.Sub, maxLines = 1)
+                }
             }
         }
     }

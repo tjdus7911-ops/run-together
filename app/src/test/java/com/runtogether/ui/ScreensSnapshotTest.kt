@@ -1,5 +1,16 @@
 package com.runtogether.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.resources.Density
@@ -16,6 +27,8 @@ import com.runtogether.state.FeedItem
 import com.runtogether.state.IncomingAlert
 import com.runtogether.state.VoiceShare
 import com.runtogether.state.acceptRest
+import com.runtogether.ui.screens.MyMessagePanel
+import com.runtogether.ui.theme.RtColors
 import com.runtogether.ui.theme.RunTogetherTheme
 import org.junit.Rule
 import org.junit.Test
@@ -61,6 +74,34 @@ class ScreensSnapshotTest {
             base.copy(messagePanelOpen = true, sentMessageId = first.id, coolingMessageIds = setOf(first.id)),
             caption = Announcements.customSent(first.text),
         )
+    }
+
+    /** 지도 자리가 좁거나 낮을 때 내 메시지 패널: 3열 간단 목록 · 2열 들어가는 만큼만 · 2열 큰 버튼 */
+    @Test
+    fun myMessagesCompact() {
+        val base = DemoScenario.step(DemoScenario.STEP_DRIVING)
+        val first = base.myMessages.first()
+        val state = base.copy(messagePanelOpen = true, sentMessageId = first.id, coolingMessageIds = setOf(first.id))
+        paparazzi.snapshot("2e_my_messages_compact") {
+            RunTogetherTheme {
+                Column(
+                    Modifier.fillMaxSize().background(RtColors.Bg).padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                ) {
+                    Box(Modifier.size(1100.dp, 300.dp)) {
+                        MyMessagePanel(state, AppActions(), Modifier.align(Alignment.BottomCenter))
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                        Box(Modifier.size(640.dp, 330.dp)) {
+                            MyMessagePanel(state, AppActions(), Modifier.align(Alignment.BottomCenter))
+                        }
+                        Box(Modifier.size(640.dp, 500.dp)) {
+                            MyMessagePanel(state, AppActions(), Modifier.align(Alignment.BottomCenter))
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Test
