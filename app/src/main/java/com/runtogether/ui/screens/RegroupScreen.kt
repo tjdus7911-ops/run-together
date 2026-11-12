@@ -20,12 +20,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Directions
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -108,21 +107,6 @@ fun RegroupScreen(state: DriveUiState, onDepart: () -> Unit, onParkedAction: (St
         }
 
         RtCard(Modifier.width(600.dp).fillMaxHeight(), padding = PaddingValues(horizontal = 32.dp, vertical = 28.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Lock, contentDescription = null, tint = RtColors.Accent, modifier = Modifier.size(22.dp))
-                Spacer(Modifier.width(10.dp))
-                Text("정차 중에만 열려요", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = RtColors.Accent)
-            }
-            Text("주행을 시작하면 자동으로 닫혀요", fontSize = 17.sp, color = RtColors.Sub)
-            Spacer(Modifier.height(18.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ParkedButton("사진 올리기", Icons.Outlined.PhotoCamera, onParkedAction, Modifier.weight(1f))
-                ParkedButton("모임 채팅", Icons.Outlined.ChatBubbleOutline, onParkedAction, Modifier.weight(1f))
-                ParkedButton("코스 바꾸기", Icons.Outlined.Directions, onParkedAction, Modifier.weight(1f))
-            }
-            Spacer(Modifier.height(20.dp))
-            HorizontalDivider(color = RtColors.Divider)
-            Spacer(Modifier.height(20.dp))
             val next = state.nextStop
             if (next != null && info != null) {
                 val minutes = state.minutesTo(next.stop)
@@ -133,7 +117,23 @@ fun RegroupScreen(state: DriveUiState, onDepart: () -> Unit, onParkedAction: (St
                     fontSize = 20.sp,
                     color = RtColors.Sub,
                 )
+                Spacer(Modifier.height(22.dp))
+                HorizontalDivider(color = RtColors.Divider)
+                Spacer(Modifier.height(20.dp))
             }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Outlined.Lock, contentDescription = null, tint = RtColors.Accent, modifier = Modifier.size(22.dp))
+                Spacer(Modifier.width(10.dp))
+                Text("정차 중에만 열려요", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = RtColors.Accent)
+            }
+            Text("주행을 시작하면 자동으로 닫혀요", fontSize = 17.sp, color = RtColors.Sub)
+            Spacer(Modifier.height(16.dp))
+            ParkedWideButton(
+                label = "코스 바꾸기",
+                caption = "다음 집결지·경유지를 바꿔 모두의 내비에 반영",
+                icon = Icons.Outlined.Directions,
+                onClick = onParkedAction,
+            )
             Spacer(Modifier.weight(1f))
             if (info != null) {
                 val pending = info.pendingMemberId?.let { state.member(it) }
@@ -166,22 +166,28 @@ private fun StatTile(title: String, value: String, caption: String, modifier: Mo
     }
 }
 
+/** 정차 중에만 누를 수 있는 넓은 버튼 */
 @Composable
-private fun ParkedButton(label: String, icon: ImageVector, onClick: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun ParkedWideButton(label: String, caption: String, icon: ImageVector, onClick: (String) -> Unit) {
     val shape = RoundedCornerShape(20.dp)
-    Column(
-        modifier
-            .height(108.dp)
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(96.dp)
             .clip(shape)
             .background(Color.White)
             .border(2.dp, RtColors.Line, shape)
-            .clickable(role = Role.Button) { onClick(label) },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+            .clickable(role = Role.Button, onClickLabel = label) { onClick(label) }
+            .padding(horizontal = 24.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, contentDescription = null, tint = RtColors.Ink, modifier = Modifier.size(30.dp))
-        Spacer(Modifier.height(10.dp))
-        Text(label, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Icon(icon, contentDescription = null, tint = RtColors.Ink, modifier = Modifier.size(32.dp))
+        Spacer(Modifier.width(18.dp))
+        Column(Modifier.weight(1f)) {
+            Text(label, fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(caption, fontSize = 16.sp, color = RtColors.Sub, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = RtColors.Faint, modifier = Modifier.size(28.dp))
     }
 }
 
