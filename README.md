@@ -5,6 +5,18 @@
 여러 대가 함께 떠나는 날, 차량 데이터와 원터치 음성 상황 공유로 코스·집결지·휴식을 모임 전체에 맞춰
 “따라가지 않아도 함께, 안전하게 도착하게” 해 주는 차량용 앱입니다.
 
+## 화면
+
+시나리오 A(6명, 잠실 → 강릉 안목해변) 그대로입니다. 1600×900 차량 화면 기준, CI가 실제 Compose 코드로 그린 이미지입니다.
+
+| ① 07:25 출발 전 | ② 08:00 주행 중 |
+|---|---|
+| ![출발 전](docs/screenshots/1_checkin.png) | ![주행 중](docs/screenshots/2_driving.png) |
+| **③ 08:15 집결지 도착** | **④ 08:55 상황 공유 — 민지 ‘졸려요’** |
+| ![집결지 도착](docs/screenshots/3_regroup.png) | ![상황 공유 알림](docs/screenshots/4_share_alert.png) |
+| **④ 투표 통과 → 모두의 내비에 추가** | |
+| ![투표 결과](docs/screenshots/5_share_result.png) | |
+
 ## 지금 들어 있는 것 (v0.1)
 
 | 화면 | 내용 |
@@ -47,6 +59,7 @@ SDK 리스너는 `data/pleos/PleosBridge.java`에서 감싸 SDK 버전 변화에
 - 일반 에뮬레이터·태블릿에서는 **시연 모드**로 열립니다. 위쪽 ‘이전 / 다음’으로 시나리오 A를 넘깁니다.
   - 07:25 출발 전 → 08:00 주행 중 → 08:15 덕평 집결 → 08:55 상황 공유(민지 ‘졸려요’ → 투표)
 - 빌드: `./gradlew assembleDebug` · 테스트: `./gradlew testDebugUnitTest`
+- 화면 이미지: `./gradlew recordPaparazziDebug` (에뮬레이터 없이 JVM에서 그림). `Screenshots` 워크플로가 `ci/screenshots` 브랜치에 최신 이미지를 올립니다.
 
 ## APK 받기
 
@@ -60,8 +73,8 @@ app/src/main/java/com/runtogether/
   domain/   모임 엔진 (안드로이드 의존 없음, 단위 테스트)
   data/     차량 데이터 · 음성 · 내비 연결부
   demo/     시나리오 A 시연 데이터
-  state/    화면 상태
-  ui/       Compose 화면 (시안 1600×900 비율 유지)
+  state/    화면 상태와 상태 전이 (투표 통과·부결 → 코스 갱신)
+  ui/       Compose 화면 (시안 1600×900 비율 유지, 한국어 어절 단위 줄바꿈)
 ```
 
 ## 안전·개인정보 원칙
