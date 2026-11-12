@@ -13,7 +13,7 @@ import com.runtogether.domain.StatusSignal
 import com.runtogether.domain.Vote
 import com.runtogether.state.DriveUiState
 import com.runtogether.state.IncomingAlert
-import com.runtogether.state.VoteResult
+import com.runtogether.state.acceptRest
 import com.runtogether.ui.theme.RunTogetherTheme
 import org.junit.Rule
 import org.junit.Test
@@ -71,11 +71,8 @@ class ScreensSnapshotTest {
         )
         shot("4_share_alert", alert, caption = spoken)
 
-        val accepted = alert.copy(
-            alert = null,
-            vote = RestVoteEngine.cast(vote, DemoScenario.me.id, Vote.YES, 2L),
-            voteResult = VoteResult(true, "문막휴게소를 모두의 내비에 추가했어요", "09:00 도착 · 15분 쉬고 출발 · 횡성 도착 09:40"),
-        )
+        // 내가 '좋아요' → 과반 → 앱과 같은 상태 전이로 문막을 코스에 넣는다
+        val accepted = alert.acceptRest(RestVoteEngine.cast(vote, DemoScenario.me.id, Vote.YES, 2L))
         shot("5_share_result", accepted)
     }
 }

@@ -15,7 +15,6 @@ import com.runtogether.data.pleos.PleosVoiceAnswer
 import com.runtogether.demo.DemoScenario
 import com.runtogether.domain.Announcements
 import com.runtogether.domain.DrivingPolicy
-import com.runtogether.domain.Josa
 import com.runtogether.domain.MeetingPointEngine
 import com.runtogether.domain.RecommendRequest
 import com.runtogether.domain.Recommendation
@@ -29,10 +28,9 @@ import com.runtogether.state.DriveUiState
 import com.runtogether.state.FeedItem
 import com.runtogether.state.IncomingAlert
 import com.runtogether.state.Phase
-import com.runtogether.state.PlannedStop
-import com.runtogether.state.VoteResult
-import com.runtogether.state.formatClock
+import com.runtogether.state.acceptRest
 import com.runtogether.state.formatDuration
+import com.runtogether.state.rejectRest
 import com.runtogether.state.withMyVehicle
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -247,46 +245,16 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun accept(vote: RestVoteState) {
-        val s = _state.value
-        val stop = vote.stop
-        navigation.addWaypoint(stop)
-        val arrive = s.clockMin + s.minutesTo(stop)
-        val depart = arrive + vote.restMinutes
-        val following = s.nextStop
-        val detail = buildString {
-            append("${formatClock(arrive)} 도착 · ${vote.restMinutes}분 쉬고 출발")
-            if (following != null && following.stop.id != stop.id && following.stop.kmFromStart > stop.kmFromStart) {
-                val after = s.minutesTo(following.stop, fromKm = stop.kmFromStart)
-                append(" · ${following.stop.shortName} 도착 ${formatClock(depart + after)}")
-            }
-        }
-        // 코스에 없던 곳이면 다음 지점 앞에 끼워 넣고, 다음 집결지로 삼는다
-        val inCourse = s.course.any { it.stop.id == stop.id }
-        val newCourse = if (inCourse) s.course else s.course.toMutableList().apply {
-            add(s.nextStopIndex.coerceIn(0, size), PlannedStop(stop, arrive, vote.restMinutes, label = "휴식"))
-        }
-        val newNext = newCourse.indexOfFirst { it.stop.id == stop.id }.takeIf { it >= 0 } ?: s.nextStopIndex
-        _state.update {
-            it.copy(
-                course = newCourse,
-                nextStopIndex = newNext,
-                alert = null,
-                voteResult = VoteResult(
-                    accepted = true,
-                    title = "${stop.name}${Josa.eulReul(stop.name)} 모두의 내비에 추가했어요",
-                    detail = detail,
-                ),
-            )
-        }
-        voice.speak(Announcements.voteAccepted(stop.name, vote.restMinutes))
+        navigation.addWaypoint(vote.stop)
+        alertJob?.cancel()
+        _state.update { it.acceptRest(vote) }
+        voice.speak(Announcements.voteAccepted(vote.stop.name, vote.restMinutes))
     }
 
     private fun reject() {
-        val next = _state.value.nextStop?.stop?.name ?: "다음 집결지"
-        _state.update {
-            it.copy(alert = null, voteResult = VoteResult(false, "이번에는 쉬지 않고 가요", "${next}에서 만나요"))
-        }
-        voice.speak(Announcements.voteRejected(next))
+        alertJob?.cancel()
+        _state.update { it.rejectRest() }
+        voice.speak(Announcements.voteRejected(_state.value.nextStop?.stop?.name ?: "다음 집결지"))
     }
 
     // ---------------- 정차 중 기능 · 알림 ----------------

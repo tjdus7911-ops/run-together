@@ -289,21 +289,22 @@ private fun StatusButton(
             .background(if (night) RtColors.NightSoft else Color.White)
             .border(1.dp, if (night) RtColors.NightLine else RtColors.Line, shape)
             .clickable(role = Role.Button, onClickLabel = signal.label) { onSignal(signal) }
-            .padding(6.dp),
+            .padding(horizontal = 4.dp, vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Icon(icon, contentDescription = null, tint = if (night) RtColors.Night else RtColors.Accent, modifier = Modifier.size(28.dp))
-        Spacer(Modifier.height(6.dp))
+        Icon(icon, contentDescription = null, tint = if (night) RtColors.Night else RtColors.Accent, modifier = Modifier.size(26.dp))
+        Spacer(Modifier.height(5.dp))
+        // 한 줄에 다 들어가게 잡되, 차마다 글꼴이 달라 넘치면 말줄임 대신 어절 단위로 두 줄
         Text(
             signal.label,
             color = if (night) RtColors.Night else RtColors.Ink,
-            fontSize = 18.sp,
+            fontSize = 17.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            lineHeight = 21.sp,
+            lineHeight = 20.sp,
         )
     }
 }

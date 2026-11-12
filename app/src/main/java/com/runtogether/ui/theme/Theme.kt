@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.intl.LocaleList
+import androidx.compose.ui.text.style.LineBreak
 
 /** 기획서·화면 시안과 같은 주황·차콜 팔레트 */
 object RtColors {
@@ -48,6 +50,20 @@ object RtColors {
     val CaptionBg = Color(0xF21C1917)
 }
 
+/**
+ * 한국어 문장은 글자가 아니라 어절(띄어쓰기) 단위로 줄을 바꾼다.
+ * ("골/랐어요", "1/분"처럼 단어 중간이 잘리지 않게. Android 13 이상에서 적용)
+ */
+val KoreanTextStyle = TextStyle(
+    color = RtColors.Ink,
+    localeList = LocaleList("ko-KR"),
+    lineBreak = LineBreak(
+        strategy = LineBreak.Strategy.HighQuality,
+        strictness = LineBreak.Strictness.Strict,
+        wordBreak = LineBreak.WordBreak.Phrase,
+    ),
+)
+
 @Composable
 fun RunTogetherTheme(content: @Composable () -> Unit) {
     MaterialTheme(
@@ -61,7 +77,7 @@ fun RunTogetherTheme(content: @Composable () -> Unit) {
         ),
     ) {
         CompositionLocalProvider(
-            LocalTextStyle provides TextStyle(color = RtColors.Ink),
+            LocalTextStyle provides KoreanTextStyle,
             LocalContentColor provides RtColors.Ink,
             content = content,
         )

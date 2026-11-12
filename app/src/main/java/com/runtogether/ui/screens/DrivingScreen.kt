@@ -92,7 +92,7 @@ fun DrivingScreen(
                 AlertCard(state, alert, onVote, onDismissAlert, Modifier.align(Alignment.Center))
             }
         }
-        Column(Modifier.width(520.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        Column(Modifier.width(540.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
             if (state.vote != null) {
                 VotePanel(state, Modifier.weight(1f).fillMaxWidth())
                 state.voteResult?.let { ResultCard(it) }

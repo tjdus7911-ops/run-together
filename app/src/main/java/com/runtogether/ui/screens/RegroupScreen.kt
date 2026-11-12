@@ -1,9 +1,11 @@
 package com.runtogether.ui.screens
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,9 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Directions
 import androidx.compose.material.icons.outlined.Lock
@@ -29,13 +33,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -96,6 +103,8 @@ fun RegroupScreen(state: DriveUiState, onDepart: () -> Unit, onParkedAction: (St
                     }
                 }
             }
+            Spacer(Modifier.weight(1f))
+            CourseStrip(state)
         }
 
         RtCard(Modifier.width(600.dp).fillMaxHeight(), padding = PaddingValues(horizontal = 32.dp, vertical = 28.dp)) {
@@ -173,5 +182,74 @@ private fun ParkedButton(label: String, icon: ImageVector, onClick: (String) -> 
         Icon(icon, contentDescription = null, tint = RtColors.Ink, modifier = Modifier.size(30.dp))
         Spacer(Modifier.height(10.dp))
         Text(label, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+private val DOT = 30.dp
+
+/** 오늘 코스에서 지금 어디쯤인지 — 지나온 구간은 주황, 남은 구간은 회색 */
+@Composable
+private fun CourseStrip(state: DriveUiState) {
+    val stops = state.course
+    if (stops.size < 2) return
+    val here = (state.nextStopIndex - 1).coerceIn(0, stops.lastIndex)
+    Column(Modifier.fillMaxWidth()) {
+        Text("오늘 코스", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = RtColors.Sub)
+        Spacer(Modifier.height(16.dp))
+        Box(Modifier.fillMaxWidth()) {
+            Canvas(Modifier.fillMaxWidth().height(DOT)) {
+                val step = size.width / stops.size
+                val y = size.height / 2
+                val inset = DOT.toPx() / 2 + 8.dp.toPx()
+                for (i in 0 until stops.lastIndex) {
+                    drawLine(
+                        color = if (i < here) RtColors.Accent else RtColors.Line2,
+                        start = Offset(step * (i + 0.5f) + inset, y),
+                        end = Offset(step * (i + 1.5f) - inset, y),
+                        strokeWidth = 4.dp.toPx(),
+                        cap = StrokeCap.Round,
+                    )
+                }
+            }
+            Row(Modifier.fillMaxWidth()) {
+                stops.forEachIndexed { i, planned ->
+                    Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                        CourseDot(passed = i < here, current = i == here, destination = i == stops.lastIndex)
+                        Spacer(Modifier.height(10.dp))
+                        Text(
+                            planned.stop.shortName,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (i <= here) RtColors.Ink else RtColors.Sub,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            if (i == here) "지금 여기" else planned.label,
+                            fontSize = 15.sp,
+                            fontWeight = if (i == here) FontWeight.Bold else FontWeight.Medium,
+                            color = if (i == here) RtColors.Accent else RtColors.Faint,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** 체크인 화면의 코스 타임라인과 같은 표시 (지나온 곳은 체크) */
+@Composable
+private fun CourseDot(passed: Boolean, current: Boolean, destination: Boolean) {
+    when {
+        current -> Box(
+            Modifier.size(DOT).border(6.dp, RtColors.AccentRing, CircleShape).padding(6.dp).clip(CircleShape).background(RtColors.Accent),
+        )
+        passed -> Box(Modifier.size(DOT).clip(CircleShape).background(RtColors.Accent), contentAlignment = Alignment.Center) {
+            Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+        }
+        destination -> Box(
+            Modifier.size(DOT).clip(RoundedCornerShape(8.dp)).background(RtColors.Line2).padding(5.dp).clip(RoundedCornerShape(4.dp)).background(RtColors.Ink),
+        )
+        else -> Box(Modifier.size(DOT).clip(CircleShape).background(Color.White).border(5.dp, RtColors.Accent, CircleShape))
     }
 }

@@ -109,8 +109,12 @@ fun formatClock(minutes: Int): String {
     return String.format(Locale.ROOT, "%02d:%02d", m / 60, m % 60)
 }
 
-fun formatKm(km: Double): String =
-    if (km >= 10) Math.round(km).toString() else String.format(Locale.ROOT, "%.1f", km)
+/** 10km 이상은 정수, 그 아래는 소수 한 자리 (6.0 → 6) */
+fun formatKm(km: Double): String {
+    if (km >= 10) return Math.round(km).toString()
+    val tenths = Math.round(km * 10)
+    return if (tenths % 10 == 0L) (tenths / 10).toString() else String.format(Locale.ROOT, "%.1f", tenths / 10.0)
+}
 
 fun formatDuration(minutes: Int): String {
     val h = minutes / 60
