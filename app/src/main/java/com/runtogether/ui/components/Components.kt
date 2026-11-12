@@ -287,9 +287,9 @@ val AccentEdge: Brush
  */
 fun Modifier.accentGlow(
     corner: Dp,
-    spread: Dp = 14.dp,
+    spread: Dp = 16.dp,
     color: Color = RtColors.AccentGlow,
-    strength: Float = 0.055f,
+    strength: Float = 0.065f,
     layers: Int = 9,
     offsetY: Dp = 3.dp,
 ): Modifier = drawBehind {

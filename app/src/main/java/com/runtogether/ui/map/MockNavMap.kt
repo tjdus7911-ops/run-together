@@ -38,6 +38,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
@@ -454,7 +455,7 @@ private fun DrawScope.drawExpressway(v: MapView) {
     drawPath(p, RtColors.MapRoadEdge, style = Stroke(1.2.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f))))
 }
 
-/** 모임 경로: 지난 길은 옅게, 앞길은 포인트 파랑 + 진행 방향 화살표. 막히는 구간은 테두리를 교통 색으로. */
+/** 모임 경로: 지난 길은 옅게, 앞길은 포인트 파랑 + 은은한 빛 + 진행 방향 화살표. 막히는 구간은 테두리를 교통 색으로. */
 private fun DrawScope.drawRoute(v: MapView, model: GroupMapModel) {
     val me = model.me ?: return
     val onRoute = model.vehicles.filter { it.onPlannedRoute }
@@ -463,6 +464,11 @@ private fun DrawScope.drawRoute(v: MapView, model: GroupMapModel) {
     if (end <= start) return
     val casing = Stroke(17.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
     val core = Stroke(10.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+    val splitAt = me.progressKm.coerceIn(start, end)
+    // 앞길 아래 은은한 빛 (넓고 옅은 선 두 겹)
+    val ahead = v.path(splitAt, end)
+    drawPath(ahead, RtColors.AccentGlow.copy(alpha = 0.12f), style = Stroke(34.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(ahead, RtColors.AccentGlow.copy(alpha = 0.16f), style = Stroke(25.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
     drawPath(v.path(start, end), Color.White, style = casing)
     for (c in model.congestion) {
         val from = max(me.progressKm + c.offsetM / 1000.0, start)
@@ -841,7 +847,12 @@ private fun VehicleMarkers(view: MapView, model: GroupMapModel) {
     val o = positions[me.member.id] ?: return
     val heading = view.angleAt(me.progressKm) * 180f / PI.toFloat()
     Pin(o, 64.dp) {
-        Box(Modifier.fillMaxSize().clip(CircleShape).background(RtColors.Accent.copy(alpha = 0.16f)))
+        // 내 차 둘레의 은은한 빛 (가운데가 진하고 바깥으로 사라짐)
+        Box(
+            Modifier.fillMaxSize().clip(CircleShape).background(
+                Brush.radialGradient(listOf(RtColors.AccentGlow.copy(alpha = 0.42f), RtColors.AccentGlow.copy(alpha = 0.10f), Color.Transparent)),
+            ),
+        )
         Box(
             Modifier.size(44.dp).shadow(4.dp, CircleShape).clip(CircleShape).background(Color.White),
             contentAlignment = Alignment.Center,
