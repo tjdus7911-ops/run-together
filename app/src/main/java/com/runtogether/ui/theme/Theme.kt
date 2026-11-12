@@ -29,9 +29,9 @@ val AstaSans = FontFamily(
 )
 
 /**
- * 그래파이트 × 번트 오렌지 디자인 토큰 (차량 인포테인먼트, 어두운 화면 — 이전 차콜보다 한 단계 밝게).
+ * 그래파이트 × 디지털 블루 디자인 토큰 (차량 인포테인먼트, 어두운 화면 — 이전 차콜보다 한 단계 밝게).
  * 바탕은 푸른 기가 살짝 도는 그래파이트, 글자는 차가운 흰색. 모든 글자는 놓이는 면 위에서 4.5:1 이상.
- * 주황(Accent)은 로고 · 지금 고른 것 · 주요 버튼 · 내 차 위치와 주행 경로 · 집결지 진행 · 중요한 상태에만 쓴다.
+ * 파랑(Accent)은 로고 · 지금 고른 것 · 주요 버튼 · 내 차 위치와 주행 경로 · 집결지 진행 · 중요한 상태에만 쓴다.
  * 이름은 이전 테마와 같게 두어 화면 코드가 그대로 따라온다 (Ink = 기본 글자, Card = 카드 바탕 …).
  */
 object RtColors {
@@ -59,18 +59,18 @@ object RtColors {
     /** 투표 막대의 아직 답하지 않은 칸 */
     val Pending = Color(0xFF555C66)
 
-    // 포인트 (번트 오렌지)
-    val Accent = Color(0xFFD66A32)
-    /** 어두운 바탕 위 주황 글자 (작은 글자도 읽히게 조금 밝게) */
-    val AccentText = Color(0xFFF59A6B)
-    val AccentSoft = Color(0x2ED66A32)
-    val AccentRing = Color(0x59D66A32)
+    // 포인트 (디지털 블루)
+    val Accent = Color(0xFF2F74EE)
+    /** 어두운 바탕 위 파란 글자 (작은 글자도 읽히게 조금 밝게) */
+    val AccentText = Color(0xFF80B0FF)
+    val AccentSoft = Color(0x2E2F74EE)
+    val AccentRing = Color(0x592F74EE)
     val OnAccent = Color(0xFFFFFFFF)
 
     /** '졸려요' = 밤·달 */
-    val Night = Color(0xFFA9B0FF)
-    val NightSoft = Color(0x29A9B0FF)
-    val NightLine = Color(0x5CA9B0FF)
+    val Night = Color(0xFFC3A6FF)
+    val NightSoft = Color(0x29C3A6FF)
+    val NightLine = Color(0x5CC3A6FF)
 
     /** 주의: 연료 부족 · 간격 벌어짐 */
     val Warn = Color(0xFFF4C76E)
@@ -103,9 +103,9 @@ object RtColors {
     val MapLabelStrong = Color(0xFF30343A)
     val MapShield = Color(0xFF2C5DA6)
     /** 지난 길(내 차 뒤) */
-    val MapRoutePassed = Color(0xFFE8B79C)
+    val MapRoutePassed = Color(0xFFA9C2EA)
 
-    // 교통 (주황 경로와 섞이지 않게 초록 · 노랑 · 진홍)
+    // 교통 (파란 경로와 섞이지 않게 초록 · 노랑 · 진홍)
     val TrafficSmooth = Color(0xFF2E9F68)
     val TrafficSlow = Color(0xFFE8B928)
     val TrafficJam = Color(0xFFCC3340)

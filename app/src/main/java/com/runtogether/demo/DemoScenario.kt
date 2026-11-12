@@ -35,8 +35,8 @@ object DemoScenario {
     const val LAST_STEP = STEP_SLEEPY
 
     // 회원 색은 어두운 화면과 밝은 지도 양쪽에서 보이는 중간 밝기 (나 = 포인트 주황)
-    val me = Member("me", "나", 0xFFD66A32, isLeader = true)
-    val minji = Member("minji", "민지", 0xFF5B6CF0)
+    val me = Member("me", "나", 0xFF2F74EE, isLeader = true)
+    val minji = Member("minji", "민지", 0xFFE07A2E)
     val sua = Member("sua", "수아", 0xFF0F94B0)
     val taehyun = Member("taehyun", "태현", 0xFF8E5CF0, isEv = true)
     val jiwon = Member("jiwon", "지원", 0xFFD9468A)

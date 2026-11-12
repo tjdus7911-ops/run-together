@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 그래파이트 × 번트 오렌지 (Compose 테마 RtColors 와 같은 값) -->
+    <!-- 그래파이트 × 디지털 블루 (Compose 테마 RtColors 와 같은 값) -->
     <color name="rt_bg">#30353C</color>
-    <color name="rt_accent">#D66A32</color>
+    <color name="rt_accent">#2F74EE</color>
 
     <style name="Theme.RunTogether" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/rt_bg</item>
