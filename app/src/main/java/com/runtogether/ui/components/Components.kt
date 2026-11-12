@@ -16,11 +16,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.Bedtime
+import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material.icons.outlined.LocalGasStation
 import androidx.compose.material.icons.outlined.Wc
@@ -41,7 +43,10 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -306,5 +311,23 @@ private fun StatusButton(
             overflow = TextOverflow.Ellipsis,
             lineHeight = 20.sp,
         )
+    }
+}
+
+/** 음성 안내 자막 (소리가 안 나는 환경에서도 내용이 보이게) */
+@Composable
+fun CaptionBar(text: String, modifier: Modifier = Modifier) {
+    Row(
+        modifier
+            .widthIn(max = 1100.dp)
+            .clip(RoundedCornerShape(999.dp))
+            .background(RtColors.CaptionBg)
+            .padding(horizontal = 26.dp, vertical = 14.dp)
+            .semantics { liveRegion = LiveRegionMode.Polite },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Outlined.GraphicEq, contentDescription = null, tint = Color(0xFFFDBA74), modifier = Modifier.size(26.dp))
+        Spacer(Modifier.width(12.dp))
+        Text(text, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Medium, maxLines = 2)
     }
 }

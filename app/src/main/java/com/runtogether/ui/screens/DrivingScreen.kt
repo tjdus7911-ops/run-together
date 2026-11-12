@@ -50,6 +50,7 @@ import com.runtogether.domain.StatusSignal
 import com.runtogether.state.DriveUiState
 import com.runtogether.state.formatClock
 import com.runtogether.state.formatKm
+import com.runtogether.ui.components.CaptionBar
 import com.runtogether.ui.components.MemberAvatar
 import com.runtogether.ui.components.OutlineTag
 import com.runtogether.ui.components.ReadAloudMark
@@ -65,6 +66,7 @@ import kotlin.math.roundToInt
 fun DrivingScreen(
     state: DriveUiState,
     gap: GroupGap,
+    caption: String?,
     onSignal: (StatusSignal) -> Unit,
     onVote: (Boolean) -> Unit,
     onDismissAlert: () -> Unit,
@@ -91,6 +93,8 @@ fun DrivingScreen(
                 Box(Modifier.fillMaxSize().background(RtColors.Scrim))
                 AlertCard(state, alert, onVote, onDismissAlert, Modifier.align(Alignment.Center))
             }
+            // 음성 안내 자막은 지도 위쪽 가운데 (오른쪽 투표 패널을 가리지 않게)
+            caption?.let { CaptionBar(it, Modifier.align(Alignment.TopCenter).padding(top = 18.dp, start = 18.dp, end = 18.dp)) }
         }
         Column(Modifier.width(540.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
             if (state.vote != null) {

@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.LocalParking
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.VerifiedUser
@@ -32,9 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -48,6 +43,7 @@ import com.runtogether.state.DriveUiState
 import com.runtogether.state.Phase
 import com.runtogether.state.formatClock
 import com.runtogether.ui.components.AppHeader
+import com.runtogether.ui.components.CaptionBar
 import com.runtogether.ui.components.Tag
 import com.runtogether.ui.screens.CheckinScreen
 import com.runtogether.ui.screens.DrivingScreen
@@ -112,6 +108,7 @@ fun AppScreen(state: DriveUiState, caption: String?, actions: AppActions) {
                             Phase.DRIVING -> DrivingScreen(
                                 state = state,
                                 gap = gap,
+                                caption = caption,
                                 onSignal = actions.onSignal,
                                 onVote = actions.onVote,
                                 onDismissAlert = actions.onDismissAlert,
@@ -126,8 +123,9 @@ fun AppScreen(state: DriveUiState, caption: String?, actions: AppActions) {
                     onNext = actions.onNext,
                     modifier = Modifier.align(Alignment.TopCenter).padding(top = 30.dp),
                 )
-                caption?.let {
-                    CaptionBar(it, Modifier.align(Alignment.TopCenter).padding(top = 116.dp))
+                // 주행 중에는 지도 위에, 그 밖에는 화면 위쪽 가운데에 자막
+                if (state.phase != Phase.DRIVING) {
+                    caption?.let { CaptionBar(it, Modifier.align(Alignment.TopCenter).padding(top = 116.dp)) }
                 }
                 state.toast?.let {
                     ToastBar(it, onClose = actions.onCloseToast, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 140.dp))
@@ -156,24 +154,6 @@ private fun Header(state: DriveUiState) {
             Icons.Outlined.LocalParking,
             "정차 중 · ${state.regroup?.stopName ?: "집결지"}",
         )
-    }
-}
-
-/** 음성 안내 자막 (소리가 안 나는 환경에서도 내용이 보이게) */
-@Composable
-private fun CaptionBar(text: String, modifier: Modifier = Modifier) {
-    Row(
-        modifier
-            .widthIn(max = 1100.dp)
-            .clip(RoundedCornerShape(999.dp))
-            .background(RtColors.CaptionBg)
-            .padding(horizontal = 26.dp, vertical = 14.dp)
-            .semantics { liveRegion = LiveRegionMode.Polite },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(Icons.Outlined.GraphicEq, contentDescription = null, tint = Color(0xFFFDBA74), modifier = Modifier.size(26.dp))
-        Spacer(Modifier.width(12.dp))
-        Text(text, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Medium, maxLines = 2)
     }
 }
 
