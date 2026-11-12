@@ -8,22 +8,27 @@
 ## 화면
 
 시나리오 A(6명, 잠실 → 강릉 안목해변) 그대로입니다. 1600×900 차량 화면 기준, CI가 실제 Compose 코드로 그린 이미지입니다.
-시연 흐름 전체(34개 상태)는 `Preview frames` 워크플로가 `ci/preview-frames` 브랜치에 1600×900 원본으로 올립니다.
+시연 흐름 전체(41개 상태)는 `Preview frames` 워크플로가 `ci/preview-frames` 브랜치에 1600×900 원본으로 올립니다.
 
 | ① 07:25 출발 전 | ② 08:00 주행 중 |
 |---|---|
 | ![출발 전](docs/screenshots/1_checkin.png) | ![주행 중](docs/screenshots/2_driving.png) |
 | **③ 08:15 집결지 도착** | **④ 08:55 상황 공유 — 민지 ‘졸려요’** |
 | ![집결지 도착](docs/screenshots/3_regroup.png) | ![상황 공유 알림](docs/screenshots/4_share_alert.png) |
-| **④ 투표 통과 → 모두의 내비에 추가** | |
-| ![투표 결과](docs/screenshots/5_share_result.png) | |
+| **④ 투표 통과 → 모두의 내비에 추가** | **② 내 메시지 — 큰 버튼으로 골라 바로 보내기** |
+| ![투표 결과](docs/screenshots/5_share_result.png) | ![내 메시지](docs/screenshots/6_my_messages.png) |
+| **② 받은 메시지 — 보낸 사람 얼굴과 함께 읽어 줌** | **② 음성으로 상황 공유 — 받아 적은 문장 확인 후 전송** |
+| ![받은 메시지](docs/screenshots/7_message_received.png) | ![음성으로 상황 공유](docs/screenshots/8_voice_share.png) |
+
+화면은 차콜(#25282D · 카드 #363A40) × 번트 오렌지(#D66A32) 토큰으로 통일했습니다 (`ui/theme/Theme.kt`).
+주황은 로고 · 지금 고른 것 · 주요 버튼 · 내 차 위치와 경로 · 집결지 진행 · 중요한 상태에만 씁니다.
 
 ## 지금 들어 있는 것 (v0.1)
 
 | 화면 | 내용 |
 |---|---|
 | ① 출발 전 | 오늘 코스, 시동 체크인(시동을 켜면 자동 체크), 연료가 가장 적은 차에 맞춘 첫 집결지 안내, 출발 안내 음성 |
-| ② 주행 중 | 모임 간격 보기(따라잡으라는 안내 없음), 다음 집결지, 모임 소식(음성으로 읽어 줌), 원터치 상황 공유 버튼 4개 |
+| ② 주행 중 | 지도(다음 안내 · 남은 거리 · 도착 예정, 모임 차 위치와 간격, 교통), 모임 주행 현황, 내 차량 상태(차가 주는 값만), 모임 소식(읽어 주기 켬/끔), 다음 집결지와 코스 진행, 원터치 상황 공유 4개, **내 메시지**, **음성으로 상황 공유** |
 | ③ 집결지 도착 | 도착 현황, 주유 자동 확인, 오늘 코스 진행, 다음 구간, 정차 중에만 열리는 코스 바꾸기 |
 | ④ 상황 공유 | “민지님이 졸리대요” 음성 알림 → 가장 가까운 쉴 곳 제안 → 쉬어가기 투표(과반·1분 마감) → 모두의 경로에 추가 |
 
@@ -44,10 +49,13 @@
 | 기어·연료·배터리·주행 가능 거리·연속 운전 시간 | **Pleos Vehicle SDK** 2.3.2 | 주행/정차 화면 전환, 연료가 가장 적은 차 기준 집결지, 연속 운전 2시간 전 휴식 제안 |
 | 시동·속도 | AAOS `CarPropertyManager` | 시동 체크인, 주행 판단 (차종별 지원 여부 확인 후 구독) |
 | 경로·경유지 | **Pleos NaviHelper SDK** 3.0.5 | 모임 코스를 모두의 내비에 넣고, 투표가 통과되면 쉴 곳을 첫 경유지로 추가 |
-| 음성 안내 | **Pleos TextToSpeech SDK** 3.3.1 (실패 시 Android TTS) | “민지님이 졸리대요” 같은 상황 공유를 모든 차에서 읽어 줌 + 화면 자막 |
-| 말로 답하기 | **Pleos SpeechToText SDK** 3.3.1 | 투표에 “좋아요 / 괜찮아요”로 답하기 (안내 음성이 끝난 뒤 듣기 시작) |
-| 위치 | 시연 데이터 | 다음 단계: Pleos Fused Location SDK |
-| 다른 차와 동기화 | 시연 시뮬레이션 | 다음 단계: 동기화 서버(WebSocket) |
+| 길 안내 값 | **Pleos NaviHelper SDK** 3.0.5 | 다음 안내(TBT) · 목적지/경유지 남은 거리·시간 · 현재 위치·방향 · 경로 교통을 주행 화면에 (없으면 ‘시연 안내’) |
+| 지도 | 시연용 그림 지도 (`ui/map/MockNavMap.kt`) | NaviHelper 는 지도를 그려 주지 않아 `GroupMapRenderer` 뒤에 두었고, 실제 지도 SDK 로 바꿔 끼울 수 있음. 화면에 ‘시연용 지도’ 표시 |
+| 음성 안내 | **Pleos TextToSpeech SDK** 3.3.1 (실패 시 Android TTS) | “민지님이 졸리대요” 같은 상황 공유를 모든 차에서 읽어 줌 + 화면 자막. `VoiceQueue` 가 한 번에 하나 · 안전 안내 먼저 · 내비 길 안내 중에는 대기 |
+| 말로 답하기 · 음성 공유 | **Pleos SpeechToText SDK** 3.3.1 | 투표에 “좋아요 / 괜찮아요”로 답하기, ‘음성으로 상황 공유’ 받아 적기 (일반 기기에서는 예시 문장으로 시연) |
+| 위치 | 시연 데이터 | 다음 단계: Pleos Fused Location SDK, 휴대폰 참여자는 휴대폰 GPS |
+| 다른 차와 동기화 | 시연 시뮬레이션 (`GroupChannel`) | 기본 상황 공유 · 내 메시지 · 음성 메시지가 같은 통로. 다음 단계: 동기화 서버(WebSocket) |
+| 내 메시지 목록 | 시연 데이터 (`MyMessageRepository`) | 휴대폰 앱에서 만들고 계정에 저장 → 차량 앱은 받아서 고르기만. 설계: [docs/my-messages.md](docs/my-messages.md) |
 
 Pleos SDK 저장소(`nexus-playground.pleos.ai`)는 `settings.gradle.kts`에 넣어 두었습니다.
 SDK 리스너는 `data/pleos/PleosBridge.java`에서 감싸 SDK 버전 변화에 덜 민감하게 했습니다.
@@ -74,8 +82,10 @@ app/src/main/java/com/runtogether/
   domain/   모임 엔진 (안드로이드 의존 없음, 단위 테스트)
   data/     차량 데이터 · 음성 · 내비 연결부
   demo/     시나리오 A 시연 데이터
-  state/    화면 상태와 상태 전이 (투표 통과·부결 → 코스 갱신)
+  state/    화면 상태와 상태 전이 (투표 통과·부결 → 코스 갱신), 시연 길 안내
   ui/       Compose 화면 (시안 1600×900 비율 유지, 한국어 어절 단위 줄바꿈)
+    theme/  디자인 토큰 (색 · 글자 단계 · 간격)
+    map/    지도 그리기 창구(GroupMapRenderer)와 시연용 지도
 ```
 
 ## 안전·개인정보 원칙

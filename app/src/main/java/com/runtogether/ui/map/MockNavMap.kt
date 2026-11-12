@@ -800,13 +800,18 @@ private fun VehicleMarkers(view: MapView, model: GroupMapModel) {
         }
     }
 
-    // 다른 길로 가는 차 (국도 위, 점선)
+    // 다른 길로 가는 차 (국도 위, 점선) — 다음 집결지에서 합류
+    val joinAt = model.stops.firstOrNull { it.isNext }?.shortName
     for (vh in model.vehicles.filter { !it.onPlannedRoute }) {
         val o = positions[vh.member.id] ?: continue
         if (!view.inside(o, -20f * density)) continue
         Pin(o, 42.dp) { MemberAvatar(vh.member, 42.dp, dashed = true, fill = Color.White) }
         MapLabelAt(Offset(o.x, o.y + 38f * density), view) {
-            MapChip("${vh.member.name} · 다른 길", foreground = Color(vh.member.color), border = Color(vh.member.color))
+            MapChip(
+                if (joinAt != null) "${vh.member.name} · 다른 길로 ${joinAt}에서 합류" else "${vh.member.name} · 다른 길",
+                foreground = Color(vh.member.color),
+                border = Color(vh.member.color),
+            )
         }
     }
 

@@ -39,6 +39,8 @@ data class MapVehicle(
 data class MapStop(
     val id: String,
     val name: String,
+    /** "덕평자연휴게소" → "덕평" */
+    val shortName: String,
     val km: Double,
     val label: String,
     val isNext: Boolean,
@@ -113,6 +115,7 @@ fun DriveUiState.toMapModel(gap: GroupGap, guidance: NaviGuidance): GroupMapMode
         MapStop(
             id = p.stop.id,
             name = p.stop.name,
+            shortName = p.stop.shortName,
             km = p.stop.kmFromStart,
             label = p.label,
             isNext = i == nextStopIndex,
@@ -127,6 +130,7 @@ fun DriveUiState.toMapModel(gap: GroupGap, guidance: NaviGuidance): GroupMapMode
             MapStop(
                 id = it.id,
                 name = it.name,
+                shortName = it.shortName,
                 km = it.kmFromStart,
                 label = "휴게소",
                 isNext = false,
