@@ -1,6 +1,6 @@
 name: Preview frames
 
-# 눌러 보는 미리보기 페이지에 쓰는 화면(1600×900 원본)을 Paparazzi 로 그려 Actions 아티팩트로 올립니다.
+# 눌러 보는 미리보기 페이지에 쓰는 화면(1600×900 원본)을 Paparazzi 로 그려 ci/preview-frames 브랜치에 올립니다.
 on:
   workflow_dispatch:
   push:
@@ -8,6 +8,9 @@ on:
     paths:
       - 'app/src/**'
       - '.github/workflows/preview-frames.yml'
+
+permissions:
+  contents: write
 
 jobs:
   frames:
@@ -36,9 +39,16 @@ jobs:
         run: |
           grep -E "^e: |error:|FAILED|What went wrong|Exception" record.log | head -60 | sed 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}' | sed 's/^/::error title=Preview frames failed::/'
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: preview-frames
-          path: app/src/test/snapshots/images/*PreviewFramesTest*.png
-          if-no-files-found: error
-          retention-days: 30
+      - name: Publish to ci/preview-frames branch
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p out
+          cp app/src/test/snapshots/images/*PreviewFramesTest*.png out/
+          cd out
+          git init -q -b ci/preview-frames
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Preview frames (${GITHUB_SHA::7})"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci/preview-frames
