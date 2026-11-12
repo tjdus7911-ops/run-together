@@ -286,7 +286,7 @@ fun PrimaryButton(text: String, icon: ImageVector?, onClick: () -> Unit, modifie
     }
 }
 
-/** 보조 버튼 (어두운 면 + 테두리) */
+/** 보조 버튼 (어두운 면 + 테두리). [selected] 면 지금 열려 있는 것 (주황 테두리) */
 @Composable
 fun SecondaryButton(
     text: String,
@@ -294,6 +294,7 @@ fun SecondaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    selected: Boolean = false,
 ) {
     val shape = RoundedCornerShape(RtDimens.ButtonRadius)
     Row(
@@ -301,15 +302,15 @@ fun SecondaryButton(
             .height(RtDimens.ButtonHeight)
             .alpha(if (enabled) 1f else 0.45f)
             .clip(shape)
-            .background(RtColors.Raised)
-            .border(1.dp, RtColors.Line2, shape)
+            .background(if (selected) RtColors.AccentSoft else RtColors.Raised)
+            .border(if (selected) 2.dp else 1.dp, if (selected) RtColors.Accent else RtColors.Line2, shape)
             .clickable(enabled = enabled, onClickLabel = text, role = Role.Button, onClick = onClick)
             .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
-            Icon(icon, contentDescription = null, tint = RtColors.Ink, modifier = Modifier.size(26.dp))
+            Icon(icon, contentDescription = null, tint = if (selected) RtColors.AccentText else RtColors.Ink, modifier = Modifier.size(26.dp))
             Spacer(Modifier.width(10.dp))
         }
         Text(text, style = RtType.Button, color = RtColors.Ink, maxLines = 1)

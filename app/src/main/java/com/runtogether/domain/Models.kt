@@ -72,9 +72,10 @@ data class StopCandidate(
     val lat: Double? = null,
     val lng: Double? = null,
 ) {
-    /** "덕평자연휴게소" → "덕평" */
+    /** "덕평자연휴게소" → "덕평", "잠실종합운동장 주차장" → "잠실" */
     val shortName: String
-        get() = name.removeSuffix("자연휴게소").removeSuffix("휴게소").removeSuffix("졸음쉼터").ifBlank { name }
+        get() = name.removeSuffix(" 주차장").removeSuffix("종합운동장")
+            .removeSuffix("자연휴게소").removeSuffix("휴게소").removeSuffix("졸음쉼터").ifBlank { name }
 }
 
 /** 원터치 상황 공유 버튼 */

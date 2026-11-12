@@ -419,15 +419,21 @@ private fun GroupStatusCard(state: DriveUiState, gap: GroupGap) {
                     }
                 }
                 Column(Modifier.width(80.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    MemberAvatar(m.member, 50.dp, dashed = !m.onPlannedRoute, ring = isMe)
-                    Spacer(Modifier.height(6.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box {
+                        MemberAvatar(m.member, 50.dp, dashed = !m.onPlannedRoute, ring = isMe)
                         if (m.member.joinMode == JoinMode.PHONE) {
-                            Icon(Icons.Outlined.PhoneAndroid, contentDescription = "휴대폰 참여", tint = RtColors.Sub, modifier = Modifier.size(14.dp))
-                            Spacer(Modifier.width(2.dp))
+                            // 휴대폰으로 참여 (위치는 휴대폰 GPS)
+                            Box(
+                                Modifier.align(Alignment.BottomEnd).size(20.dp).clip(CircleShape).background(RtColors.Card)
+                                    .border(1.5.dp, RtColors.Line2, CircleShape),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(Icons.Outlined.PhoneAndroid, contentDescription = "휴대폰 참여", tint = RtColors.Ink2, modifier = Modifier.size(13.dp))
+                            }
                         }
-                        Text(m.member.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1)
                     }
+                    Spacer(Modifier.height(6.dp))
+                    Text(m.member.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1)
                     Text(sub, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = subColor, maxLines = 1)
                 }
             }
@@ -630,9 +636,16 @@ private fun DriveBottomBar(state: DriveUiState, actions: AppActions) {
         Spacer(Modifier.width(18.dp))
         CourseStepper(state.course, state.nextStopIndex, Modifier.weight(1f))
         Spacer(Modifier.width(18.dp))
-        SecondaryButton("내 메시지", Icons.Outlined.ChatBubbleOutline, actions.onOpenMyMessages, Modifier.width(196.dp))
+        SecondaryButton(
+            "내 메시지",
+            Icons.Outlined.ChatBubbleOutline,
+            if (state.messagePanelOpen) actions.onCloseMyMessages else actions.onOpenMyMessages,
+            Modifier.width(196.dp),
+            selected = state.messagePanelOpen,
+        )
         Spacer(Modifier.width(12.dp))
-        PrimaryButton("음성으로 상황 공유", Icons.Outlined.Mic, actions.onVoiceShare, Modifier.width(300.dp))
+        val listening = state.voiceShare?.stage == VoiceShare.Stage.LISTENING
+        PrimaryButton(if (listening) "듣고 있어요…" else "음성으로 상황 공유", Icons.Outlined.Mic, actions.onVoiceShare, Modifier.width(300.dp))
     }
 }
 

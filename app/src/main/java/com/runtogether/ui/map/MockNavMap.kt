@@ -191,15 +191,20 @@ private fun buildView(model: GroupMapModel, camera: MapCamera, w: Float, h: Floa
     val onRoute = model.vehicles.filter { it.onPlannedRoute }
     val tail = onRoute.minOfOrNull { it.progressKm } ?: me?.progressKm ?: 0.0
     val lead = onRoute.maxOfOrNull { it.progressKm } ?: me?.progressKm ?: 0.0
-    val spread = (lead - tail).coerceAtLeast(0.2)
+    // 다음 집결지가 7km 안이면 함께 보이게 맞춘다 (쉬어가기 투표로 가까운 휴게소가 정해졌을 때 등)
+    val nextKm = model.stops.firstOrNull { it.isNext }?.km
+    val fitTo = if (nextKm != null && nextKm - lead in 0.0..7.0) nextKm else lead
+    val withNext = fitTo > lead
+    val spread = (fitTo - tail).coerceAtLeast(0.2)
     val visiblePx = h / 0.848f
+    val fill = if (withNext) 0.8f else 0.45f
     var auto = 0
-    for (i in LEVELS_DP.indices) if (spread * LEVELS_DP[i] * density <= 0.45f * visiblePx) auto = i
+    for (i in LEVELS_DP.indices) if (spread * LEVELS_DP[i] * density <= fill * visiblePx) auto = i
     val index = (auto + camera.zoomStep).coerceIn(0, LEVELS_DP.lastIndex)
     val pxPerKm = LEVELS_DP[index] * density.toDouble()
     val follow = camera.followMe && me != null
-    val centerKm = if (camera.followMe && me != null) me.progressKm + 0.16 * visiblePx / pxPerKm else (tail + lead) / 2
-    val pivot = Offset(w * 0.42f, h * if (follow) 0.64f else 0.6f)
+    val centerKm = if (camera.followMe && me != null) me.progressKm + 0.16 * visiblePx / pxPerKm else (tail + fitTo) / 2
+    val pivot = Offset(w * 0.42f, h * if (follow) 0.64f else if (withNext) 0.56f else 0.6f)
     val t = Road.tangent(centerKm)
     val angle = ROUTE_ANGLE_DEG * PI / 180.0 - atan2(t.y, t.x)
     return MapView(w, h, density, centerKm, pxPerKm, pivot, angle)
@@ -438,7 +443,7 @@ private fun DrawScope.drawNationalRoad(v: MapView) {
         val from = max(span.fromKm, v.fromKm)
         val to = min(span.toKm, v.toKm)
         if (to <= from) continue
-        drawPath(v.path(from, to) { Road.national(it) }, trafficColor(span.level), style = Stroke(4.dp.toPx(), cap = StrokeCap.Butt))
+        drawPath(v.path(from, to) { Road.national(it) }, trafficColor(span.level).copy(alpha = 0.8f), style = Stroke(3.5.dp.toPx(), cap = StrokeCap.Butt))
     }
 }
 
@@ -530,14 +535,27 @@ private fun DrawScope.drawShield(tm: TextMeasurer, number: String, center: Offse
     return w
 }
 
-/** 경로 가까이에서 화면 안에 들어오는 지점 하나 고르기 */
-private fun firstInside(v: MapView, kms: List<Double>, lateral: (Double) -> Double, margin: Float): Double? =
-    kms.firstOrNull { v.inside(v.at(it, lateral(it)), -margin) }
+/**
+ * 도로 이름표를 놓을 자리: 안내 카드(왼쪽 위) · 상황 공유 줄(오른쪽) · 아래 표시줄을 피하고,
+ * 차 · IC · 집결지와 겹치지 않는 곳 중 먼저 맞는 곳.
+ */
+private fun DrawScope.labelSpot(v: MapView, model: GroupMapModel, kms: List<Double>, lateral: (Double) -> Double): Double? {
+    val left = 24.dp.toPx()
+    val right = v.widthPx - 190.dp.toPx()
+    val top = 230.dp.toPx()
+    val bottom = v.heightPx - 90.dp.toPx()
+    val markers = model.vehicles.map { vh -> if (vh.onPlannedRoute) v.at(vh.progressKm) else v.at(vh.progressKm, Road.national(vh.progressKm)) }
+    val busyKm = DemoMapData.interchanges.map { it.km } + model.stops.map { it.km }
+    return kms.firstOrNull { km ->
+        val o = v.at(km, lateral(km))
+        o.x in left..right && o.y in top..bottom &&
+            markers.none { (it - o).getDistance() < 90.dp.toPx() } &&
+            busyKm.none { abs(it - km) < 0.9 }
+    }
+}
 
 private fun DrawScope.drawMapLabels(v: MapView, tm: TextMeasurer, model: GroupMapModel) {
     val side = DemoMapData.NATIONAL_SIDE
-    val me = model.me
-    val tail = model.vehicles.filter { it.onPlannedRoute }.minOfOrNull { it.progressKm } ?: me?.progressKm ?: v.centerKm
     val span = v.toKm - v.centerKm
 
     // 마을 이름
@@ -575,8 +593,9 @@ private fun DrawScope.drawMapLabels(v: MapView, tm: TextMeasurer, model: GroupMa
         drawText(layout, topLeft = Offset(badge.x - layout.size.width / 2f, badge.y - layout.size.height / 2f))
         drawChip(tm, stop.name, Offset(badge.x + away.x * 44.dp.toPx(), badge.y + away.y * 30.dp.toPx()))
     }
-    // 고속도로 번호판 + 이름 (모임 뒤쪽 빈 곳)
-    val roadKm = firstInside(v, listOf(tail - 1.0, tail - 0.6, v.centerKm + span * 0.35, v.centerKm - span * 0.3), { 0.0 }, 40.dp.toPx())
+    // 고속도로 번호판 + 이름 (비어 있는 곳)
+    val candidates = (-12..12).map { v.centerKm + span * it / 16.0 }.sortedBy { abs(it - (v.centerKm + span * 0.2)) }
+    val roadKm = labelSpot(v, model, candidates) { 0.0 }
     if (roadKm != null) {
         val o = v.at(roadKm)
         val away = awayFromNational(v, roadKm)
@@ -586,7 +605,7 @@ private fun DrawScope.drawMapLabels(v: MapView, tm: TextMeasurer, model: GroupMa
         drawChip(tm, DemoMapData.EXPRESSWAY, Offset(at.x + w / 2 + 8.dp.toPx() + nameLayout.size.width / 2f + 7.dp.toPx(), at.y))
     }
     // 국도 번호판
-    val nationalKm = firstInside(v, listOf(v.centerKm + span * 0.2, v.centerKm - span * 0.15, v.centerKm + span * 0.45), { Road.national(it) }, 40.dp.toPx())
+    val nationalKm = labelSpot(v, model, candidates.filter { roadKm == null || abs(it - roadKm) > span * 0.25 }) { Road.national(it) }
     if (nationalKm != null) {
         val o = v.at(nationalKm, Road.national(nationalKm))
         val w = drawShield(tm, DemoMapData.NATIONAL_ROAD_NO, o)

@@ -234,6 +234,32 @@ fun VotePanel(state: DriveUiState, modifier: Modifier = Modifier) {
                 }
             }
         }
+        Spacer(Modifier.height(18.dp))
+        // 어디서 얼마나 쉬자는 건지
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(RtColors.Panel)
+                .padding(horizontal = 18.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Outlined.LocalCafe, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(26.dp))
+            Spacer(Modifier.width(12.dp))
+            Column {
+                Text("${vote.stop.name}에서 ${vote.restMinutes}분 쉬기", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+                val facilities = buildList {
+                    if (vote.stop.hasFuel) add("주유소")
+                    if (vote.stop.hasCharger) add("충전소")
+                    if (vote.stop.hasFood) add("카페")
+                }.joinToString("·")
+                Text(
+                    "${formatKm(state.distanceTo(vote.stop))}km · 약 ${state.minutesTo(vote.stop)}분" + if (facilities.isNotEmpty()) " · $facilities" else "",
+                    fontSize = 16.sp,
+                    color = RtColors.Sub,
+                )
+            }
+        }
         Spacer(Modifier.weight(1f))
         HorizontalDivider(color = RtColors.Divider)
         Spacer(Modifier.height(14.dp))
