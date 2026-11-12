@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 차콜 × 번트 오렌지 (Compose 테마 RtColors 와 같은 값) -->
-    <color name="rt_bg">#25282D</color>
+    <!-- 그래파이트 × 번트 오렌지 (Compose 테마 RtColors 와 같은 값) -->
+    <color name="rt_bg">#30353C</color>
     <color name="rt_accent">#D66A32</color>
 
     <style name="Theme.RunTogether" parent="android:Theme.Material.NoActionBar">

@@ -8,46 +8,61 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.runtogether.R
 
 /**
- * 차콜 × 번트 오렌지 디자인 토큰 (차량 인포테인먼트, 어두운 화면).
+ * Pleos Connect 시스템 글꼴 Asta Sans (42dot, SIL OFL 1.1 — assets/licenses/asta_sans_OFL.txt).
+ * 앱이 차량 기본 화면과 같은 글꼴을 쓰면 처음 보는 화면도 익숙하게 읽힌다 (Pleos Connect UI 디자인 가이드 ‘일관성’).
+ * 화면 코드는 Medium · Bold · Black 만 쓴다. Black(900) 은 가장 굵은 800 으로 그려진다.
+ */
+val AstaSans = FontFamily(
+    Font(R.font.asta_sans_medium, FontWeight.Medium),
+    Font(R.font.asta_sans_bold, FontWeight.Bold),
+    Font(R.font.asta_sans_extrabold, FontWeight.ExtraBold),
+)
+
+/**
+ * 그래파이트 × 번트 오렌지 디자인 토큰 (차량 인포테인먼트, 어두운 화면 — 이전 차콜보다 한 단계 밝게).
+ * 바탕은 푸른 기가 살짝 도는 그래파이트, 글자는 차가운 흰색. 모든 글자는 놓이는 면 위에서 4.5:1 이상.
  * 주황(Accent)은 로고 · 지금 고른 것 · 주요 버튼 · 내 차 위치와 주행 경로 · 집결지 진행 · 중요한 상태에만 쓴다.
- * 이름은 이전 밝은 테마와 같게 두어 화면 코드가 그대로 따라온다 (Ink = 기본 글자, Card = 카드 바탕 …).
+ * 이름은 이전 테마와 같게 두어 화면 코드가 그대로 따라온다 (Ink = 기본 글자, Card = 카드 바탕 …).
  */
 object RtColors {
     // 바탕
-    val Bg = Color(0xFF25282D)
-    val Card = Color(0xFF363A40)
+    val Bg = Color(0xFF30353C)
+    val Card = Color(0xFF3D434B)
     /** 카드 안의 한 단계 낮은 면 (타일·입력 칸) */
-    val Panel = Color(0xFF2D3035)
+    val Panel = Color(0xFF353A42)
     /** 카드 위로 올라온 면 (보조 버튼·칩) */
-    val Raised = Color(0xFF42464D)
-    /** 지도 위에 뜨는 어두운 패널 */
-    val Overlay = Color(0xF5262A2F)
+    val Raised = Color(0xFF4A515A)
+    /** 지도 위에 뜨는 패널 */
+    val Overlay = Color(0xF5343A42)
 
     // 글자
-    val Ink = Color(0xFFF3F1ED)
-    val Ink2 = Color(0xFFE5E3DF)
-    val Sub = Color(0xFFB8B9BD)
-    val Muted = Color(0xFF9EA0A6)
-    val Faint = Color(0xFF7E8187)
+    val Ink = Color(0xFFF5F6F8)
+    val Ink2 = Color(0xFFE4E7EB)
+    val Sub = Color(0xFFBCC2CA)
+    val Muted = Color(0xFFAAB1BA)
+    val Faint = Color(0xFF8A919B)
 
     // 선
-    val Line = Color(0xFF50545B)
-    val Line2 = Color(0xFF5E636A)
-    val Divider = Color(0xFF464A51)
+    val Line = Color(0xFF59606A)
+    val Line2 = Color(0xFF677079)
+    val Divider = Color(0xFF4E555E)
     /** 투표 막대의 아직 답하지 않은 칸 */
-    val Pending = Color(0xFF4B4F56)
+    val Pending = Color(0xFF555C66)
 
     // 포인트 (번트 오렌지)
     val Accent = Color(0xFFD66A32)
     /** 어두운 바탕 위 주황 글자 (작은 글자도 읽히게 조금 밝게) */
-    val AccentText = Color(0xFFF08B57)
+    val AccentText = Color(0xFFF59A6B)
     val AccentSoft = Color(0x2ED66A32)
     val AccentRing = Color(0x59D66A32)
     val OnAccent = Color(0xFFFFFFFF)
@@ -65,8 +80,8 @@ object RtColors {
     val WarnLine = Color(0xFFE5AC3C)
 
     /** 위험: 도움 요청 · 차에 문제 */
-    val Danger = Color(0xFFFF8478)
-    val DangerSoft = Color(0x26FF8478)
+    val Danger = Color(0xFFFF8F84)
+    val DangerSoft = Color(0x26FF8F84)
 
     /** 정상 · 실시간 연결됨 */
     val Good = Color(0xFF6CCB97)
@@ -96,7 +111,7 @@ object RtColors {
     val TrafficJam = Color(0xFFCC3340)
 
     val Scrim = Color(0x8C141618)
-    val CaptionBg = Color(0xF5191B1F)
+    val CaptionBg = Color(0xF51F2329)
 }
 
 /**
@@ -105,6 +120,7 @@ object RtColors {
  */
 val KoreanTextStyle = TextStyle(
     color = RtColors.Ink,
+    fontFamily = AstaSans,
     localeList = LocaleList("ko-KR"),
     lineBreak = LineBreak(
         strategy = LineBreak.Strategy.HighQuality,
