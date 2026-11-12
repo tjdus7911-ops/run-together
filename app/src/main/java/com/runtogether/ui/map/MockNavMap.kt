@@ -204,7 +204,7 @@ private fun buildView(model: GroupMapModel, camera: MapCamera, w: Float, h: Floa
     val pxPerKm = LEVELS_DP[index] * density.toDouble()
     val follow = camera.followMe && me != null
     val centerKm = if (camera.followMe && me != null) me.progressKm + 0.16 * visiblePx / pxPerKm else (tail + fitTo) / 2
-    val pivot = Offset(w * 0.42f, h * if (follow) 0.64f else if (withNext) 0.56f else 0.6f)
+    val pivot = Offset(w * 0.42f, h * if (follow) 0.64f else if (withNext) 0.53f else 0.6f)
     val t = Road.tangent(centerKm)
     val angle = ROUTE_ANGLE_DEG * PI / 180.0 - atan2(t.y, t.x)
     return MapView(w, h, density, centerKm, pxPerKm, pivot, angle)
@@ -542,13 +542,16 @@ private fun DrawScope.drawShield(tm: TextMeasurer, number: String, center: Offse
 private fun DrawScope.labelSpot(v: MapView, model: GroupMapModel, kms: List<Double>, lateral: (Double) -> Double): Double? {
     val left = 24.dp.toPx()
     val right = v.widthPx - 190.dp.toPx()
-    val top = 230.dp.toPx()
+    val top = 130.dp.toPx()
     val bottom = v.heightPx - 90.dp.toPx()
+    // 안내 카드 자리 (왼쪽 위)
+    val cardRight = 400.dp.toPx()
+    val cardBottom = 230.dp.toPx()
     val markers = model.vehicles.map { vh -> if (vh.onPlannedRoute) v.at(vh.progressKm) else v.at(vh.progressKm, Road.national(vh.progressKm)) }
     val busyKm = DemoMapData.interchanges.map { it.km } + model.stops.map { it.km }
     return kms.firstOrNull { km ->
         val o = v.at(km, lateral(km))
-        o.x in left..right && o.y in top..bottom &&
+        o.x in left..right && o.y in top..bottom && !(o.x < cardRight && o.y < cardBottom) &&
             markers.none { (it - o).getDistance() < 90.dp.toPx() } &&
             busyKm.none { abs(it - km) < 0.9 }
     }
