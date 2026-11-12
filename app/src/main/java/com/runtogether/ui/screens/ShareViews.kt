@@ -49,6 +49,7 @@ import com.runtogether.state.IncomingAlert
 import com.runtogether.state.VoteResult
 import com.runtogether.state.formatKm
 import com.runtogether.ui.components.MemberAvatar
+import com.runtogether.ui.components.PrimaryButton
 import com.runtogether.ui.components.RtCard
 import com.runtogether.ui.components.SectionLabel
 import com.runtogether.ui.components.Tag
@@ -136,18 +137,20 @@ fun AlertCard(
         }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            Button(
-                onClick = { onVote(true) },
-                modifier = Modifier.weight(1f).height(76.dp),
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (myVote == Vote.NO) RtColors.Raised else RtColors.Accent,
-                    contentColor = if (myVote == Vote.NO) RtColors.Ink2 else Color.White,
-                ),
-            ) {
-                Icon(Icons.Outlined.Check, contentDescription = null, modifier = Modifier.size(26.dp))
-                Spacer(Modifier.width(10.dp))
-                Text("좋아요", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+            if (myVote == Vote.NO) {
+                // 이미 ‘괜찮아요’로 답했으면 눌러도 되지만 눈에 띄지 않게
+                Button(
+                    onClick = { onVote(true) },
+                    modifier = Modifier.weight(1f).height(76.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = RtColors.Raised, contentColor = RtColors.Ink2),
+                ) {
+                    Icon(Icons.Outlined.Check, contentDescription = null, modifier = Modifier.size(26.dp))
+                    Spacer(Modifier.width(10.dp))
+                    Text("좋아요", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                }
+            } else {
+                PrimaryButton("좋아요", Icons.Outlined.Check, { onVote(true) }, Modifier.weight(1f), textSize = 26.sp, corner = 20.dp)
             }
             OutlinedButton(
                 onClick = { onVote(false) },

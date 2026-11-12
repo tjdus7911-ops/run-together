@@ -78,7 +78,7 @@ import kotlin.math.sqrt
 
 /**
  * 시연용 그림 지도. 실제 지도 SDK 를 붙이기 전까지 쓰며, 화면에 ‘시연용 지도’라고 표시한다.
- * 고속도로 · 국도 · 마을 길, 시가지 · 숲 · 물, IC · 휴게소 · 지명, 교통 색, 모임 경로(주황)와 차 위치를 그린다.
+ * 고속도로 · 국도 · 마을 길, 시가지 · 숲 · 물, IC · 휴게소 · 지명, 교통 색, 모임 경로(포인트 파랑)와 차 위치를 그린다.
  * 차 위치는 코스를 따라 간 거리(progressKm)로 놓는다 — 실제 지도에서는 좌표로 놓는다.
  */
 object MockNavMapRenderer : GroupMapRenderer {
@@ -454,7 +454,7 @@ private fun DrawScope.drawExpressway(v: MapView) {
     drawPath(p, RtColors.MapRoadEdge, style = Stroke(1.2.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f))))
 }
 
-/** 모임 경로: 지난 길은 옅게, 앞길은 주황 + 진행 방향 화살표. 막히는 구간은 테두리를 교통 색으로. */
+/** 모임 경로: 지난 길은 옅게, 앞길은 포인트 파랑 + 진행 방향 화살표. 막히는 구간은 테두리를 교통 색으로. */
 private fun DrawScope.drawRoute(v: MapView, model: GroupMapModel) {
     val me = model.me ?: return
     val onRoute = model.vehicles.filter { it.onPlannedRoute }
@@ -760,7 +760,7 @@ private fun OffscreenStop(view: MapView, fromKm: Double, stop: MapStop, distance
     }
 }
 
-/** 차들: 겹치면 길 옆으로 살짝 비켜 놓는다. 내 차는 주황 화살표(진행 방향). */
+/** 차들: 겹치면 길 옆으로 살짝 비켜 놓는다. 내 차는 포인트 파랑 화살표(진행 방향). */
 @Composable
 private fun VehicleMarkers(view: MapView, model: GroupMapModel) {
     val density = LocalDensity.current.density

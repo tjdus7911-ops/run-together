@@ -28,8 +28,6 @@ import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material.icons.outlined.LocalGasStation
 import androidx.compose.material.icons.outlined.SignalCellularAlt
 import androidx.compose.material.icons.outlined.Wc
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +38,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
@@ -55,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.runtogether.domain.Member
@@ -269,24 +270,92 @@ fun AppHeader(
     }
 }
 
-/** 큰 주황 버튼 (화면의 주요 동작 하나에만) */
-@Composable
-fun PrimaryButton(text: String, icon: ImageVector?, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(
-        onClick = onClick,
-        modifier = modifier.height(RtDimens.ButtonHeight),
-        shape = RoundedCornerShape(RtDimens.ButtonRadius),
-        colors = ButtonDefaults.buttonColors(containerColor = RtColors.Accent, contentColor = RtColors.OnAccent),
-    ) {
-        if (icon != null) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(26.dp))
-            Spacer(Modifier.width(12.dp))
-        }
-        Text(text, fontSize = 22.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+// ---------------- 디지털 블루 면 · 빛 ----------------
+
+/** 포인트 면: 왼쪽 위 밝은 디지털 블루 → 오른쪽 아래 깊은 블루 */
+val AccentBrush: Brush
+    get() = Brush.linearGradient(listOf(RtColors.AccentHi, RtColors.AccentLo))
+
+/** 포인트 면 위쪽 가장자리에만 도는 얇은 빛 (아래로 갈수록 사라진다) */
+val AccentEdge: Brush
+    get() = Brush.verticalGradient(0f to Color.White.copy(alpha = 0.36f), 0.55f to Color.White.copy(alpha = 0f))
+
+/**
+ * 버튼 뒤의 은은한 바깥 빛. 흐림 필터 없이 반투명 둥근 사각형을 겹쳐 그려
+ * 차량 화면과 미리보기(Paparazzi)에서 똑같이 보인다. 가장자리 쪽이 가장 진하고 [spread] 만큼 퍼지며 옅어진다.
+ * 움직이지 않는 빛이라 운전 중 시선을 끌지 않는다.
+ */
+fun Modifier.accentGlow(
+    corner: Dp,
+    spread: Dp = 14.dp,
+    color: Color = RtColors.AccentGlow,
+    strength: Float = 0.055f,
+    layers: Int = 9,
+    offsetY: Dp = 3.dp,
+): Modifier = drawBehind {
+    val s = spread.toPx()
+    val c = corner.toPx()
+    val dy = offsetY.toPx()
+    for (i in layers downTo 1) {
+        val e = s * i / layers
+        drawRoundRect(
+            color = color.copy(alpha = strength),
+            topLeft = Offset(-e, -e + dy),
+            size = Size(size.width + 2 * e, size.height + 2 * e),
+            cornerRadius = CornerRadius(c + e, c + e),
+        )
     }
 }
 
-/** 보조 버튼 (어두운 면 + 테두리). [selected] 면 지금 열려 있는 것 (주황 테두리) */
+/**
+ * 큰 포인트 버튼 (화면의 주요 동작 하나에만).
+ * 디지털 블루 그라데이션 + 위쪽 가장자리 빛 + 은은한 바깥 빛. 글자는 흰색(그라데이션 어디서나 큰 글자 3:1 이상).
+ */
+@Composable
+fun PrimaryButton(
+    text: String,
+    icon: ImageVector?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    textSize: TextUnit = 22.sp,
+    corner: Dp = RtDimens.ButtonRadius,
+) {
+    val shape = RoundedCornerShape(corner)
+    Row(
+        modifier
+            .height(RtDimens.ButtonHeight)
+            .accentGlow(corner)
+            .clip(shape)
+            .background(AccentBrush)
+            .border(1.dp, AccentEdge, shape)
+            .clickable(onClickLabel = text, role = Role.Button, onClick = onClick)
+            .padding(horizontal = 24.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (icon != null) {
+            Icon(icon, contentDescription = null, tint = RtColors.OnAccent, modifier = Modifier.size(26.dp))
+            Spacer(Modifier.width(12.dp))
+        }
+        Text(text, fontSize = textSize, fontWeight = FontWeight.Bold, color = RtColors.OnAccent, maxLines = 1)
+    }
+}
+
+/** 포인트 동그라미 (음성 듣는 중 · 보냈어요): 그라데이션 + 바깥 빛 */
+@Composable
+fun AccentCircle(size: Dp, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(
+        modifier
+            .size(size)
+            .accentGlow(size / 2, spread = 16.dp)
+            .clip(CircleShape)
+            .background(AccentBrush)
+            .border(1.dp, AccentEdge, CircleShape),
+        contentAlignment = Alignment.Center,
+    ) { content() }
+}
+
+/** 보조 버튼 (어두운 면 + 테두리). [selected] 면 지금 열려 있는 것 (포인트 테두리 + 옅은 빛) */
 @Composable
 fun SecondaryButton(
     text: String,
@@ -301,6 +370,7 @@ fun SecondaryButton(
         modifier
             .height(RtDimens.ButtonHeight)
             .alpha(if (enabled) 1f else 0.45f)
+            .then(if (selected) Modifier.accentGlow(RtDimens.ButtonRadius, spread = 10.dp, strength = 0.04f) else Modifier)
             .clip(shape)
             .background(if (selected) RtColors.AccentSoft else RtColors.Raised)
             .border(if (selected) 2.dp else 1.dp, if (selected) RtColors.Accent else RtColors.Line2, shape)

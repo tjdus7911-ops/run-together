@@ -193,7 +193,7 @@ private fun ParkedWideButton(label: String, caption: String, icon: ImageVector, 
 
 private val DOT = 30.dp
 
-/** 오늘 코스에서 지금 어디쯤인지 — 지나온 구간은 주황, 남은 구간은 회색 */
+/** 오늘 코스에서 지금 어디쯤인지 — 지나온 구간은 포인트 파랑, 남은 구간은 회색 */
 @Composable
 private fun CourseStrip(state: DriveUiState) {
     val stops = state.course

@@ -3,6 +3,7 @@ package com.runtogether.ui.theme
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -30,8 +31,10 @@ val AstaSans = FontFamily(
 
 /**
  * 그래파이트 × 디지털 블루 디자인 토큰 (차량 인포테인먼트, 어두운 화면 — 이전 차콜보다 한 단계 밝게).
+ * 현대차그룹 SDV 인포테인먼트 Pleos Connect 에 맞춘 디지털 콘셉트: 시스템 글꼴 Asta Sans, 차가운 그래파이트, 디지털 블루.
  * 바탕은 푸른 기가 살짝 도는 그래파이트, 글자는 차가운 흰색. 모든 글자는 놓이는 면 위에서 4.5:1 이상.
  * 파랑(Accent)은 로고 · 지금 고른 것 · 주요 버튼 · 내 차 위치와 주행 경로 · 집결지 진행 · 중요한 상태에만 쓴다.
+ * 주요 버튼만 그라데이션([AccentHi] → [AccentLo])과 은은한 바깥 빛([AccentGlow])을 쓴다. 움직이는 효과는 쓰지 않는다.
  * 이름은 이전 테마와 같게 두어 화면 코드가 그대로 따라온다 (Ink = 기본 글자, Card = 카드 바탕 …).
  */
 object RtColors {
@@ -65,6 +68,11 @@ object RtColors {
     val AccentText = Color(0xFF80B0FF)
     val AccentSoft = Color(0x2E2F74EE)
     val AccentRing = Color(0x592F74EE)
+    /** 주요 버튼 그라데이션: 왼쪽 위 밝은 디지털 블루 → 오른쪽 아래 깊은 블루 (흰 글자 3.3:1 ~ 6.2:1, 큰 버튼 글자 기준 통과) */
+    val AccentHi = Color(0xFF3D8BFF)
+    val AccentLo = Color(0xFF2456D6)
+    /** 주요 버튼 뒤 은은한 빛 (겹친 반투명 테두리로 그린다) */
+    val AccentGlow = Color(0xFF3D8BFF)
     val OnAccent = Color(0xFFFFFFFF)
 
     /** '졸려요' = 밤·달 */
@@ -169,9 +177,22 @@ object RtDimens {
     val ButtonHeight = 76.dp
 }
 
+/** Material 부품(버튼 · 대화상자 …) 안의 글자도 Asta Sans 로 */
+private val RtTypography = Typography().run {
+    fun TextStyle.asta() = copy(fontFamily = AstaSans)
+    copy(
+        displayLarge = displayLarge.asta(), displayMedium = displayMedium.asta(), displaySmall = displaySmall.asta(),
+        headlineLarge = headlineLarge.asta(), headlineMedium = headlineMedium.asta(), headlineSmall = headlineSmall.asta(),
+        titleLarge = titleLarge.asta(), titleMedium = titleMedium.asta(), titleSmall = titleSmall.asta(),
+        bodyLarge = bodyLarge.asta(), bodyMedium = bodyMedium.asta(), bodySmall = bodySmall.asta(),
+        labelLarge = labelLarge.asta(), labelMedium = labelMedium.asta(), labelSmall = labelSmall.asta(),
+    )
+}
+
 @Composable
 fun RunTogetherTheme(content: @Composable () -> Unit) {
     MaterialTheme(
+        typography = RtTypography,
         colorScheme = darkColorScheme(
             primary = RtColors.Accent,
             onPrimary = RtColors.OnAccent,

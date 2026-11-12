@@ -34,7 +34,7 @@ object DemoScenario {
     const val STEP_SLEEPY = 3
     const val LAST_STEP = STEP_SLEEPY
 
-    // 회원 색은 어두운 화면과 밝은 지도 양쪽에서 보이는 중간 밝기 (나 = 포인트 주황)
+    // 회원 색은 어두운 화면과 밝은 지도 양쪽에서 보이는 중간 밝기 (나 = 포인트 파랑)
     val me = Member("me", "나", 0xFF2F74EE, isLeader = true)
     val minji = Member("minji", "민지", 0xFFE07A2E)
     val sua = Member("sua", "수아", 0xFF0F94B0)

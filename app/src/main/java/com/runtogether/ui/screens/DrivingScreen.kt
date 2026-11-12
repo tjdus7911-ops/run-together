@@ -102,6 +102,9 @@ import com.runtogether.state.formatKm
 import com.runtogether.state.nextStopEta
 import com.runtogether.state.shownGuidance
 import com.runtogether.ui.AppActions
+import com.runtogether.ui.components.AccentBrush
+import com.runtogether.ui.components.AccentCircle
+import com.runtogether.ui.components.AccentEdge
 import com.runtogether.ui.components.CaptionBar
 import com.runtogether.ui.components.CarGlyph
 import com.runtogether.ui.components.MemberAvatar
@@ -112,6 +115,7 @@ import com.runtogether.ui.components.RtCard
 import com.runtogether.ui.components.SecondaryButton
 import com.runtogether.ui.components.SourceBadge
 import com.runtogether.ui.components.StatusButtons
+import com.runtogether.ui.components.accentGlow
 import com.runtogether.ui.map.LocalGroupMapRenderer
 import com.runtogether.ui.map.MapCamera
 import com.runtogether.ui.map.toMapModel
@@ -221,7 +225,12 @@ private fun TurnCard(g: NaviGuidance, modifier: Modifier) {
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
-                Modifier.size(64.dp).clip(RoundedCornerShape(16.dp)).background(RtColors.Accent),
+                Modifier
+                    .size(64.dp)
+                    .accentGlow(16.dp, spread = 10.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(AccentBrush)
+                    .border(1.dp, AccentEdge, RoundedCornerShape(16.dp)),
                 contentAlignment = Alignment.Center,
             ) {
                 TurnGlyph(g.turn ?: TurnKind.STRAIGHT, Modifier.size(42.dp))
@@ -851,7 +860,7 @@ private fun MessageButton(
             Modifier
                 .size(if (compact) 40.dp else 48.dp)
                 .clip(RoundedCornerShape(if (compact) 12.dp else 14.dp))
-                .background(if (sent) RtColors.Accent else RtColors.Raised),
+                .then(if (sent) Modifier.background(AccentBrush) else Modifier.background(RtColors.Raised)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
@@ -913,7 +922,7 @@ private fun VoiceSharePanel(share: VoiceShare, actions: AppActions, modifier: Mo
     ) {
         when (share.stage) {
             VoiceShare.Stage.LISTENING -> {
-                Box(Modifier.size(88.dp).clip(CircleShape).background(RtColors.Accent), contentAlignment = Alignment.Center) {
+                AccentCircle(88.dp) {
                     Icon(Icons.Outlined.Mic, contentDescription = null, tint = Color.White, modifier = Modifier.size(44.dp))
                 }
                 Spacer(Modifier.height(18.dp))
@@ -936,7 +945,7 @@ private fun VoiceSharePanel(share: VoiceShare, actions: AppActions, modifier: Mo
                 }
             }
             VoiceShare.Stage.SENT -> {
-                Box(Modifier.size(80.dp).clip(CircleShape).background(RtColors.Accent), contentAlignment = Alignment.Center) {
+                AccentCircle(80.dp) {
                     Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(42.dp))
                 }
                 Spacer(Modifier.height(16.dp))
