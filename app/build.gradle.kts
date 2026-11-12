@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    // 에뮬레이터 없이 화면 스크린샷을 그려 확인 (CI)
+    alias(libs.plugins.paparazzi)
 }
 
 android {

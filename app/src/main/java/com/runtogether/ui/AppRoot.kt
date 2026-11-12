@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.runtogether.GroupDriveViewModel
 import com.runtogether.demo.DemoScenario
 import com.runtogether.domain.GapCalculator
+import com.runtogether.domain.StatusSignal
 import com.runtogether.state.DriveUiState
 import com.runtogether.state.Phase
 import com.runtogether.state.formatClock
@@ -57,10 +58,39 @@ import com.runtogether.ui.theme.RtColors
 private const val DESIGN_WIDTH = 1600f
 private const val DESIGN_HEIGHT = 900f
 
+/** 화면에서 할 수 있는 동작 묶음 (ViewModel 없이도 화면을 그릴 수 있게) */
+data class AppActions(
+    val onDepart: () -> Unit = {},
+    val onSignal: (StatusSignal) -> Unit = {},
+    val onVote: (Boolean) -> Unit = {},
+    val onDismissAlert: () -> Unit = {},
+    val onParkedAction: (String) -> Unit = {},
+    val onPrevious: () -> Unit = {},
+    val onNext: () -> Unit = {},
+    val onCloseToast: () -> Unit = {},
+)
+
 @Composable
 fun AppRoot(viewModel: GroupDriveViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val caption by viewModel.caption.collectAsStateWithLifecycle()
+    val actions = remember(viewModel) {
+        AppActions(
+            onDepart = viewModel::sendDepartureNotice,
+            onSignal = viewModel::sendSignal,
+            onVote = viewModel::answerVote,
+            onDismissAlert = viewModel::dismissAlert,
+            onParkedAction = viewModel::parkedAction,
+            onPrevious = viewModel::previousStep,
+            onNext = viewModel::nextStep,
+            onCloseToast = viewModel::clearToast,
+        )
+    }
+    AppScreen(state, caption, actions)
+}
+
+@Composable
+fun AppScreen(state: DriveUiState, caption: String?, actions: AppActions) {
     val gap = remember(state.members) { GapCalculator.compute(state.members) }
 
     BoxWithConstraints(Modifier.fillMaxSize().background(RtColors.Bg)) {
@@ -78,29 +108,29 @@ fun AppRoot(viewModel: GroupDriveViewModel) {
                     Header(state)
                     Box(Modifier.weight(1f).fillMaxWidth()) {
                         when (state.phase) {
-                            Phase.PRE_DEPARTURE -> CheckinScreen(state, viewModel::sendDepartureNotice)
+                            Phase.PRE_DEPARTURE -> CheckinScreen(state, actions.onDepart)
                             Phase.DRIVING -> DrivingScreen(
                                 state = state,
                                 gap = gap,
-                                onSignal = viewModel::sendSignal,
-                                onVote = viewModel::answerVote,
-                                onDismissAlert = viewModel::dismissAlert,
+                                onSignal = actions.onSignal,
+                                onVote = actions.onVote,
+                                onDismissAlert = actions.onDismissAlert,
                             )
-                            Phase.AT_MEETING_POINT -> RegroupScreen(state, viewModel::sendDepartureNotice, viewModel::parkedAction)
+                            Phase.AT_MEETING_POINT -> RegroupScreen(state, actions.onDepart, actions.onParkedAction)
                         }
                     }
                 }
                 DemoBar(
                     state,
-                    onPrevious = viewModel::previousStep,
-                    onNext = viewModel::nextStep,
+                    onPrevious = actions.onPrevious,
+                    onNext = actions.onNext,
                     modifier = Modifier.align(Alignment.TopCenter).padding(top = 30.dp),
                 )
                 caption?.let {
                     CaptionBar(it, Modifier.align(Alignment.TopCenter).padding(top = 116.dp))
                 }
                 state.toast?.let {
-                    ToastBar(it, onClose = viewModel::clearToast, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 140.dp))
+                    ToastBar(it, onClose = actions.onCloseToast, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 140.dp))
                 }
             }
         }

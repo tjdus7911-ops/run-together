@@ -12,3 +12,4 @@
 *.aab
 /probe-out/
 __pycache__/
+app/src/test/snapshots/
