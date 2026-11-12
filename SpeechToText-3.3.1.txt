@@ -1,0 +1,886 @@
+# ai.pleos.playground:SpeechToText:3.3.1
+## pom
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ai.pleos.playground</groupId>
+  <artifactId>SpeechToText</artifactId>
+  <version>3.3.1</version>
+  <packaging>aar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>androidx.core</groupId>
+      <artifactId>core-ktx</artifactId>
+      <version>1.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-coroutines-android</artifactId>
+      <version>1.6.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.pleos.playground.security</groupId>
+      <artifactId>universal-access</artifactId>
+      <version>0.6.0</version>
+    </dependency>
+  </dependencies>
+</project>
+
+## aar entries
+R.txt
+AndroidManifest.xml
+classes.jar
+res/
+res/values/
+res/values/values.xml
+META-INF/com/android/build/gradle/aar-metadata.properties
+## AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ai.pleos.playground.sdk.stt" >
+
+    <uses-sdk android:minSdkVersion="23" />
+
+    <!-- CCG Validation 체크를 위한 권한 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <queries>
+        <intent>
+            <action android:name="ai.pleos.playground.caas.intent.action.SPEECH_START" />
+        </intent>
+    </queries>
+
+    <application>
+
+        <!-- CAAS minimum version: matches the actual GAAS package name (ai.pleos.playground.caas) -->
+        <meta-data
+            android:name="ai.pleos.playground.caas.min_version_name"
+            android:value="4.1.29" />
+        <meta-data
+            android:name="ai.pleos.playground.caas.min_version_code"
+            android:value="4001029" />
+
+        <!-- Deprecated: legacy keys kept for backward compatibility with older app-market versions -->
+        <meta-data
+            android:name="ai.pleos.playground.service.caas.min_version_name"
+            android:value="4.1.29" />
+        <meta-data
+            android:name="ai.pleos.playground.service.caas.min_version_code"
+            android:value="4001029" />
+        <meta-data
+            android:name="ai.pleos.playground.sdk.stt.current_version_name"
+            android:value="3.3.1" />
+        <meta-data
+            android:name="ai.pleos.playground.sdk.stt.current_version_code"
+            android:value="3003001" />
+    </application>
+
+</manifest>
+## 59 classes
+Compiled from "SourceFile"
+public interface ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback, java.lang.String) throws android.os.RemoteException;
+  public abstract void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback) throws android.os.RemoteException;
+  public abstract void request(java.lang.String) throws android.os.RemoteException;
+  public abstract void close() throws android.os.RemoteException;
+  public abstract void send(byte[], java.lang.String) throws android.os.RemoteException;
+  public abstract void sendCallAudio(java.lang.String, byte[], java.lang.String) throws android.os.RemoteException;
+  public abstract void requestCompleteSendBuffer(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void showSensorPrivacyDialog(int, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt$Default implements ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt {
+  public ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt$Default();
+  public void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback) throws android.os.RemoteException;
+  public void request(java.lang.String) throws android.os.RemoteException;
+  public void close() throws android.os.RemoteException;
+  public void send(byte[], java.lang.String) throws android.os.RemoteException;
+  public void sendCallAudio(java.lang.String, byte[], java.lang.String) throws android.os.RemoteException;
+  public void requestCompleteSendBuffer(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void showSensorPrivacyDialog(int, java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt$Stub extends android.os.Binder implements ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt {
+  public ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt$Stub();
+  public static ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+class ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt$Stub$Proxy implements ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback) throws android.os.RemoteException;
+  public void request(java.lang.String) throws android.os.RemoteException;
+  public void close() throws android.os.RemoteException;
+  public void send(byte[], java.lang.String) throws android.os.RemoteException;
+  public void sendCallAudio(java.lang.String, byte[], java.lang.String) throws android.os.RemoteException;
+  public void requestCompleteSendBuffer(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void showSensorPrivacyDialog(int, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.caas.service.speech.aidl.IStt extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback, java.lang.String) throws android.os.RemoteException;
+  public abstract void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback) throws android.os.RemoteException;
+  public abstract void setEicServer(int, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void request(java.lang.String) throws android.os.RemoteException;
+  public abstract void close(java.lang.String) throws android.os.RemoteException;
+  public abstract void updateEicContextInfo(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void setSpeechLanguageCode(java.lang.String) throws android.os.RemoteException;
+  public abstract void setEnableSpeechSourceSeparation(boolean) throws android.os.RemoteException;
+  public abstract void setSpeakerRecognitionMethod(int) throws android.os.RemoteException;
+  public abstract void setProfileId(java.lang.String) throws android.os.RemoteException;
+  public abstract void setIsFirstForEnrollOpt(boolean) throws android.os.RemoteException;
+  public abstract void setScriptForEnrollOpt(java.lang.String) throws android.os.RemoteException;
+  public abstract void requestWithoutRecording(java.lang.String) throws android.os.RemoteException;
+  public abstract void sendRecognitionAudio(byte[], boolean) throws android.os.RemoteException;
+  public abstract void setWakeUpWordConfig(java.lang.String) throws android.os.RemoteException;
+  public abstract void setLMBoostConfig(java.lang.String) throws android.os.RemoteException;
+  public abstract void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void registerApp(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void closeGrpcConnection(java.lang.String) throws android.os.RemoteException;
+  public abstract void setMode(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void showSensorPrivacyDialog(int, java.lang.String) throws android.os.RemoteException;
+  public abstract void requestWithUaToken(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void requestWithoutRecordingWithUaToken(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void requestForSpeechV2(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void requestWithoutRecordingForSpeechV2(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void setWakeUpWordConfigV2(byte[], java.lang.String) throws android.os.RemoteException;
+  public abstract void setLMBoostConfigV2(java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.service.speech.aidl.IStt$Default implements ai.pleos.playground.caas.service.speech.aidl.IStt {
+  public ai.pleos.playground.caas.service.speech.aidl.IStt$Default();
+  public void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback) throws android.os.RemoteException;
+  public void setEicServer(int, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void request(java.lang.String) throws android.os.RemoteException;
+  public void close(java.lang.String) throws android.os.RemoteException;
+  public void updateEicContextInfo(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setSpeechLanguageCode(java.lang.String) throws android.os.RemoteException;
+  public void setEnableSpeechSourceSeparation(boolean) throws android.os.RemoteException;
+  public void setSpeakerRecognitionMethod(int) throws android.os.RemoteException;
+  public void setProfileId(java.lang.String) throws android.os.RemoteException;
+  public void setIsFirstForEnrollOpt(boolean) throws android.os.RemoteException;
+  public void setScriptForEnrollOpt(java.lang.String) throws android.os.RemoteException;
+  public void requestWithoutRecording(java.lang.String) throws android.os.RemoteException;
+  public void sendRecognitionAudio(byte[], boolean) throws android.os.RemoteException;
+  public void setWakeUpWordConfig(java.lang.String) throws android.os.RemoteException;
+  public void setLMBoostConfig(java.lang.String) throws android.os.RemoteException;
+  public void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void registerApp(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void closeGrpcConnection(java.lang.String) throws android.os.RemoteException;
+  public void setMode(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void showSensorPrivacyDialog(int, java.lang.String) throws android.os.RemoteException;
+  public void requestWithUaToken(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void requestWithoutRecordingWithUaToken(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void requestForSpeechV2(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void requestWithoutRecordingForSpeechV2(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setWakeUpWordConfigV2(byte[], java.lang.String) throws android.os.RemoteException;
+  public void setLMBoostConfigV2(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.caas.service.speech.aidl.IStt$Stub extends android.os.Binder implements ai.pleos.playground.caas.service.speech.aidl.IStt {
+  public ai.pleos.playground.caas.service.speech.aidl.IStt$Stub();
+  public static ai.pleos.playground.caas.service.speech.aidl.IStt asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+class ai.pleos.playground.caas.service.speech.aidl.IStt$Stub$Proxy implements ai.pleos.playground.caas.service.speech.aidl.IStt {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ISttCallback) throws android.os.RemoteException;
+  public void setEicServer(int, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void request(java.lang.String) throws android.os.RemoteException;
+  public void close(java.lang.String) throws android.os.RemoteException;
+  public void updateEicContextInfo(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setSpeechLanguageCode(java.lang.String) throws android.os.RemoteException;
+  public void setEnableSpeechSourceSeparation(boolean) throws android.os.RemoteException;
+  public void setSpeakerRecognitionMethod(int) throws android.os.RemoteException;
+  public void setProfileId(java.lang.String) throws android.os.RemoteException;
+  public void setIsFirstForEnrollOpt(boolean) throws android.os.RemoteException;
+  public void setScriptForEnrollOpt(java.lang.String) throws android.os.RemoteException;
+  public void requestWithoutRecording(java.lang.String) throws android.os.RemoteException;
+  public void sendRecognitionAudio(byte[], boolean) throws android.os.RemoteException;
+  public void setWakeUpWordConfig(java.lang.String) throws android.os.RemoteException;
+  public void setLMBoostConfig(java.lang.String) throws android.os.RemoteException;
+  public void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void registerApp(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void closeGrpcConnection(java.lang.String) throws android.os.RemoteException;
+  public void setMode(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void showSensorPrivacyDialog(int, java.lang.String) throws android.os.RemoteException;
+  public void requestWithUaToken(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void requestWithoutRecordingWithUaToken(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void requestForSpeechV2(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void requestWithoutRecordingForSpeechV2(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setWakeUpWordConfigV2(byte[], java.lang.String) throws android.os.RemoteException;
+  public void setLMBoostConfigV2(java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.caas.service.speech.aidl.ISttCallback extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void onResponse(java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.service.speech.aidl.ISttCallback$Default implements ai.pleos.playground.caas.service.speech.aidl.ISttCallback {
+  public ai.pleos.playground.caas.service.speech.aidl.ISttCallback$Default();
+  public void onResponse(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.caas.service.speech.aidl.ISttCallback$Stub extends android.os.Binder implements ai.pleos.playground.caas.service.speech.aidl.ISttCallback {
+  public ai.pleos.playground.caas.service.speech.aidl.ISttCallback$Stub();
+  public static ai.pleos.playground.caas.service.speech.aidl.ISttCallback asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+class ai.pleos.playground.caas.service.speech.aidl.ISttCallback$Stub$Proxy implements ai.pleos.playground.caas.service.speech.aidl.ISttCallback {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void onResponse(java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.sdk.stt.BuildConfig {
+  public static final boolean a;
+  public static final java.lang.String b;
+  public static final java.lang.String c;
+  public static final java.lang.String d;
+  public ai.pleos.playground.sdk.stt.BuildConfig();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.SpeechToText {
+  public static final ai.pleos.playground.stt.SpeechToText$Companion Companion;
+  public ai.pleos.playground.stt.SpeechToText(android.content.Context, ai.pleos.playground.stt.constant.Mode);
+  public ai.pleos.playground.stt.SpeechToText(android.content.Context, ai.pleos.playground.stt.constant.Mode, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public final void initialize();
+  public final void initialize(ai.pleos.playground.stt.listener.OnInitializeListener);
+  public final void release();
+  public final void addListener(ai.pleos.playground.stt.listener.ResultListener);
+  public final void removeListener(ai.pleos.playground.stt.listener.ResultListener);
+  public final void registerApp(java.lang.String, java.lang.String, ai.pleos.playground.stt.listener.OnServerConnectionListener);
+  public final void registerApp(java.lang.String, java.lang.String, java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void registerApp(java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void request();
+  public final void stop();
+  public final void sendAudio(byte[]);
+  public final void completeAudioSend();
+  public final void setLocale(java.util.Locale);
+  public final ai.pleos.playground.stt.api.CallApi getCallApi();
+  public final ai.pleos.playground.stt.api.AmbientAiApi getAmbientAi();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.SpeechToText$Companion {
+  public ai.pleos.playground.stt.SpeechToText$Companion(kotlin.jvm.internal.DefaultConstructorMarker);
+  public final java.lang.String a();
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.stt.api.AmbientAiApi {
+  public abstract void setRecognitionResultListener(ai.pleos.playground.stt.listener.AmbientAiRecognitionResultListener);
+  public abstract void updateEicContextInfo(java.lang.String);
+  public abstract void setEnableSpeechSourceSeparation(boolean);
+  public abstract void setSpeakerRecognitionMethod(int);
+  public abstract void setProfileId(java.lang.String);
+  public abstract void setIsFirstForEnrollOpt(boolean);
+  public abstract void setScriptForEnrollOpt(java.lang.String);
+  public abstract void requestWithoutRecording(java.lang.String);
+  public abstract void sendRecognitionAudio(byte[], boolean);
+  public abstract void setWakeUpWordConfig(ai.pleos.playground.stt.data.WakeUpWordConfig);
+  public abstract void setLMBoostConfig(ai.pleos.playground.stt.data.LMBoostConfig);
+  public abstract void request(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.api.AmbientAiApi$DefaultImpls {
+  public static void b(ai.pleos.playground.stt.api.AmbientAiApi, java.lang.String, int, java.lang.Object);
+  public static void a(ai.pleos.playground.stt.api.AmbientAiApi, java.lang.String, int, java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.api.ApiChecker {
+  public static final ai.pleos.playground.stt.api.ApiChecker a;
+  public final void b(android.content.Context);
+  public final void a(android.content.Context);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.stt.api.CallApi {
+  public abstract void sendTxAudio(byte[], ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public abstract void sendRxAudio(byte[], ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public abstract void completeTxAudioSend();
+  public abstract void completeRxAudioSend();
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.stt.api.PrivilegedApi extends java.lang.annotation.Annotation {
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.api.impl.AmbientAiApiImpl implements ai.pleos.playground.stt.api.AmbientAiApi {
+  public ai.pleos.playground.stt.api.impl.AmbientAiApiImpl(android.content.Context, ai.pleos.playground.stt.service.SttServiceManager);
+  public void setRecognitionResultListener(ai.pleos.playground.stt.listener.AmbientAiRecognitionResultListener);
+  public void updateEicContextInfo(java.lang.String);
+  public void setEnableSpeechSourceSeparation(boolean);
+  public void setSpeakerRecognitionMethod(int);
+  public void setProfileId(java.lang.String);
+  public void setIsFirstForEnrollOpt(boolean);
+  public void setScriptForEnrollOpt(java.lang.String);
+  public void requestWithoutRecording(java.lang.String);
+  public void request(java.lang.String);
+  public void sendRecognitionAudio(byte[], boolean);
+  public void setWakeUpWordConfig(ai.pleos.playground.stt.data.WakeUpWordConfig);
+  public void setLMBoostConfig(ai.pleos.playground.stt.data.LMBoostConfig);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.api.impl.CallApiImpl implements ai.pleos.playground.stt.api.CallApi {
+  public ai.pleos.playground.stt.api.impl.CallApiImpl(android.content.Context, ai.pleos.playground.stt.service.SttServiceManager);
+  public void sendTxAudio(byte[], ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public void sendRxAudio(byte[], ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public void completeTxAudioSend();
+  public void completeRxAudioSend();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.constant.AudioBufferType extends java.lang.Enum<ai.pleos.playground.stt.constant.AudioBufferType> {
+  public static final ai.pleos.playground.stt.constant.AudioBufferType DEFAULT;
+  public static final ai.pleos.playground.stt.constant.AudioBufferType RX;
+  public static final ai.pleos.playground.stt.constant.AudioBufferType TX;
+  public static ai.pleos.playground.stt.constant.AudioBufferType[] values();
+  public static ai.pleos.playground.stt.constant.AudioBufferType valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.constant.ConversationInfo {
+  public ai.pleos.playground.stt.constant.ConversationInfo(java.lang.String, java.lang.String);
+  public static ai.pleos.playground.stt.constant.ConversationInfo copy$default(ai.pleos.playground.stt.constant.ConversationInfo, java.lang.String, java.lang.String, int, java.lang.Object);
+  public final java.lang.String getConversationId();
+  public final java.lang.String getConversationSeq();
+  public final java.lang.String component1();
+  public final java.lang.String component2();
+  public final ai.pleos.playground.stt.constant.ConversationInfo copy(java.lang.String, java.lang.String);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.constant.EpdState extends java.lang.Enum<ai.pleos.playground.stt.constant.EpdState> {
+  public static final ai.pleos.playground.stt.constant.EpdState EPD_ON;
+  public static final ai.pleos.playground.stt.constant.EpdState EPD_OFF;
+  public static ai.pleos.playground.stt.constant.EpdState[] values();
+  public static ai.pleos.playground.stt.constant.EpdState valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.constant.ErrorType extends java.lang.Enum<ai.pleos.playground.stt.constant.ErrorType> {
+  public static final ai.pleos.playground.stt.constant.ErrorType AUDIO_ERROR;
+  public static final ai.pleos.playground.stt.constant.ErrorType MIC_ERROR;
+  public static final ai.pleos.playground.stt.constant.ErrorType SERVER_INTERNAL_ERROR;
+  public static final ai.pleos.playground.stt.constant.ErrorType NETWORK_ERROR;
+  public static final ai.pleos.playground.stt.constant.ErrorType INVALID_REQUEST_ERROR;
+  public static final ai.pleos.playground.stt.constant.ErrorType TIMEOUT;
+  public static final ai.pleos.playground.stt.constant.ErrorType UNAUTHENTICATED;
+  public static final ai.pleos.playground.stt.constant.ErrorType PERMISSION_DENIED;
+  public static final ai.pleos.playground.stt.constant.ErrorType ON_DEVICE_ENGINE_ERROR;
+  public static final ai.pleos.playground.stt.constant.ErrorType UNKNOWN;
+  public static final ai.pleos.playground.stt.constant.ErrorType UNAVAILABLE_LANGUAGE;
+  public static final ai.pleos.playground.stt.constant.ErrorType NOT_SUPPORTED_API;
+  public static ai.pleos.playground.stt.constant.ErrorType[] values();
+  public static ai.pleos.playground.stt.constant.ErrorType valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.constant.ErrorTypeKt {
+  public static final ai.pleos.playground.stt.constant.ErrorType toErrorType(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.constant.EventCommand extends java.lang.Enum<ai.pleos.playground.stt.constant.EventCommand> {
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateSttResult;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateRxSttResult;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateTxSttResult;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateSttCompleted;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateRxSttCompleted;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateTxSttCompleted;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateServerConnected;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateEpdState;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateConversationInfo;
+  public static final ai.pleos.playground.stt.constant.EventCommand ErrorRecognition;
+  public static final ai.pleos.playground.stt.constant.EventCommand ReadyToSendBufferToServer;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateSttCompletedToAmbientAi;
+  public static final ai.pleos.playground.stt.constant.EventCommand ReadyToStartRecognition;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateServerConnectionFail;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateRms;
+  public static final ai.pleos.playground.stt.constant.EventCommand UpdateCurrentVariant;
+  public static ai.pleos.playground.stt.constant.EventCommand[] values();
+  public static ai.pleos.playground.stt.constant.EventCommand valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.constant.Mode extends java.lang.Enum<ai.pleos.playground.stt.constant.Mode> {
+  public static final ai.pleos.playground.stt.constant.Mode HYBRID;
+  public static final ai.pleos.playground.stt.constant.Mode SERVER;
+  public static final ai.pleos.playground.stt.constant.Mode ON_DEVICE;
+  public static ai.pleos.playground.stt.constant.Mode[] values();
+  public static ai.pleos.playground.stt.constant.Mode valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.constant.ServiceConstants extends java.lang.Enum<ai.pleos.playground.stt.constant.ServiceConstants> {
+  public static final ai.pleos.playground.stt.constant.ServiceConstants PACKAGE_NAME;
+  public static final ai.pleos.playground.stt.constant.ServiceConstants STT_COMPONENT_NAME;
+  public static final ai.pleos.playground.stt.constant.ServiceConstants STT_HYBRID_ACTION;
+  public static final ai.pleos.playground.stt.constant.ServiceConstants STT_SERVER_ACTION;
+  public static final ai.pleos.playground.stt.constant.ServiceConstants STT_ON_DEVICE_ACTION;
+  public static ai.pleos.playground.stt.constant.ServiceConstants[] values();
+  public static ai.pleos.playground.stt.constant.ServiceConstants valueOf(java.lang.String);
+  public final java.lang.String getConst();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.constant.SttFinalResult {
+  public ai.pleos.playground.stt.constant.SttFinalResult(java.lang.String, java.lang.String, long, long);
+  public ai.pleos.playground.stt.constant.SttFinalResult(java.lang.String, java.lang.String, long, long, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.stt.constant.SttFinalResult copy$default(ai.pleos.playground.stt.constant.SttFinalResult, java.lang.String, java.lang.String, long, long, int, java.lang.Object);
+  public ai.pleos.playground.stt.constant.SttFinalResult();
+  public final java.lang.String getAsrText();
+  public final java.lang.String getSpeakerId();
+  public final long getEpdOn();
+  public final long getEpdOff();
+  public final java.lang.String component1();
+  public final java.lang.String component2();
+  public final long component3();
+  public final long component4();
+  public final ai.pleos.playground.stt.constant.SttFinalResult copy(java.lang.String, java.lang.String, long, long);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.data.Alternative {
+  public ai.pleos.playground.stt.data.Alternative(java.lang.String, float, java.lang.String);
+  public ai.pleos.playground.stt.data.Alternative(java.lang.String, float, java.lang.String, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.stt.data.Alternative copy$default(ai.pleos.playground.stt.data.Alternative, java.lang.String, float, java.lang.String, int, java.lang.Object);
+  public ai.pleos.playground.stt.data.Alternative();
+  public final java.lang.String getTranscript();
+  public final float getConfidence();
+  public final java.lang.String getTokenSequence();
+  public final java.lang.String component1();
+  public final float component2();
+  public final java.lang.String component3();
+  public final ai.pleos.playground.stt.data.Alternative copy(java.lang.String, float, java.lang.String);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.data.InferenceSource extends java.lang.Enum<ai.pleos.playground.stt.data.InferenceSource> {
+  public static final ai.pleos.playground.stt.data.InferenceSource$Companion Companion;
+  public static final ai.pleos.playground.stt.data.InferenceSource ON_DEVICE;
+  public static final ai.pleos.playground.stt.data.InferenceSource SERVER;
+  public static ai.pleos.playground.stt.data.InferenceSource[] values();
+  public static ai.pleos.playground.stt.data.InferenceSource valueOf(java.lang.String);
+  public static final ai.pleos.playground.stt.data.InferenceSource access$getDEFAULT$cp();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.data.InferenceSource$Companion {
+  public ai.pleos.playground.stt.data.InferenceSource$Companion(kotlin.jvm.internal.DefaultConstructorMarker);
+  public final ai.pleos.playground.stt.data.InferenceSource getDEFAULT();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.data.LMBoostConfig {
+  public ai.pleos.playground.stt.data.LMBoostConfig(java.lang.String, java.lang.String);
+  public ai.pleos.playground.stt.data.LMBoostConfig(java.lang.String, java.lang.String, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.stt.data.LMBoostConfig copy$default(ai.pleos.playground.stt.data.LMBoostConfig, java.lang.String, java.lang.String, int, java.lang.Object);
+  public ai.pleos.playground.stt.data.LMBoostConfig();
+  public final java.lang.String getPhrases();
+  public final java.lang.String getTriggers();
+  public final java.lang.String component1();
+  public final java.lang.String component2();
+  public final ai.pleos.playground.stt.data.LMBoostConfig copy(java.lang.String, java.lang.String);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.data.RecognitionFinalResult {
+  public ai.pleos.playground.stt.data.RecognitionFinalResult(long, long, java.util.List<ai.pleos.playground.stt.data.RecognitionResult>, ai.pleos.playground.stt.data.Speaker, ai.pleos.playground.stt.data.InferenceSource);
+  public ai.pleos.playground.stt.data.RecognitionFinalResult(long, long, java.util.List, ai.pleos.playground.stt.data.Speaker, ai.pleos.playground.stt.data.InferenceSource, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.stt.data.RecognitionFinalResult copy$default(ai.pleos.playground.stt.data.RecognitionFinalResult, long, long, java.util.List, ai.pleos.playground.stt.data.Speaker, ai.pleos.playground.stt.data.InferenceSource, int, java.lang.Object);
+  public ai.pleos.playground.stt.data.RecognitionFinalResult();
+  public final long getEpdOn();
+  public final long getEpdOff();
+  public final java.util.List<ai.pleos.playground.stt.data.RecognitionResult> getResults();
+  public final ai.pleos.playground.stt.data.Speaker getSpeaker();
+  public final ai.pleos.playground.stt.data.InferenceSource getInferenceSource();
+  public final long component1();
+  public final long component2();
+  public final java.util.List<ai.pleos.playground.stt.data.RecognitionResult> component3();
+  public final ai.pleos.playground.stt.data.Speaker component4();
+  public final ai.pleos.playground.stt.data.InferenceSource component5();
+  public final ai.pleos.playground.stt.data.RecognitionFinalResult copy(long, long, java.util.List<ai.pleos.playground.stt.data.RecognitionResult>, ai.pleos.playground.stt.data.Speaker, ai.pleos.playground.stt.data.InferenceSource);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.data.RecognitionResult {
+  public ai.pleos.playground.stt.data.RecognitionResult(java.util.List<ai.pleos.playground.stt.data.Alternative>, java.lang.String, ai.pleos.playground.stt.data.Speaker, boolean);
+  public ai.pleos.playground.stt.data.RecognitionResult(java.util.List, java.lang.String, ai.pleos.playground.stt.data.Speaker, boolean, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.stt.data.RecognitionResult copy$default(ai.pleos.playground.stt.data.RecognitionResult, java.util.List, java.lang.String, ai.pleos.playground.stt.data.Speaker, boolean, int, java.lang.Object);
+  public ai.pleos.playground.stt.data.RecognitionResult();
+  public final java.util.List<ai.pleos.playground.stt.data.Alternative> getAlternatives();
+  public final java.lang.String getLanguageCode();
+  public final ai.pleos.playground.stt.data.Speaker getSpeaker();
+  public final boolean isWakeUpWord();
+  public final java.util.List<ai.pleos.playground.stt.data.Alternative> component1();
+  public final java.lang.String component2();
+  public final ai.pleos.playground.stt.data.Speaker component3();
+  public final boolean component4();
+  public final ai.pleos.playground.stt.data.RecognitionResult copy(java.util.List<ai.pleos.playground.stt.data.Alternative>, java.lang.String, ai.pleos.playground.stt.data.Speaker, boolean);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.data.Speaker {
+  public ai.pleos.playground.stt.data.Speaker(java.lang.String);
+  public ai.pleos.playground.stt.data.Speaker(java.lang.String, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.stt.data.Speaker copy$default(ai.pleos.playground.stt.data.Speaker, java.lang.String, int, java.lang.Object);
+  public ai.pleos.playground.stt.data.Speaker();
+  public final java.lang.String getSpeakerId();
+  public final java.lang.String component1();
+  public final ai.pleos.playground.stt.data.Speaker copy(java.lang.String);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.data.WakeUpWordConfig {
+  public ai.pleos.playground.stt.data.WakeUpWordConfig(java.lang.String, java.lang.String, byte[], float, float, float, java.lang.String);
+  public ai.pleos.playground.stt.data.WakeUpWordConfig(java.lang.String, java.lang.String, byte[], float, float, float, java.lang.String, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.stt.data.WakeUpWordConfig copy$default(ai.pleos.playground.stt.data.WakeUpWordConfig, java.lang.String, java.lang.String, byte[], float, float, float, java.lang.String, int, java.lang.Object);
+  public ai.pleos.playground.stt.data.WakeUpWordConfig();
+  public final java.lang.String getName();
+  public final java.lang.String getLocaleCode();
+  public final byte[] getAudio();
+  public final float getOnset();
+  public final float getOffset();
+  public final float getProbability();
+  public final java.lang.String getVersion();
+  public final java.lang.String component1();
+  public final java.lang.String component2();
+  public final byte[] component3();
+  public final float component4();
+  public final float component5();
+  public final float component6();
+  public final java.lang.String component7();
+  public final ai.pleos.playground.stt.data.WakeUpWordConfig copy(java.lang.String, java.lang.String, byte[], float, float, float, java.lang.String);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.eventbus.EventBus {
+  public static final ai.pleos.playground.stt.eventbus.EventBus a;
+  public final kotlinx.coroutines.flow.SharedFlow<java.lang.String> a();
+  public final void a(java.lang.String);
+}
+
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.factory.OnDeviceStt extends ai.pleos.playground.stt.factory.Stt {
+  public ai.pleos.playground.stt.factory.OnDeviceStt(android.content.Context, ai.pleos.playground.stt.viewmodel.SttViewModel);
+  public static final java.lang.Object a(ai.pleos.playground.stt.factory.OnDeviceStt, kotlin.coroutines.Continuation);
+  public static final java.lang.String c(ai.pleos.playground.stt.factory.OnDeviceStt);
+  public static final ai.pleos.playground.stt.service.SttCallback d(ai.pleos.playground.stt.factory.OnDeviceStt);
+  public static final void a(ai.pleos.playground.stt.factory.OnDeviceStt);
+  public static final android.content.Context b(ai.pleos.playground.stt.factory.OnDeviceStt);
+  public static final boolean e(ai.pleos.playground.stt.factory.OnDeviceStt);
+  public static final boolean a(ai.pleos.playground.stt.factory.OnDeviceStt, ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt, java.lang.String);
+  public static final boolean a(ai.pleos.playground.stt.factory.OnDeviceStt, ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt);
+  public static final void f(ai.pleos.playground.stt.factory.OnDeviceStt);
+  public static final boolean c(ai.pleos.playground.stt.factory.OnDeviceStt, ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt);
+  public static final void a(ai.pleos.playground.stt.factory.OnDeviceStt, ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt, boolean);
+  public static final void b(ai.pleos.playground.stt.factory.OnDeviceStt, ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt);
+  public static final void d(ai.pleos.playground.stt.factory.OnDeviceStt, ai.pleos.playground.caas.service.speech.aidl.IOnDeviceStt);
+  public static final kotlin.Pair a(ai.pleos.playground.stt.factory.OnDeviceStt, boolean);
+  public void d(java.lang.String);
+  public void e();
+  public void c();
+  public void a(ai.pleos.playground.stt.listener.OnInitializeListener);
+  public void d();
+  public void a(boolean, java.lang.String);
+  public void a();
+  public void a(ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public void b(ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public void a(int, java.lang.String, java.lang.String);
+  public void a(byte[], java.lang.String);
+  public void a(java.lang.String);
+  public void c(byte[], java.lang.String);
+  public void b(byte[], java.lang.String);
+  public void c(java.lang.String);
+  public void b(java.lang.String);
+  public void g(java.lang.String);
+  public void a(boolean);
+  public void a(int);
+  public void e(java.lang.String);
+  public void b(boolean);
+  public void f(java.lang.String);
+  public void a(ai.pleos.playground.stt.listener.AmbientAiRecognitionResultListener);
+  public void a(byte[], boolean);
+  public void a(ai.pleos.playground.stt.data.WakeUpWordConfig);
+  public void a(ai.pleos.playground.stt.data.LMBoostConfig);
+  public void a(java.util.Locale, java.lang.String);
+  public void a(java.lang.String, java.lang.String, ai.pleos.playground.stt.listener.OnServerConnectionListener);
+  public void b();
+  public void a(boolean, java.lang.String, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.factory.ServerStt extends ai.pleos.playground.stt.factory.Stt {
+  public static final int q;
+  public ai.pleos.playground.stt.factory.ServerStt(android.content.Context, ai.pleos.playground.stt.viewmodel.SttViewModel, ai.pleos.playground.stt.constant.Mode);
+  public static final java.lang.Object a(ai.pleos.playground.stt.factory.ServerStt, kotlin.coroutines.Continuation);
+  public static final java.lang.String e(ai.pleos.playground.stt.factory.ServerStt);
+  public static final ai.pleos.playground.stt.service.SttCallback h(ai.pleos.playground.stt.factory.ServerStt);
+  public static final void a(ai.pleos.playground.stt.factory.ServerStt);
+  public static final android.content.Context b(ai.pleos.playground.stt.factory.ServerStt);
+  public static final boolean i(ai.pleos.playground.stt.factory.ServerStt);
+  public static final int f(ai.pleos.playground.stt.factory.ServerStt);
+  public static final void a(ai.pleos.playground.stt.factory.ServerStt, int);
+  public static final long d(ai.pleos.playground.stt.factory.ServerStt);
+  public static final long g(ai.pleos.playground.stt.factory.ServerStt);
+  public static final void a(ai.pleos.playground.stt.factory.ServerStt, long);
+  public static final com.google.gson.Gson c(ai.pleos.playground.stt.factory.ServerStt);
+  public static final void b(ai.pleos.playground.stt.factory.ServerStt, boolean);
+  public static final boolean j(ai.pleos.playground.stt.factory.ServerStt);
+  public static final boolean b(ai.pleos.playground.stt.factory.ServerStt, ai.pleos.playground.caas.service.speech.aidl.IStt, java.lang.String);
+  public static final boolean a(ai.pleos.playground.stt.factory.ServerStt, ai.pleos.playground.caas.service.speech.aidl.IStt, java.lang.String);
+  public static final boolean a(ai.pleos.playground.stt.factory.ServerStt, ai.pleos.playground.caas.service.speech.aidl.IStt);
+  public static final void k(ai.pleos.playground.stt.factory.ServerStt);
+  public static final boolean c(ai.pleos.playground.stt.factory.ServerStt, ai.pleos.playground.caas.service.speech.aidl.IStt);
+  public static final void a(ai.pleos.playground.stt.factory.ServerStt, ai.pleos.playground.caas.service.speech.aidl.IStt, boolean);
+  public static final void b(ai.pleos.playground.stt.factory.ServerStt, ai.pleos.playground.caas.service.speech.aidl.IStt);
+  public static final void d(ai.pleos.playground.stt.factory.ServerStt, ai.pleos.playground.caas.service.speech.aidl.IStt);
+  public static final kotlin.Pair a(ai.pleos.playground.stt.factory.ServerStt, boolean);
+  public void d(java.lang.String);
+  public void e();
+  public void c();
+  public void a(ai.pleos.playground.stt.listener.OnInitializeListener);
+  public void d();
+  public void a(ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public void b(ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public void a(boolean, java.lang.String);
+  public void a();
+  public void a(int, java.lang.String, java.lang.String);
+  public void a(byte[], java.lang.String);
+  public void a(java.lang.String);
+  public void c(byte[], java.lang.String);
+  public void b(byte[], java.lang.String);
+  public void c(java.lang.String);
+  public void b(java.lang.String);
+  public void g(java.lang.String);
+  public void a(boolean);
+  public void a(int);
+  public void e(java.lang.String);
+  public void b(boolean);
+  public void f(java.lang.String);
+  public void a(ai.pleos.playground.stt.listener.AmbientAiRecognitionResultListener);
+  public void a(byte[], boolean);
+  public void a(ai.pleos.playground.stt.data.WakeUpWordConfig);
+  public void a(ai.pleos.playground.stt.data.LMBoostConfig);
+  public void a(java.util.Locale, java.lang.String);
+  public void a(java.lang.String, java.lang.String, ai.pleos.playground.stt.listener.OnServerConnectionListener);
+  public void b();
+  public void a(boolean, java.lang.String, java.lang.String);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.stt.factory.ServerStt$Companion {
+  public ai.pleos.playground.stt.factory.ServerStt$Companion(kotlin.jvm.internal.DefaultConstructorMarker);
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.stt.factory.Stt {
+  public ai.pleos.playground.stt.factory.Stt();
+  public static void a(ai.pleos.playground.stt.factory.Stt, boolean, java.lang.String, int, java.lang.Object);
+  public static void a(ai.pleos.playground.stt.factory.Stt, boolean, java.lang.String, java.lang.String, int, java.lang.Object);
+  public abstract void d(java.lang.String);
+  public abstract void e();
+  public abstract void c();
+  public abstract void a(ai.pleos.playground.stt.listener.OnInitializeListener);
+  public abstract void d();
+  public abstract void a(boolean, java.lang.String);
+  public abstract void a();
+  public abstract void a(ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public abstract void b(ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public abstract void a(int, java.lang.String, java.lang.String);
+  public abstract void a(byte[], java.lang.String);
+  public abstract void a(java.lang.String);
+  public abstract void c(byte[], java.lang.String);
+  public abstract void b(byte[], java.lang.String);
+  public abstract void c(java.lang.String);
+  public abstract void b(java.lang.String);
+  public abstract void g(java.lang.String);
+  public abstract void a(boolean);
+  public abstract void a(int);
+  public abstract void e(java.lang.String);
+  public abstract void b(boolean);
+  public abstract void f(java.lang.String);
+  public abstract void a(ai.pleos.playground.stt.listener.AmbientAiRecognitionResultListener);
+  public abstract void a(byte[], boolean);
+  public abstract void a(ai.pleos.playground.stt.data.WakeUpWordConfig);
+  public abstract void a(ai.pleos.playground.stt.data.LMBoostConfig);
+  public abstract void a(java.util.Locale, java.lang.String);
+  public abstract void a(java.lang.String, java.lang.String, ai.pleos.playground.stt.listener.OnServerConnectionListener);
+  public abstract void b();
+  public abstract void a(boolean, java.lang.String, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.factory.SttFactory {
+  public ai.pleos.playground.stt.factory.SttFactory(android.content.Context, ai.pleos.playground.stt.viewmodel.SttViewModel);
+  public final ai.pleos.playground.stt.factory.Stt a(ai.pleos.playground.stt.constant.Mode);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.factory.SttFactory$WhenMappings {
+  public static final int[] a;
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.stt.listener.AmbientAiRecognitionResultListener {
+  public abstract void onUpdated(java.lang.String, java.lang.String, boolean);
+  public abstract void onUpdatedEpdState(int);
+  public abstract void onUpdatedConversationInfo(java.lang.String, java.lang.String);
+  public abstract void onError(ai.pleos.playground.stt.constant.ErrorType);
+  public abstract void onReadyToSendBuffer();
+  public abstract void onUpdateRecognitionFinalResult(ai.pleos.playground.stt.data.RecognitionFinalResult);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.stt.listener.OnInitializeListener {
+  public abstract void onSuccess();
+  public abstract void onFailure(ai.pleos.playground.stt.constant.ErrorType);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.stt.listener.OnServerConnectionListener {
+  public abstract void onConnected();
+  public abstract void onFailed(ai.pleos.playground.stt.constant.ErrorType);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.stt.listener.RecognitionResultListener {
+  public abstract void onUpdated(java.lang.String, boolean);
+  public abstract void onUpdatedEpdData(long, long);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.stt.listener.ResultListener {
+  public abstract void onUpdated(java.lang.String, boolean);
+  public abstract void onUpdatedEpdData(long, long);
+  public abstract void onStartedRecognition();
+  public abstract void onEndedRecognition();
+  public abstract void onError(ai.pleos.playground.stt.constant.ErrorType);
+  public abstract void onReady();
+  public abstract void onUpdatedRms(double);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.service.SttCallback extends ai.pleos.playground.caas.service.speech.aidl.ISttCallback$Stub {
+  public ai.pleos.playground.stt.service.SttCallback(ai.pleos.playground.stt.viewmodel.SttViewModel);
+  public final void setTxAudioListener(ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public final void setRxAudioListener(ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public final void setAmbientAiRecognitionResultListener(ai.pleos.playground.stt.listener.AmbientAiRecognitionResultListener);
+  public final void setServerConnectionListener(ai.pleos.playground.stt.listener.OnServerConnectionListener);
+  public void onResponse(java.lang.String, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.service.SttServiceManager {
+  public ai.pleos.playground.stt.service.SttServiceManager(android.content.Context, ai.pleos.playground.stt.viewmodel.SttViewModel);
+  public static void requestSpeechStream$default(ai.pleos.playground.stt.service.SttServiceManager, boolean, java.lang.String, int, java.lang.Object);
+  public static final java.lang.String access$getLogTag$p(ai.pleos.playground.stt.service.SttServiceManager);
+  public static final ai.pleos.playground.stt.factory.Stt access$getStt$p(ai.pleos.playground.stt.service.SttServiceManager);
+  public static final ai.pleos.playground.stt.ua.UAWrapper access$getUaWrapper$p(ai.pleos.playground.stt.service.SttServiceManager);
+  public static final android.content.Context access$getContext$p(ai.pleos.playground.stt.service.SttServiceManager);
+  public final void createStt(ai.pleos.playground.stt.constant.Mode);
+  public final void connectService();
+  public final void connectService(ai.pleos.playground.stt.listener.OnInitializeListener);
+  public final void disconnectService();
+  public final void setAmbientAiRecognitionResultListener(ai.pleos.playground.stt.listener.AmbientAiRecognitionResultListener);
+  public final void setRxAudioListener(ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public final void setTxAudioListener(ai.pleos.playground.stt.listener.RecognitionResultListener);
+  public final void requestSpeechStream(boolean, java.lang.String);
+  public final void closeStream();
+  public final void send(byte[]);
+  public final void completeAudioSend();
+  public final void sendTxAudio(byte[]);
+  public final void sendRxAudio(byte[]);
+  public final void completeTxAudioSend();
+  public final void completeRxAudioSend();
+  public final void updateEicContextInfo(java.lang.String);
+  public final void setEnableSpeechSourceSeparation(boolean);
+  public final void setSpeakerRecognitionMethod(int);
+  public final void setProfileId(java.lang.String);
+  public final void setIsFirstForEnrollOpt(boolean);
+  public final void setScriptForEnrollOpt(java.lang.String);
+  public final void sendRecognitionAudio(byte[], boolean);
+  public final void setWakeUpWordConfig(ai.pleos.playground.stt.data.WakeUpWordConfig);
+  public final void setLMBoostConfig(ai.pleos.playground.stt.data.LMBoostConfig);
+  public final void setLocale(java.util.Locale);
+  public final void registerApp(java.lang.String, java.lang.String, ai.pleos.playground.stt.listener.OnServerConnectionListener);
+  public final void closeGrpcConnection();
+  public final void useUaSdk(boolean);
+  public final void registerApp(java.lang.String, java.lang.String, java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void registerApp(java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.service.SttServiceManager$VariantType extends java.lang.Enum<ai.pleos.playground.stt.service.SttServiceManager$VariantType> {
+  public static final ai.pleos.playground.stt.service.SttServiceManager$VariantType STAGE;
+  public static final ai.pleos.playground.stt.service.SttServiceManager$VariantType CORAL;
+  public static final ai.pleos.playground.stt.service.SttServiceManager$VariantType REAL;
+  public static ai.pleos.playground.stt.service.SttServiceManager$VariantType[] values();
+  public static ai.pleos.playground.stt.service.SttServiceManager$VariantType valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.ua.UARepository {
+  public ai.pleos.playground.stt.ua.UARepository(android.content.Context);
+  public static final java.lang.String a(ai.pleos.playground.stt.ua.UARepository);
+  public final void a(java.lang.String, java.lang.String, java.lang.String, kotlin.jvm.functions.Function1<? super kotlin.Result<kotlin.Unit>, kotlin.Unit>);
+  public final void a(java.lang.String, kotlin.jvm.functions.Function1<? super kotlin.Result<kotlin.Unit>, kotlin.Unit>);
+  public final void a(kotlin.jvm.functions.Function1<? super kotlin.Result<kotlin.Unit>, kotlin.Unit>);
+  public final void a(ai.pleos.playground.security.ua.EnvironmentType);
+  public final void a(kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.ua.UAWrapper {
+  public ai.pleos.playground.stt.ua.UAWrapper(android.content.Context);
+  public static final java.lang.String b(ai.pleos.playground.stt.ua.UAWrapper);
+  public static final android.content.Context a(ai.pleos.playground.stt.ua.UAWrapper);
+  public final void a(java.lang.String, java.lang.String, java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void a(java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void a(kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void a(ai.pleos.playground.security.ua.EnvironmentType);
+  public final void a(kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.utils.Log {
+  public static final ai.pleos.playground.stt.utils.Log a;
+  public final void a(java.lang.String, java.lang.String);
+  public final void c(java.lang.String, java.lang.String);
+  public final void b(java.lang.String, java.lang.String);
+  public final void d(java.lang.String, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.utils.StringUtils {
+  public static final ai.pleos.playground.stt.utils.StringUtils a;
+  public static final java.lang.String b;
+  public final java.lang.String a(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.stt.viewmodel.SttViewModel {
+  public ai.pleos.playground.stt.viewmodel.SttViewModel();
+  public static void a(ai.pleos.playground.stt.viewmodel.SttViewModel, java.lang.String, boolean, int, java.lang.Object);
+  public static final java.lang.String a(ai.pleos.playground.stt.viewmodel.SttViewModel);
+  public final void a(ai.pleos.playground.stt.listener.ResultListener);
+  public final void b(ai.pleos.playground.stt.listener.ResultListener);
+  public final void a(java.lang.String, boolean);
+  public final void a(long, long);
+  public final void c();
+  public final void b();
+  public final void a(java.lang.String);
+  public final void a();
+  public final void b(java.lang.String);
+}

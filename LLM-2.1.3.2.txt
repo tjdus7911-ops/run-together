@@ -1,0 +1,507 @@
+# ai.pleos.playground:LLM:2.1.3.2
+## pom
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ai.pleos.playground</groupId>
+  <artifactId>LLM</artifactId>
+  <version>2.1.3.2</version>
+  <packaging>aar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>androidx.core</groupId>
+      <artifactId>core-ktx</artifactId>
+      <version>1.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-coroutines-android</artifactId>
+      <version>1.6.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>converter-gson</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+  </dependencies>
+</project>
+
+## aar entries
+R.txt
+AndroidManifest.xml
+classes.jar
+META-INF/com/android/build/gradle/aar-metadata.properties
+## AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="ai.pleos.playground.llm" >
+
+    <uses-sdk android:minSdkVersion="23" />
+
+    <!-- CCG Validation 체크를 위한 권한 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- <permission -->
+    <!-- android:name="pleos.car.permission.LLM_SERVICE" -->
+    <!-- android:protectionLevel="normal" /> -->
+
+    <queries tools:node="merge" >
+        <intent>
+            <action android:name="ai.pleos.playground.caas.intent.action.LLM_START" />
+        </intent>
+    </queries>
+
+</manifest>
+## 46 classes
+Compiled from "SourceFile"
+public interface ai.pleos.playground.caas.data.llm.aidl.ILLMCallback extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void onResponse(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.data.llm.aidl.ILLMCallback$Default implements ai.pleos.playground.caas.data.llm.aidl.ILLMCallback {
+  public ai.pleos.playground.caas.data.llm.aidl.ILLMCallback$Default();
+  public void onResponse(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.caas.data.llm.aidl.ILLMCallback$Stub extends android.os.Binder implements ai.pleos.playground.caas.data.llm.aidl.ILLMCallback {
+  public ai.pleos.playground.caas.data.llm.aidl.ILLMCallback$Stub();
+  public static ai.pleos.playground.caas.data.llm.aidl.ILLMCallback asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+class ai.pleos.playground.caas.data.llm.aidl.ILLMCallback$Stub$Proxy implements ai.pleos.playground.caas.data.llm.aidl.ILLMCallback {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void onResponse(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void registerCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback, java.lang.String) throws android.os.RemoteException;
+  public abstract void unregisterCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback) throws android.os.RemoteException;
+  public abstract void initialize(java.lang.String) throws android.os.RemoteException;
+  public abstract void isRunning(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void generateContentStream(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void startChat(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void sendMessageStream(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM$Default implements ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM {
+  public ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM$Default();
+  public void registerCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback) throws android.os.RemoteException;
+  public void initialize(java.lang.String) throws android.os.RemoteException;
+  public void isRunning(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void generateContentStream(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void startChat(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void sendMessageStream(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM$Stub extends android.os.Binder implements ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM {
+  public ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM$Stub();
+  public static ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+class ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM$Stub$Proxy implements ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void registerCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback) throws android.os.RemoteException;
+  public void initialize(java.lang.String) throws android.os.RemoteException;
+  public void isRunning(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void generateContentStream(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void startChat(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void sendMessageStream(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.caas.data.llm.aidl.IServerLLM extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void registerCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback, java.lang.String) throws android.os.RemoteException;
+  public abstract void unregisterCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback) throws android.os.RemoteException;
+  public abstract void initialize(java.lang.String) throws android.os.RemoteException;
+  public abstract void isRunning(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void generateContent(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void startChat(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void sendMessage(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void setModelParameter(java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void registerApp(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.data.llm.aidl.IServerLLM$Default implements ai.pleos.playground.caas.data.llm.aidl.IServerLLM {
+  public ai.pleos.playground.caas.data.llm.aidl.IServerLLM$Default();
+  public void registerCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback) throws android.os.RemoteException;
+  public void initialize(java.lang.String) throws android.os.RemoteException;
+  public void isRunning(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void generateContent(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void startChat(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void sendMessage(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setModelParameter(java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void registerApp(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.caas.data.llm.aidl.IServerLLM$Stub extends android.os.Binder implements ai.pleos.playground.caas.data.llm.aidl.IServerLLM {
+  public ai.pleos.playground.caas.data.llm.aidl.IServerLLM$Stub();
+  public static ai.pleos.playground.caas.data.llm.aidl.IServerLLM asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+class ai.pleos.playground.caas.data.llm.aidl.IServerLLM$Stub$Proxy implements ai.pleos.playground.caas.data.llm.aidl.IServerLLM {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void registerCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.data.llm.aidl.ILLMCallback) throws android.os.RemoteException;
+  public void initialize(java.lang.String) throws android.os.RemoteException;
+  public void isRunning(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void generateContent(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void startChat(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void sendMessage(java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setModelParameter(java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void registerApp(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.BuildConfig {
+  public static final boolean a;
+  public static final java.lang.String b;
+  public static final java.lang.String c;
+  public static final java.lang.String d;
+  public ai.pleos.playground.llm.BuildConfig();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.LLM {
+  public static final ai.pleos.playground.llm.LLM$Companion Companion;
+  public static final java.lang.String ERROR_IS_NOT_RUNNING;
+  public ai.pleos.playground.llm.LLM(android.content.Context, ai.pleos.playground.llm.constant.Mode);
+  public ai.pleos.playground.llm.LLM(android.content.Context, ai.pleos.playground.llm.constant.Mode, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static void startChat$default(ai.pleos.playground.llm.LLM, java.util.List, kotlin.jvm.functions.Function0, kotlin.jvm.functions.Function1, int, java.lang.Object);
+  public final void initialize();
+  public final void release();
+  public final void generateContent(java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public final void generateContentStream(java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public final void startChat(java.util.List<ai.pleos.playground.llm.data.LLMContent>, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void sendMessage(ai.pleos.playground.llm.data.LLMContent, ai.pleos.playground.llm.listener.ResultListener);
+  public final void sendMessageStream(ai.pleos.playground.llm.data.LLMContent, ai.pleos.playground.llm.listener.ResultListener);
+  public final java.lang.String getPromptsContents();
+  public final void setModelParameter(ai.pleos.playground.llm.data.ModelParameter, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public final void registerApp(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.OnServerConnectionListener);
+  public final void setServerType(int);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.LLM$Companion {
+  public ai.pleos.playground.llm.LLM$Companion(kotlin.jvm.internal.DefaultConstructorMarker);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.api.ApiChecker {
+  public static final ai.pleos.playground.llm.api.ApiChecker a;
+  public static final java.lang.String b;
+  public final void b(android.content.Context);
+  public final void a(android.content.Context);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.llm.api.PrivilegedApi extends java.lang.annotation.Annotation {
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.constant.EventType extends java.lang.Enum<ai.pleos.playground.llm.constant.EventType> {
+  public static final ai.pleos.playground.llm.constant.EventType Unknown;
+  public static final ai.pleos.playground.llm.constant.EventType Success;
+  public static final ai.pleos.playground.llm.constant.EventType Error;
+  public static final ai.pleos.playground.llm.constant.EventType IsRunning;
+  public static final ai.pleos.playground.llm.constant.EventType GenerateContentResponse;
+  public static final ai.pleos.playground.llm.constant.EventType GenerateContentStreamPartialResponse;
+  public static final ai.pleos.playground.llm.constant.EventType GenerateContentStreamFullResponse;
+  public static final ai.pleos.playground.llm.constant.EventType SendMessageResponse;
+  public static final ai.pleos.playground.llm.constant.EventType SendMessageStreamPartialResponse;
+  public static final ai.pleos.playground.llm.constant.EventType SendMessageStreamFullResponse;
+  public static final ai.pleos.playground.llm.constant.EventType ModelName;
+  public static final ai.pleos.playground.llm.constant.EventType ModelMD5;
+  public static final ai.pleos.playground.llm.constant.EventType PromptsContentsResponse;
+  public static final ai.pleos.playground.llm.constant.EventType UpdateServerConnected;
+  public static final ai.pleos.playground.llm.constant.EventType UpdateServerConnectionFail;
+  public static ai.pleos.playground.llm.constant.EventType[] values();
+  public static ai.pleos.playground.llm.constant.EventType valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.constant.Mode extends java.lang.Enum<ai.pleos.playground.llm.constant.Mode> {
+  public static final ai.pleos.playground.llm.constant.Mode SERVER;
+  public static final ai.pleos.playground.llm.constant.Mode ON_DEVICE;
+  public static ai.pleos.playground.llm.constant.Mode[] values();
+  public static ai.pleos.playground.llm.constant.Mode valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.constant.ServiceType extends java.lang.Enum<ai.pleos.playground.llm.constant.ServiceType> {
+  public static final ai.pleos.playground.llm.constant.ServiceType LLM_ON_DEVICE;
+  public static ai.pleos.playground.llm.constant.ServiceType[] values();
+  public static ai.pleos.playground.llm.constant.ServiceType valueOf(java.lang.String);
+  public final java.lang.String getAction();
+  public final java.lang.String getPackageName();
+  public final java.lang.String getComponentName();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.data.BlobPart implements ai.pleos.playground.llm.data.Part {
+  public ai.pleos.playground.llm.data.BlobPart(java.lang.String, byte[]);
+  public final java.lang.String getMimeType();
+  public final byte[] getBlob();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.data.FileDataPart implements ai.pleos.playground.llm.data.Part {
+  public ai.pleos.playground.llm.data.FileDataPart(java.lang.String, java.lang.String);
+  public final java.lang.String getUri();
+  public final java.lang.String getMimeType();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.data.ImagePart implements ai.pleos.playground.llm.data.Part {
+  public ai.pleos.playground.llm.data.ImagePart(android.graphics.Bitmap);
+  public final android.graphics.Bitmap getImage();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.data.LLMContent {
+  public ai.pleos.playground.llm.data.LLMContent(java.lang.String, java.util.List<ai.pleos.playground.llm.data.Part>);
+  public ai.pleos.playground.llm.data.LLMContent(java.lang.String, java.util.List, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.llm.data.LLMContent copy$default(ai.pleos.playground.llm.data.LLMContent, java.lang.String, java.util.List, int, java.lang.Object);
+  public ai.pleos.playground.llm.data.LLMContent();
+  public final java.lang.String getRole();
+  public final java.util.List<ai.pleos.playground.llm.data.Part> getParts();
+  public final void setParts(java.util.List<ai.pleos.playground.llm.data.Part>);
+  public final java.lang.String component1();
+  public final java.util.List<ai.pleos.playground.llm.data.Part> component2();
+  public final ai.pleos.playground.llm.data.LLMContent copy(java.lang.String, java.util.List<ai.pleos.playground.llm.data.Part>);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.data.ModelParameter extends java.lang.Enum<ai.pleos.playground.llm.data.ModelParameter> {
+  public static final ai.pleos.playground.llm.data.ModelParameter$Companion Companion;
+  public static final ai.pleos.playground.llm.data.ModelParameter TEMPERATURE;
+  public static final ai.pleos.playground.llm.data.ModelParameter MAX_TOKENS;
+  public static final ai.pleos.playground.llm.data.ModelParameter MODEL_NAME;
+  public static ai.pleos.playground.llm.data.ModelParameter[] values();
+  public static ai.pleos.playground.llm.data.ModelParameter valueOf(java.lang.String);
+  public static final java.lang.String access$getKey$p(ai.pleos.playground.llm.data.ModelParameter);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.data.ModelParameter$Companion {
+  public ai.pleos.playground.llm.data.ModelParameter$Companion(kotlin.jvm.internal.DefaultConstructorMarker);
+  public final java.lang.String toKey(ai.pleos.playground.llm.data.ModelParameter);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.llm.data.Part {
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.data.PartTypeAdapter extends com.google.gson.TypeAdapter<ai.pleos.playground.llm.data.Part> {
+  public ai.pleos.playground.llm.data.PartTypeAdapter();
+  public void write(com.google.gson.stream.JsonWriter, ai.pleos.playground.llm.data.Part) throws java.io.IOException;
+  public ai.pleos.playground.llm.data.Part read(com.google.gson.stream.JsonReader) throws java.io.IOException;
+  public void write(com.google.gson.stream.JsonWriter, java.lang.Object);
+  public java.lang.Object read(com.google.gson.stream.JsonReader);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.data.TextPart implements ai.pleos.playground.llm.data.Part {
+  public ai.pleos.playground.llm.data.TextPart(java.lang.String);
+  public final java.lang.String getText();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.factory.LLMFactory {
+  public ai.pleos.playground.llm.factory.LLMFactory(android.content.Context);
+  public final ai.pleos.playground.llm.factory.LLMInterface a(ai.pleos.playground.llm.constant.Mode);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.factory.LLMFactory$WhenMappings {
+  public static final int[] a;
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.llm.factory.LLMInterface {
+  public ai.pleos.playground.llm.factory.LLMInterface();
+  public static void a(ai.pleos.playground.llm.factory.LLMInterface, java.lang.String, java.util.List, kotlin.jvm.functions.Function0, kotlin.jvm.functions.Function1, int, java.lang.Object);
+  public abstract void a();
+  public abstract void b();
+  public abstract void a(java.lang.String);
+  public abstract void a(java.lang.String, java.util.List<ai.pleos.playground.llm.data.LLMContent>, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public abstract void a(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public abstract void a(java.lang.String, ai.pleos.playground.llm.data.LLMContent, ai.pleos.playground.llm.listener.ResultListener);
+  public abstract void a(java.lang.String, ai.pleos.playground.llm.data.ModelParameter, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public abstract void a(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.OnServerConnectionListener);
+  public abstract void a(int);
+  public abstract void b(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public abstract void b(java.lang.String, ai.pleos.playground.llm.data.LLMContent, ai.pleos.playground.llm.listener.ResultListener);
+  public abstract java.lang.String c();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.factory.OnDeviceLLM extends ai.pleos.playground.llm.factory.LLMInterface {
+  public ai.pleos.playground.llm.factory.OnDeviceLLM(android.content.Context);
+  public static final java.lang.String d(ai.pleos.playground.llm.factory.OnDeviceLLM);
+  public static final void a(ai.pleos.playground.llm.factory.OnDeviceLLM, ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM);
+  public static final void a(ai.pleos.playground.llm.factory.OnDeviceLLM, java.lang.String);
+  public static final android.content.Context a(ai.pleos.playground.llm.factory.OnDeviceLLM);
+  public static final ai.pleos.playground.caas.data.llm.aidl.IOnDeviceLLM c(ai.pleos.playground.llm.factory.OnDeviceLLM);
+  public static final ai.pleos.playground.llm.service.LLMServiceCallback e(ai.pleos.playground.llm.factory.OnDeviceLLM);
+  public static final com.google.gson.Gson b(ai.pleos.playground.llm.factory.OnDeviceLLM);
+  public void a();
+  public void b();
+  public void a(java.lang.String);
+  public void b(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public void a(java.lang.String, java.util.List<ai.pleos.playground.llm.data.LLMContent>, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public void a(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public void a(java.lang.String, ai.pleos.playground.llm.data.LLMContent, ai.pleos.playground.llm.listener.ResultListener);
+  public void b(java.lang.String, ai.pleos.playground.llm.data.LLMContent, ai.pleos.playground.llm.listener.ResultListener);
+  public java.lang.String c();
+  public void a(java.lang.String, ai.pleos.playground.llm.data.ModelParameter, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public void a(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.OnServerConnectionListener);
+  public void a(int);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.factory.ServerLLM extends ai.pleos.playground.llm.factory.LLMInterface {
+  public ai.pleos.playground.llm.factory.ServerLLM(android.content.Context);
+  public static final java.lang.String e(ai.pleos.playground.llm.factory.ServerLLM);
+  public static final void a(ai.pleos.playground.llm.factory.ServerLLM, ai.pleos.playground.caas.data.llm.aidl.IServerLLM);
+  public static final void a(ai.pleos.playground.llm.factory.ServerLLM, java.lang.String);
+  public static final android.content.Context a(ai.pleos.playground.llm.factory.ServerLLM);
+  public static final ai.pleos.playground.caas.data.llm.aidl.IServerLLM d(ai.pleos.playground.llm.factory.ServerLLM);
+  public static final ai.pleos.playground.llm.service.LLMServiceCallback f(ai.pleos.playground.llm.factory.ServerLLM);
+  public static final com.google.gson.Gson c(ai.pleos.playground.llm.factory.ServerLLM);
+  public static final int b(ai.pleos.playground.llm.factory.ServerLLM);
+  public void a();
+  public void b();
+  public void a(java.lang.String);
+  public void b(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public void a(java.lang.String, java.util.List<ai.pleos.playground.llm.data.LLMContent>, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public void a(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public void a(java.lang.String, ai.pleos.playground.llm.data.LLMContent, ai.pleos.playground.llm.listener.ResultListener);
+  public void b(java.lang.String, ai.pleos.playground.llm.data.LLMContent, ai.pleos.playground.llm.listener.ResultListener);
+  public java.lang.String c();
+  public void a(java.lang.String, ai.pleos.playground.llm.data.ModelParameter, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public void a(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.OnServerConnectionListener);
+  public void a(int);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.llm.factory.ServerLLM$ServerType extends java.lang.Enum<ai.pleos.playground.llm.factory.ServerLLM$ServerType> {
+  public static final ai.pleos.playground.llm.factory.ServerLLM$ServerType b;
+  public static final ai.pleos.playground.llm.factory.ServerLLM$ServerType c;
+  public static final ai.pleos.playground.llm.factory.ServerLLM$ServerType d;
+  public static final ai.pleos.playground.llm.factory.ServerLLM$ServerType e;
+  public static final ai.pleos.playground.llm.factory.ServerLLM$ServerType f;
+  public static ai.pleos.playground.llm.factory.ServerLLM$ServerType[] values();
+  public static ai.pleos.playground.llm.factory.ServerLLM$ServerType a(java.lang.String);
+  public final int b();
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.llm.listener.OnServerConnectionListener {
+  public abstract void onConnected();
+  public abstract void onFailed(java.lang.String);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.llm.listener.ResultListener {
+  public abstract void onResponse(java.lang.String, boolean);
+  public abstract void onError(java.lang.String);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.llm.network.RetrofitApiInterface {
+  public abstract java.lang.Object a(com.google.gson.JsonObject, kotlin.coroutines.Continuation<? super retrofit2.Response<ai.pleos.playground.llm.network.data.TokenData>>);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.network.constant.NetworkConstants extends java.lang.Enum<ai.pleos.playground.llm.network.constant.NetworkConstants> {
+  public static final ai.pleos.playground.llm.network.constant.NetworkConstants b;
+  public static final ai.pleos.playground.llm.network.constant.NetworkConstants c;
+  public static final ai.pleos.playground.llm.network.constant.NetworkConstants d;
+  public static final ai.pleos.playground.llm.network.constant.NetworkConstants e;
+  public static final ai.pleos.playground.llm.network.constant.NetworkConstants f;
+  public static final ai.pleos.playground.llm.network.constant.NetworkConstants g;
+  public static final ai.pleos.playground.llm.network.constant.NetworkConstants h;
+  public static final ai.pleos.playground.llm.network.constant.NetworkConstants i;
+  public static ai.pleos.playground.llm.network.constant.NetworkConstants[] values();
+  public static ai.pleos.playground.llm.network.constant.NetworkConstants a(java.lang.String);
+  public final java.lang.String b();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.network.data.TokenData {
+  public ai.pleos.playground.llm.network.data.TokenData(java.lang.String, java.lang.Long, java.lang.String, java.lang.String, java.lang.Boolean);
+  public ai.pleos.playground.llm.network.data.TokenData(java.lang.String, java.lang.Long, java.lang.String, java.lang.String, java.lang.Boolean, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.llm.network.data.TokenData a(ai.pleos.playground.llm.network.data.TokenData, java.lang.String, java.lang.Long, java.lang.String, java.lang.String, java.lang.Boolean, int, java.lang.Object);
+  public ai.pleos.playground.llm.network.data.TokenData();
+  public final java.lang.String f();
+  public final java.lang.Long g();
+  public final java.lang.String i();
+  public final java.lang.String j();
+  public final java.lang.Boolean h();
+  public final java.lang.String a();
+  public final java.lang.Long b();
+  public final java.lang.String c();
+  public final java.lang.String d();
+  public final java.lang.Boolean e();
+  public final ai.pleos.playground.llm.network.data.TokenData a(java.lang.String, java.lang.Long, java.lang.String, java.lang.String, java.lang.Boolean);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.service.LLMServiceCallback extends ai.pleos.playground.caas.data.llm.aidl.ILLMCallback$Stub {
+  public ai.pleos.playground.llm.service.LLMServiceCallback();
+  public final void setServerConnectionListener(ai.pleos.playground.llm.listener.OnServerConnectionListener);
+  public void onResponse(java.lang.String, java.lang.String, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.service.LLMServiceManager {
+  public ai.pleos.playground.llm.service.LLMServiceManager(android.content.Context);
+  public static void startChat$default(ai.pleos.playground.llm.service.LLMServiceManager, java.util.List, kotlin.jvm.functions.Function0, kotlin.jvm.functions.Function1, int, java.lang.Object);
+  public final void createLLM(ai.pleos.playground.llm.constant.Mode);
+  public final void connectService();
+  public final void disconnectService();
+  public final void initialize(java.lang.String);
+  public final void generateContent(java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public final void generateContentStream(java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public final void startChat(java.util.List<ai.pleos.playground.llm.data.LLMContent>, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void sendMessage(ai.pleos.playground.llm.data.LLMContent, ai.pleos.playground.llm.listener.ResultListener);
+  public final void sendMessageStream(ai.pleos.playground.llm.data.LLMContent, ai.pleos.playground.llm.listener.ResultListener);
+  public final java.lang.String getPromptsContents();
+  public final void setModelParameter(ai.pleos.playground.llm.data.ModelParameter, java.lang.String, ai.pleos.playground.llm.listener.ResultListener);
+  public final void registerApp(java.lang.String, java.lang.String, ai.pleos.playground.llm.listener.OnServerConnectionListener);
+  public final void setServerType(int);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.service.ModelManager {
+  public static final ai.pleos.playground.llm.service.ModelManager INSTANCE;
+  public final java.util.concurrent.ConcurrentHashMap<java.lang.String, ai.pleos.playground.llm.listener.ResultListener> getRequestListeners();
+  public final boolean isRunning();
+  public final void setRunning(boolean);
+  public final java.lang.String getPromptsContents();
+  public final void updatePromptsContents(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.service.constants.ServiceConstants extends java.lang.Enum<ai.pleos.playground.llm.service.constants.ServiceConstants> {
+  public static final ai.pleos.playground.llm.service.constants.ServiceConstants PACKAGE_NAME;
+  public static final ai.pleos.playground.llm.service.constants.ServiceConstants LLM_COMPONENT_NAME;
+  public static final ai.pleos.playground.llm.service.constants.ServiceConstants LLM_SERVER_ACTION;
+  public static final ai.pleos.playground.llm.service.constants.ServiceConstants LLM_ON_DEVICE_ACTION;
+  public static ai.pleos.playground.llm.service.constants.ServiceConstants[] values();
+  public static ai.pleos.playground.llm.service.constants.ServiceConstants valueOf(java.lang.String);
+  public final java.lang.String getConst();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.utils.Log {
+  public static final ai.pleos.playground.llm.utils.Log INSTANCE;
+  public final void d(java.lang.String, java.lang.String);
+  public final void i(java.lang.String, java.lang.String);
+  public final void e(java.lang.String, java.lang.String);
+  public final void w(java.lang.String, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.llm.utils.StringUtils {
+  public static final ai.pleos.playground.llm.utils.StringUtils INSTANCE;
+  public static final java.lang.String EMPTY;
+  public final java.lang.String TAG(java.lang.String);
+}

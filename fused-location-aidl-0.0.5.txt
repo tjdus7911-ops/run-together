@@ -1,0 +1,240 @@
+# ai.pleos.playground:fused-location-aidl:0.0.5
+## pom
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ai.pleos.playground</groupId>
+  <artifactId>fused-location-aidl</artifactId>
+  <version>0.0.5</version>
+  <packaging>aar</packaging>
+  <dependencies/>
+</project>
+
+## aar entries
+R.txt
+AndroidManifest.xml
+classes.jar
+proguard.txt
+META-INF/com/android/build/gradle/aar-metadata.properties
+aidl/
+aidl/ai/
+aidl/ai/pleos/
+aidl/ai/pleos/playground/
+aidl/ai/pleos/playground/location/
+aidl/ai/pleos/playground/location/fused/
+aidl/ai/pleos/playground/location/fused/model/
+aidl/ai/pleos/playground/location/fused/model/FusedLocationTransData.aidl
+aidl/ai/pleos/playground/location/fused/model/ProximityAlertEventTransData.aidl
+aidl/ai/pleos/playground/location/fused/model/ProximityAlertTransData.aidl
+## AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ai.pleos.playground.location.fused.aidl" >
+
+    <uses-sdk android:minSdkVersion="23" />
+
+</manifest>
+## 22 classes
+Compiled from "IFusedLocationService.java"
+public interface ai.pleos.playground.location.fused.IFusedLocationService extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void registerFusedLocationCallback(ai.pleos.playground.location.fused.callback.IFusedLocationCallback) throws android.os.RemoteException;
+  public abstract void unregisterFusedLocationCallback(ai.pleos.playground.location.fused.callback.IFusedLocationCallback) throws android.os.RemoteException;
+  public abstract void getLastKnownLocation(ai.pleos.playground.location.fused.callback.IFusedLocationCallback) throws android.os.RemoteException;
+  public abstract void addProximityAlert(ai.pleos.playground.location.fused.model.ProximityAlertTransData, ai.pleos.playground.location.fused.callback.IProximityAlertCallback) throws android.os.RemoteException;
+  public abstract void removeProximityAlert(java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "IFusedLocationService.java"
+public class ai.pleos.playground.location.fused.IFusedLocationService$Default implements ai.pleos.playground.location.fused.IFusedLocationService {
+  public ai.pleos.playground.location.fused.IFusedLocationService$Default();
+  public void registerFusedLocationCallback(ai.pleos.playground.location.fused.callback.IFusedLocationCallback) throws android.os.RemoteException;
+  public void unregisterFusedLocationCallback(ai.pleos.playground.location.fused.callback.IFusedLocationCallback) throws android.os.RemoteException;
+  public void getLastKnownLocation(ai.pleos.playground.location.fused.callback.IFusedLocationCallback) throws android.os.RemoteException;
+  public void addProximityAlert(ai.pleos.playground.location.fused.model.ProximityAlertTransData, ai.pleos.playground.location.fused.callback.IProximityAlertCallback) throws android.os.RemoteException;
+  public void removeProximityAlert(java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "IFusedLocationService.java"
+public abstract class ai.pleos.playground.location.fused.IFusedLocationService$Stub extends android.os.Binder implements ai.pleos.playground.location.fused.IFusedLocationService {
+  public ai.pleos.playground.location.fused.IFusedLocationService$Stub();
+  public static ai.pleos.playground.location.fused.IFusedLocationService asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "IFusedLocationService.java"
+class ai.pleos.playground.location.fused.IFusedLocationService$Stub$Proxy implements ai.pleos.playground.location.fused.IFusedLocationService {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void registerFusedLocationCallback(ai.pleos.playground.location.fused.callback.IFusedLocationCallback) throws android.os.RemoteException;
+  public void unregisterFusedLocationCallback(ai.pleos.playground.location.fused.callback.IFusedLocationCallback) throws android.os.RemoteException;
+  public void getLastKnownLocation(ai.pleos.playground.location.fused.callback.IFusedLocationCallback) throws android.os.RemoteException;
+  public void addProximityAlert(ai.pleos.playground.location.fused.model.ProximityAlertTransData, ai.pleos.playground.location.fused.callback.IProximityAlertCallback) throws android.os.RemoteException;
+  public void removeProximityAlert(java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "IFusedLocationService.java"
+public class ai.pleos.playground.location.fused.IFusedLocationService$_Parcel {
+  public ai.pleos.playground.location.fused.IFusedLocationService$_Parcel();
+}
+Compiled from "BuildConfig.java"
+public final class ai.pleos.playground.location.fused.aidl.BuildConfig {
+  public static final boolean DEBUG;
+  public static final java.lang.String LIBRARY_PACKAGE_NAME;
+  public static final java.lang.String BUILD_TYPE;
+  public ai.pleos.playground.location.fused.aidl.BuildConfig();
+}
+Compiled from "IFusedLocationCallback.java"
+public interface ai.pleos.playground.location.fused.callback.IFusedLocationCallback extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void onChangeEvent(ai.pleos.playground.location.fused.model.FusedLocationTransData) throws android.os.RemoteException;
+  public abstract void onErrorEvent(java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "IFusedLocationCallback.java"
+public class ai.pleos.playground.location.fused.callback.IFusedLocationCallback$Default implements ai.pleos.playground.location.fused.callback.IFusedLocationCallback {
+  public ai.pleos.playground.location.fused.callback.IFusedLocationCallback$Default();
+  public void onChangeEvent(ai.pleos.playground.location.fused.model.FusedLocationTransData) throws android.os.RemoteException;
+  public void onErrorEvent(java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "IFusedLocationCallback.java"
+public abstract class ai.pleos.playground.location.fused.callback.IFusedLocationCallback$Stub extends android.os.Binder implements ai.pleos.playground.location.fused.callback.IFusedLocationCallback {
+  public ai.pleos.playground.location.fused.callback.IFusedLocationCallback$Stub();
+  public static ai.pleos.playground.location.fused.callback.IFusedLocationCallback asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "IFusedLocationCallback.java"
+class ai.pleos.playground.location.fused.callback.IFusedLocationCallback$Stub$Proxy implements ai.pleos.playground.location.fused.callback.IFusedLocationCallback {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void onChangeEvent(ai.pleos.playground.location.fused.model.FusedLocationTransData) throws android.os.RemoteException;
+  public void onErrorEvent(java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "IFusedLocationCallback.java"
+public class ai.pleos.playground.location.fused.callback.IFusedLocationCallback$_Parcel {
+  public ai.pleos.playground.location.fused.callback.IFusedLocationCallback$_Parcel();
+}
+Compiled from "IProximityAlertCallback.java"
+public interface ai.pleos.playground.location.fused.callback.IProximityAlertCallback extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void onTransitionEvent(ai.pleos.playground.location.fused.model.ProximityAlertEventTransData) throws android.os.RemoteException;
+  public abstract void onErrorEvent(java.lang.String) throws android.os.RemoteException;
+  public abstract void onRegistered(java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "IProximityAlertCallback.java"
+public class ai.pleos.playground.location.fused.callback.IProximityAlertCallback$Default implements ai.pleos.playground.location.fused.callback.IProximityAlertCallback {
+  public ai.pleos.playground.location.fused.callback.IProximityAlertCallback$Default();
+  public void onTransitionEvent(ai.pleos.playground.location.fused.model.ProximityAlertEventTransData) throws android.os.RemoteException;
+  public void onErrorEvent(java.lang.String) throws android.os.RemoteException;
+  public void onRegistered(java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "IProximityAlertCallback.java"
+public abstract class ai.pleos.playground.location.fused.callback.IProximityAlertCallback$Stub extends android.os.Binder implements ai.pleos.playground.location.fused.callback.IProximityAlertCallback {
+  public ai.pleos.playground.location.fused.callback.IProximityAlertCallback$Stub();
+  public static ai.pleos.playground.location.fused.callback.IProximityAlertCallback asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "IProximityAlertCallback.java"
+class ai.pleos.playground.location.fused.callback.IProximityAlertCallback$Stub$Proxy implements ai.pleos.playground.location.fused.callback.IProximityAlertCallback {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void onTransitionEvent(ai.pleos.playground.location.fused.model.ProximityAlertEventTransData) throws android.os.RemoteException;
+  public void onErrorEvent(java.lang.String) throws android.os.RemoteException;
+  public void onRegistered(java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "IProximityAlertCallback.java"
+public class ai.pleos.playground.location.fused.callback.IProximityAlertCallback$_Parcel {
+  public ai.pleos.playground.location.fused.callback.IProximityAlertCallback$_Parcel();
+}
+Compiled from "FusedLocationTransData.kt"
+public final class ai.pleos.playground.location.fused.model.FusedLocationTransData implements android.os.Parcelable {
+  public static final ai.pleos.playground.location.fused.model.FusedLocationTransData$CREATOR CREATOR;
+  public ai.pleos.playground.location.fused.model.FusedLocationTransData(double, double, double, float, float, long);
+  public final double getLatitude();
+  public final double getLongitude();
+  public final double getAltitude();
+  public final float getHeading();
+  public final float getConfidence();
+  public final long getTimestampMillis();
+  public ai.pleos.playground.location.fused.model.FusedLocationTransData(android.os.Parcel);
+  public void writeToParcel(android.os.Parcel, int);
+  public int describeContents();
+  public final double component1();
+  public final double component2();
+  public final double component3();
+  public final float component4();
+  public final float component5();
+  public final long component6();
+  public final ai.pleos.playground.location.fused.model.FusedLocationTransData copy(double, double, double, float, float, long);
+  public static ai.pleos.playground.location.fused.model.FusedLocationTransData copy$default(ai.pleos.playground.location.fused.model.FusedLocationTransData, double, double, double, float, float, long, int, java.lang.Object);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "FusedLocationTransData.kt"
+public final class ai.pleos.playground.location.fused.model.FusedLocationTransData$CREATOR implements android.os.Parcelable$Creator<ai.pleos.playground.location.fused.model.FusedLocationTransData> {
+  public ai.pleos.playground.location.fused.model.FusedLocationTransData createFromParcel(android.os.Parcel);
+  public ai.pleos.playground.location.fused.model.FusedLocationTransData[] newArray(int);
+  public java.lang.Object createFromParcel(android.os.Parcel);
+  public java.lang.Object[] newArray(int);
+  public ai.pleos.playground.location.fused.model.FusedLocationTransData$CREATOR(kotlin.jvm.internal.DefaultConstructorMarker);
+}
+Compiled from "ProximityAlertEventTransData.kt"
+public final class ai.pleos.playground.location.fused.model.ProximityAlertEventTransData implements android.os.Parcelable {
+  public static final ai.pleos.playground.location.fused.model.ProximityAlertEventTransData$CREATOR CREATOR;
+  public ai.pleos.playground.location.fused.model.ProximityAlertEventTransData(java.lang.String, int);
+  public final java.lang.String getAlertId();
+  public final int getTransitionType();
+  public ai.pleos.playground.location.fused.model.ProximityAlertEventTransData(android.os.Parcel);
+  public void writeToParcel(android.os.Parcel, int);
+  public int describeContents();
+  public final java.lang.String component1();
+  public final int component2();
+  public final ai.pleos.playground.location.fused.model.ProximityAlertEventTransData copy(java.lang.String, int);
+  public static ai.pleos.playground.location.fused.model.ProximityAlertEventTransData copy$default(ai.pleos.playground.location.fused.model.ProximityAlertEventTransData, java.lang.String, int, int, java.lang.Object);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "ProximityAlertEventTransData.kt"
+public final class ai.pleos.playground.location.fused.model.ProximityAlertEventTransData$CREATOR implements android.os.Parcelable$Creator<ai.pleos.playground.location.fused.model.ProximityAlertEventTransData> {
+  public ai.pleos.playground.location.fused.model.ProximityAlertEventTransData createFromParcel(android.os.Parcel);
+  public ai.pleos.playground.location.fused.model.ProximityAlertEventTransData[] newArray(int);
+  public java.lang.Object createFromParcel(android.os.Parcel);
+  public java.lang.Object[] newArray(int);
+  public ai.pleos.playground.location.fused.model.ProximityAlertEventTransData$CREATOR(kotlin.jvm.internal.DefaultConstructorMarker);
+}
+Compiled from "ProximityAlertTransData.kt"
+public final class ai.pleos.playground.location.fused.model.ProximityAlertTransData implements android.os.Parcelable {
+  public static final ai.pleos.playground.location.fused.model.ProximityAlertTransData$CREATOR CREATOR;
+  public static final int TRANSITION_ENTER;
+  public static final int TRANSITION_EXIT;
+  public ai.pleos.playground.location.fused.model.ProximityAlertTransData(java.lang.String, double, double, float, java.util.List<java.lang.Integer>);
+  public final java.lang.String getAlertId();
+  public final double getLatitude();
+  public final double getLongitude();
+  public final float getRadiusMeters();
+  public final java.util.List<java.lang.Integer> getTransitionTypes();
+  public ai.pleos.playground.location.fused.model.ProximityAlertTransData(android.os.Parcel);
+  public void writeToParcel(android.os.Parcel, int);
+  public int describeContents();
+  public final java.lang.String component1();
+  public final double component2();
+  public final double component3();
+  public final float component4();
+  public final java.util.List<java.lang.Integer> component5();
+  public final ai.pleos.playground.location.fused.model.ProximityAlertTransData copy(java.lang.String, double, double, float, java.util.List<java.lang.Integer>);
+  public static ai.pleos.playground.location.fused.model.ProximityAlertTransData copy$default(ai.pleos.playground.location.fused.model.ProximityAlertTransData, java.lang.String, double, double, float, java.util.List, int, java.lang.Object);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "ProximityAlertTransData.kt"
+public final class ai.pleos.playground.location.fused.model.ProximityAlertTransData$CREATOR implements android.os.Parcelable$Creator<ai.pleos.playground.location.fused.model.ProximityAlertTransData> {
+  public ai.pleos.playground.location.fused.model.ProximityAlertTransData createFromParcel(android.os.Parcel);
+  public ai.pleos.playground.location.fused.model.ProximityAlertTransData[] newArray(int);
+  public java.lang.Object createFromParcel(android.os.Parcel);
+  public java.lang.Object[] newArray(int);
+  public ai.pleos.playground.location.fused.model.ProximityAlertTransData$CREATOR(kotlin.jvm.internal.DefaultConstructorMarker);
+}

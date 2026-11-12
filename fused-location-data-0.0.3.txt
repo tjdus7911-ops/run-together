@@ -1,0 +1,70 @@
+# ai.pleos.playground:fused-location-data:0.0.3
+## pom
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ai.pleos.playground</groupId>
+  <artifactId>fused-location-data</artifactId>
+  <version>0.0.3</version>
+  <packaging>aar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>androidx.core</groupId>
+      <artifactId>core-ktx</artifactId>
+      <version>1.8.0</version>
+    </dependency>
+  </dependencies>
+</project>
+
+## aar entries
+R.txt
+AndroidManifest.xml
+classes.jar
+proguard.txt
+META-INF/com/android/build/gradle/aar-metadata.properties
+## AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ai.pleos.playground.fused.location.data" >
+
+    <uses-sdk android:minSdkVersion="23" />
+
+</manifest>
+## 5 classes
+Compiled from "BuildConfig.java"
+public final class ai.pleos.playground.fused.location.data.BuildConfig {
+  public static final boolean DEBUG;
+  public static final java.lang.String LIBRARY_PACKAGE_NAME;
+  public static final java.lang.String BUILD_TYPE;
+  public ai.pleos.playground.fused.location.data.BuildConfig();
+}
+Compiled from "ErrorCode.kt"
+public final class ai.pleos.playground.location.fused.constant.ErrorCode extends java.lang.Enum<ai.pleos.playground.location.fused.constant.ErrorCode> {
+  public static final ai.pleos.playground.location.fused.constant.ErrorCode$Companion Companion;
+  public static final ai.pleos.playground.location.fused.constant.ErrorCode ERROR_INTERNAL_SERVICE;
+  public static final ai.pleos.playground.location.fused.constant.ErrorCode ERROR_SERVICE_CONNECTION_FAILURE;
+  public static final ai.pleos.playground.location.fused.constant.ErrorCode ERROR_DRIVING_RESTRICTED;
+  public static final ai.pleos.playground.location.fused.constant.ErrorCode ERROR_EMPTY_RESULT;
+  public static final ai.pleos.playground.location.fused.constant.ErrorCode ERROR_SECURITY_PERMISSION;
+  public static final ai.pleos.playground.location.fused.constant.ErrorCode ERROR_LOCATION_DISABLED;
+  public static final ai.pleos.playground.location.fused.constant.ErrorCode ERROR_UNDEFINED;
+  public final int getId();
+  public static ai.pleos.playground.location.fused.constant.ErrorCode[] values();
+  public static ai.pleos.playground.location.fused.constant.ErrorCode valueOf(java.lang.String);
+  public static kotlin.enums.EnumEntries<ai.pleos.playground.location.fused.constant.ErrorCode> getEntries();
+}
+Compiled from "ErrorCode.kt"
+public final class ai.pleos.playground.location.fused.constant.ErrorCode$Companion {
+  public final ai.pleos.playground.location.fused.constant.ErrorCode findById(int);
+  public ai.pleos.playground.location.fused.constant.ErrorCode$Companion(kotlin.jvm.internal.DefaultConstructorMarker);
+}
+Compiled from "PleosPermission.kt"
+public final class ai.pleos.playground.location.fused.constant.PleosPermission {
+  public static final ai.pleos.playground.location.fused.constant.PleosPermission INSTANCE;
+  public static final java.lang.String FUSED_LOCATION;
+}
+Compiled from "LocationException.kt"
+public final class ai.pleos.playground.location.fused.exception.LocationException extends java.lang.Exception {
+  public ai.pleos.playground.location.fused.exception.LocationException(ai.pleos.playground.location.fused.constant.ErrorCode);
+  public final ai.pleos.playground.location.fused.constant.ErrorCode getErrorCode();
+}

@@ -1,0 +1,687 @@
+# ai.pleos.playground:TextToSpeech:3.3.1
+## pom
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ai.pleos.playground</groupId>
+  <artifactId>TextToSpeech</artifactId>
+  <version>3.3.1</version>
+  <packaging>aar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>androidx.core</groupId>
+      <artifactId>core-ktx</artifactId>
+      <version>1.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-coroutines-android</artifactId>
+      <version>1.6.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.pleos.playground.security</groupId>
+      <artifactId>universal-access</artifactId>
+      <version>0.6.0</version>
+    </dependency>
+  </dependencies>
+</project>
+
+## aar entries
+R.txt
+AndroidManifest.xml
+classes.jar
+res/
+res/values/
+res/values/values.xml
+META-INF/com/android/build/gradle/aar-metadata.properties
+aidl/
+aidl/ai/
+aidl/ai/pleos/
+aidl/ai/pleos/playground/
+aidl/ai/pleos/playground/caas/
+aidl/ai/pleos/playground/caas/service/
+aidl/ai/pleos/playground/caas/service/speech/
+aidl/ai/pleos/playground/caas/service/speech/data/
+aidl/ai/pleos/playground/caas/service/speech/data/tts/
+aidl/ai/pleos/playground/caas/service/speech/data/tts/AudioAttributesParcel.aidl
+## AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ai.pleos.playground.sdk.tts" >
+
+    <uses-sdk android:minSdkVersion="23" />
+
+    <!-- CCG Validation 체크를 위한 권한 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <queries>
+        <intent>
+            <action android:name="ai.pleos.playground.caas.intent.action.SPEECH_START" />
+        </intent>
+    </queries>
+
+    <application>
+
+        <!-- CAAS minimum version: matches the actual GAAS package name (ai.pleos.playground.caas) -->
+        <meta-data
+            android:name="ai.pleos.playground.caas.min_version_name"
+            android:value="4.1.29" />
+        <meta-data
+            android:name="ai.pleos.playground.caas.min_version_code"
+            android:value="4001029" />
+
+        <!-- Deprecated: legacy keys kept for backward compatibility with older app-market versions -->
+        <meta-data
+            android:name="ai.pleos.playground.service.caas.min_version_name"
+            android:value="4.1.29" />
+        <meta-data
+            android:name="ai.pleos.playground.service.caas.min_version_code"
+            android:value="4001029" />
+        <meta-data
+            android:name="ai.pleos.playground.sdk.tts.current_version_name"
+            android:value="3.3.1" />
+        <meta-data
+            android:name="ai.pleos.playground.sdk.tts.current_version_code"
+            android:value="3003001" />
+    </application>
+
+</manifest>
+## 52 classes
+Compiled from "SourceFile"
+public interface ai.pleos.playground.caas.service.speech.aidl.ITtsCallback extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void onResponse(java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.service.speech.aidl.ITtsCallback$Default implements ai.pleos.playground.caas.service.speech.aidl.ITtsCallback {
+  public ai.pleos.playground.caas.service.speech.aidl.ITtsCallback$Default();
+  public void onResponse(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.caas.service.speech.aidl.ITtsCallback$Stub extends android.os.Binder implements ai.pleos.playground.caas.service.speech.aidl.ITtsCallback {
+  public ai.pleos.playground.caas.service.speech.aidl.ITtsCallback$Stub();
+  public static ai.pleos.playground.caas.service.speech.aidl.ITtsCallback asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+class ai.pleos.playground.caas.service.speech.aidl.ITtsCallback$Stub$Proxy implements ai.pleos.playground.caas.service.speech.aidl.ITtsCallback {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void onResponse(java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback, java.lang.String) throws android.os.RemoteException;
+  public abstract void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback) throws android.os.RemoteException;
+  public abstract void setSpeaker(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void speak(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel) throws android.os.RemoteException;
+  public abstract void stop(java.lang.String) throws android.os.RemoteException;
+  public abstract void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void setSpeakerType(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void speakWithAudioConfig(java.lang.String, int, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream$Default implements ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream {
+  public ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream$Default();
+  public void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback) throws android.os.RemoteException;
+  public void setSpeaker(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void speak(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel) throws android.os.RemoteException;
+  public void stop(java.lang.String) throws android.os.RemoteException;
+  public void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setSpeakerType(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void speakWithAudioConfig(java.lang.String, int, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream$Stub extends android.os.Binder implements ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream {
+  public ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream$Stub();
+  public static ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+class ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream$Stub$Proxy implements ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback) throws android.os.RemoteException;
+  public void setSpeaker(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void speak(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel) throws android.os.RemoteException;
+  public void stop(java.lang.String) throws android.os.RemoteException;
+  public void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setSpeakerType(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void speakWithAudioConfig(java.lang.String, int, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream$_Parcel {
+  public ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream$_Parcel();
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.caas.service.speech.aidl.ITtsStream extends android.os.IInterface {
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback, java.lang.String) throws android.os.RemoteException;
+  public abstract void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback) throws android.os.RemoteException;
+  public abstract void setSpeaker(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void setEncodingType(int, java.lang.String) throws android.os.RemoteException;
+  public abstract void setEicServer(int, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void updateEicContextInfo(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void requestSynthesize(ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String) throws android.os.RemoteException;
+  public abstract void speak(java.lang.String, boolean, java.lang.String) throws android.os.RemoteException;
+  public abstract void stop(java.lang.String) throws android.os.RemoteException;
+  public abstract void speak2(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel) throws android.os.RemoteException;
+  public abstract void registerApp(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void closeGrpcConnection(java.lang.String) throws android.os.RemoteException;
+  public abstract void setMode(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void setSpeakerType(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void speakWithUaToken(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public abstract void speakForSpeechV2(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String) throws android.os.RemoteException;
+  public abstract void speakWithAudioConfig(java.lang.String, int, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.service.speech.aidl.ITtsStream$Default implements ai.pleos.playground.caas.service.speech.aidl.ITtsStream {
+  public ai.pleos.playground.caas.service.speech.aidl.ITtsStream$Default();
+  public void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback) throws android.os.RemoteException;
+  public void setSpeaker(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setEncodingType(int, java.lang.String) throws android.os.RemoteException;
+  public void setEicServer(int, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void updateEicContextInfo(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void requestSynthesize(ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String) throws android.os.RemoteException;
+  public void speak(java.lang.String, boolean, java.lang.String) throws android.os.RemoteException;
+  public void stop(java.lang.String) throws android.os.RemoteException;
+  public void speak2(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel) throws android.os.RemoteException;
+  public void registerApp(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void closeGrpcConnection(java.lang.String) throws android.os.RemoteException;
+  public void setMode(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setSpeakerType(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void speakWithUaToken(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void speakForSpeechV2(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String) throws android.os.RemoteException;
+  public void speakWithAudioConfig(java.lang.String, int, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public android.os.IBinder asBinder();
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.caas.service.speech.aidl.ITtsStream$Stub extends android.os.Binder implements ai.pleos.playground.caas.service.speech.aidl.ITtsStream {
+  public ai.pleos.playground.caas.service.speech.aidl.ITtsStream$Stub();
+  public static ai.pleos.playground.caas.service.speech.aidl.ITtsStream asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+class ai.pleos.playground.caas.service.speech.aidl.ITtsStream$Stub$Proxy implements ai.pleos.playground.caas.service.speech.aidl.ITtsStream {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void registerCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback, java.lang.String) throws android.os.RemoteException;
+  public void unregisterCallback(ai.pleos.playground.caas.service.speech.aidl.ITtsCallback) throws android.os.RemoteException;
+  public void setSpeaker(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setEncodingType(int, java.lang.String) throws android.os.RemoteException;
+  public void setEicServer(int, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void updateEicContextInfo(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void requestSynthesize(ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String) throws android.os.RemoteException;
+  public void speak(java.lang.String, boolean, java.lang.String) throws android.os.RemoteException;
+  public void stop(java.lang.String) throws android.os.RemoteException;
+  public void speak2(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel) throws android.os.RemoteException;
+  public void registerApp(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void closeGrpcConnection(java.lang.String) throws android.os.RemoteException;
+  public void setMode(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setLocale(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void setSpeakerType(java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void speakWithUaToken(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String, java.lang.String) throws android.os.RemoteException;
+  public void speakForSpeechV2(java.lang.String, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String) throws android.os.RemoteException;
+  public void speakWithAudioConfig(java.lang.String, int, boolean, java.lang.String, ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel, java.lang.String, java.lang.String, java.lang.String) throws android.os.RemoteException;
+}
+Compiled from "SourceFile"
+public class ai.pleos.playground.caas.service.speech.aidl.ITtsStream$_Parcel {
+  public ai.pleos.playground.caas.service.speech.aidl.ITtsStream$_Parcel();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel implements android.os.Parcelable {
+  public static final ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel$CREATOR CREATOR;
+  public ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel(android.media.AudioAttributes);
+  public ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel(android.os.Parcel);
+  public final android.media.AudioAttributes getAudioAttributes();
+  public void writeToParcel(android.os.Parcel, int);
+  public int describeContents();
+  public final int getContent();
+  public final int getUsage();
+  public final int getFlag();
+  public final android.media.AudioAttributes getAttributes();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel$CREATOR implements android.os.Parcelable$Creator<ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel> {
+  public ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel$CREATOR(kotlin.jvm.internal.DefaultConstructorMarker);
+  public ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel createFromParcel(android.os.Parcel);
+  public ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcel[] newArray(int);
+  public java.lang.Object createFromParcel(android.os.Parcel);
+  public java.lang.Object[] newArray(int);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.caas.service.speech.data.tts.AudioAttributesParcelKt {
+  public static final android.media.AudioAttributes access$readAudioAttributes(android.os.Parcel);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.caas.service.speech.data.tts.AudioInfo {
+  public ai.pleos.playground.caas.service.speech.data.tts.AudioInfo(int);
+  public static ai.pleos.playground.caas.service.speech.data.tts.AudioInfo copy$default(ai.pleos.playground.caas.service.speech.data.tts.AudioInfo, int, int, java.lang.Object);
+  public final int getZoneId();
+  public final int component1();
+  public final ai.pleos.playground.caas.service.speech.data.tts.AudioInfo copy(int);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.sdk.tts.BuildConfig {
+  public static final boolean a;
+  public static final java.lang.String b;
+  public static final java.lang.String c;
+  public static final java.lang.String d;
+  public ai.pleos.playground.sdk.tts.BuildConfig();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.TextToSpeech {
+  public static final ai.pleos.playground.tts.TextToSpeech$Companion Companion;
+  public ai.pleos.playground.tts.TextToSpeech(android.content.Context, ai.pleos.playground.tts.constant.Mode);
+  public ai.pleos.playground.tts.TextToSpeech(android.content.Context, ai.pleos.playground.tts.constant.Mode, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static void speak$default(ai.pleos.playground.tts.TextToSpeech, java.lang.String, boolean, int, java.lang.Object);
+  public final void initialize();
+  public final void initialize(ai.pleos.playground.tts.listener.OnInitializeListener);
+  public final void release();
+  public final void addEventListener(ai.pleos.playground.tts.listener.EventListener);
+  public final void removeEventListener(ai.pleos.playground.tts.listener.EventListener);
+  public final void setAudioAttributes(android.media.AudioAttributes);
+  public final void registerApp(java.lang.String, java.lang.String, ai.pleos.playground.tts.listener.OnServerConnectionListener);
+  public final void registerApp(java.lang.String, java.lang.String, java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void registerApp(java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void speak(java.lang.String, boolean);
+  public final void stop();
+  public final void setLocale(java.util.Locale);
+  public final void setSpeakerType(java.lang.String);
+  public final void setAudioZoneId(int);
+  public final ai.pleos.playground.tts.api.AmbientAi getAmbientAi();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.TextToSpeech$Companion {
+  public ai.pleos.playground.tts.TextToSpeech$Companion(kotlin.jvm.internal.DefaultConstructorMarker);
+  public final java.lang.String getVersion();
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.tts.api.AmbientAi {
+  public abstract void setSpeaker(java.lang.String);
+  public abstract void updateEicContextInfo(java.lang.String);
+  public abstract void setIdentifier(java.lang.String);
+  public abstract void speak(java.lang.String, boolean, java.lang.String);
+  public abstract void speak(java.lang.String, boolean, boolean, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.api.AmbientAi$DefaultImpls {
+  public static void a(ai.pleos.playground.tts.api.AmbientAi, java.lang.String, boolean, java.lang.String, int, java.lang.Object);
+  public static void a(ai.pleos.playground.tts.api.AmbientAi, java.lang.String, boolean, boolean, java.lang.String, int, java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.api.AmbientAiImpl implements ai.pleos.playground.tts.api.AmbientAi {
+  public ai.pleos.playground.tts.api.AmbientAiImpl(android.content.Context, ai.pleos.playground.tts.service.TtsServiceManager);
+  public void setSpeaker(java.lang.String);
+  public void updateEicContextInfo(java.lang.String);
+  public void setIdentifier(java.lang.String);
+  public void speak(java.lang.String, boolean, java.lang.String);
+  public void speak(java.lang.String, boolean, boolean, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.api.ApiChecker {
+  public static final ai.pleos.playground.tts.api.ApiChecker a;
+  public final void b(android.content.Context);
+  public final void a(android.content.Context);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.tts.api.PrivilegedApi extends java.lang.annotation.Annotation {
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.constant.ErrorType extends java.lang.Enum<ai.pleos.playground.tts.constant.ErrorType> {
+  public static final ai.pleos.playground.tts.constant.ErrorType AUDIO_ERROR;
+  public static final ai.pleos.playground.tts.constant.ErrorType MIC_ERROR;
+  public static final ai.pleos.playground.tts.constant.ErrorType SERVER_INTERNAL_ERROR;
+  public static final ai.pleos.playground.tts.constant.ErrorType NETWORK_ERROR;
+  public static final ai.pleos.playground.tts.constant.ErrorType INVALID_REQUEST_ERROR;
+  public static final ai.pleos.playground.tts.constant.ErrorType TIMEOUT;
+  public static final ai.pleos.playground.tts.constant.ErrorType UNAUTHENTICATED;
+  public static final ai.pleos.playground.tts.constant.ErrorType PERMISSION_DENIED;
+  public static final ai.pleos.playground.tts.constant.ErrorType ON_DEVICE_ENGINE_ERROR;
+  public static final ai.pleos.playground.tts.constant.ErrorType UNKNOWN;
+  public static final ai.pleos.playground.tts.constant.ErrorType UNAVAILABLE_LANGUAGE;
+  public static final ai.pleos.playground.tts.constant.ErrorType NOT_SUPPORTED_API;
+  public static ai.pleos.playground.tts.constant.ErrorType[] values();
+  public static ai.pleos.playground.tts.constant.ErrorType valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.constant.ErrorTypeKt {
+  public static final ai.pleos.playground.tts.constant.ErrorType toErrorType(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.constant.EventCommand extends java.lang.Enum<ai.pleos.playground.tts.constant.EventCommand> {
+  public static final ai.pleos.playground.tts.constant.EventCommand UpdateServerConnected;
+  public static final ai.pleos.playground.tts.constant.EventCommand UpdateTtsReady;
+  public static final ai.pleos.playground.tts.constant.EventCommand UpdateTtsStart;
+  public static final ai.pleos.playground.tts.constant.EventCommand UpdateTtsDone;
+  public static final ai.pleos.playground.tts.constant.EventCommand UpdateTtsStop;
+  public static final ai.pleos.playground.tts.constant.EventCommand UpdateTtsError;
+  public static final ai.pleos.playground.tts.constant.EventCommand UpdateServerConnectionFail;
+  public static final ai.pleos.playground.tts.constant.EventCommand UpdateRms;
+  public static final ai.pleos.playground.tts.constant.EventCommand UpdateCurrentVariant;
+  public static ai.pleos.playground.tts.constant.EventCommand[] values();
+  public static ai.pleos.playground.tts.constant.EventCommand valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.constant.Mode extends java.lang.Enum<ai.pleos.playground.tts.constant.Mode> {
+  public static final ai.pleos.playground.tts.constant.Mode SERVER;
+  public static final ai.pleos.playground.tts.constant.Mode ON_DEVICE;
+  public static final ai.pleos.playground.tts.constant.Mode HYBRID;
+  public static ai.pleos.playground.tts.constant.Mode[] values();
+  public static ai.pleos.playground.tts.constant.Mode valueOf(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.constant.ServiceConstants extends java.lang.Enum<ai.pleos.playground.tts.constant.ServiceConstants> {
+  public static final ai.pleos.playground.tts.constant.ServiceConstants PACKAGE_NAME;
+  public static final ai.pleos.playground.tts.constant.ServiceConstants TTS_COMPONENT_NAME;
+  public static final ai.pleos.playground.tts.constant.ServiceConstants TTS_HYBRID_ACTION;
+  public static final ai.pleos.playground.tts.constant.ServiceConstants TTS_SERVER_ACTION;
+  public static final ai.pleos.playground.tts.constant.ServiceConstants TTS_ON_DEVICE_ACTION;
+  public static final ai.pleos.playground.tts.constant.ServiceConstants TTS_STREAM_SERVER_ACTION;
+  public static final ai.pleos.playground.tts.constant.ServiceConstants TTS_STREAM_ON_DEVICE_ACTION;
+  public static final ai.pleos.playground.tts.constant.ServiceConstants TTS_STREAM_HYBRID_ACTION;
+  public static ai.pleos.playground.tts.constant.ServiceConstants[] values();
+  public static ai.pleos.playground.tts.constant.ServiceConstants valueOf(java.lang.String);
+  public final java.lang.String getConst();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.constant.TtsJobMode extends java.lang.Enum<ai.pleos.playground.tts.constant.TtsJobMode> {
+  public static final ai.pleos.playground.tts.constant.TtsJobMode Auto;
+  public static final ai.pleos.playground.tts.constant.TtsJobMode New;
+  public static final ai.pleos.playground.tts.constant.TtsJobMode Continue;
+  public static ai.pleos.playground.tts.constant.TtsJobMode[] values();
+  public static ai.pleos.playground.tts.constant.TtsJobMode valueOf(java.lang.String);
+  public final int getFlags();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.eventbus.EventBus {
+  public static final ai.pleos.playground.tts.eventbus.EventBus a;
+  public final kotlinx.coroutines.flow.SharedFlow<java.lang.String> a();
+  public final void a(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.factory.OnDeviceStreamTts extends ai.pleos.playground.tts.factory.Tts {
+  public ai.pleos.playground.tts.factory.OnDeviceStreamTts(android.content.Context);
+  public static final java.lang.Object a(ai.pleos.playground.tts.factory.OnDeviceStreamTts, kotlin.coroutines.Continuation);
+  public static final java.lang.StringBuilder h(ai.pleos.playground.tts.factory.OnDeviceStreamTts);
+  public static final java.lang.String g(ai.pleos.playground.tts.factory.OnDeviceStreamTts);
+  public static final android.content.Context e(ai.pleos.playground.tts.factory.OnDeviceStreamTts);
+  public static final android.media.AudioAttributes b(ai.pleos.playground.tts.factory.OnDeviceStreamTts);
+  public static final int c(ai.pleos.playground.tts.factory.OnDeviceStreamTts);
+  public static final int d(ai.pleos.playground.tts.factory.OnDeviceStreamTts);
+  public static final com.google.gson.Gson f(ai.pleos.playground.tts.factory.OnDeviceStreamTts);
+  public static final void a(ai.pleos.playground.tts.factory.OnDeviceStreamTts);
+  public static final boolean i(ai.pleos.playground.tts.factory.OnDeviceStreamTts);
+  public static final boolean a(ai.pleos.playground.tts.factory.OnDeviceStreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream, java.lang.String);
+  public static final boolean a(ai.pleos.playground.tts.factory.OnDeviceStreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream);
+  public static final void j(ai.pleos.playground.tts.factory.OnDeviceStreamTts);
+  public static final boolean c(ai.pleos.playground.tts.factory.OnDeviceStreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream);
+  public static final void a(ai.pleos.playground.tts.factory.OnDeviceStreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream, boolean);
+  public static final void b(ai.pleos.playground.tts.factory.OnDeviceStreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream);
+  public static final void d(ai.pleos.playground.tts.factory.OnDeviceStreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsOnDeviceStream);
+  public static final kotlin.Pair a(ai.pleos.playground.tts.factory.OnDeviceStreamTts, boolean);
+  public void b();
+  public void a(ai.pleos.playground.tts.listener.OnInitializeListener);
+  public void c();
+  public void a(ai.pleos.playground.tts.listener.EventListener);
+  public void b(ai.pleos.playground.tts.listener.EventListener);
+  public void a(java.lang.String, boolean, java.lang.String);
+  public void a(java.lang.String, boolean, boolean, java.lang.String);
+  public void a(java.lang.String, boolean, java.lang.String, java.lang.String);
+  public void a(java.lang.String, boolean, boolean, java.lang.String, java.lang.String);
+  public void e();
+  public void b(java.lang.String);
+  public void d(java.lang.String);
+  public void a(java.lang.String, java.lang.String, ai.pleos.playground.tts.listener.OnServerConnectionListener);
+  public void a(java.lang.String);
+  public void a();
+  public void a(java.util.Locale);
+  public void c(java.lang.String);
+  public void a(android.media.AudioAttributes);
+  public void a(int);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.factory.StreamTts extends ai.pleos.playground.tts.factory.Tts {
+  public static final int r;
+  public ai.pleos.playground.tts.factory.StreamTts(android.content.Context, ai.pleos.playground.tts.constant.Mode);
+  public static final java.lang.Object a(ai.pleos.playground.tts.factory.StreamTts, kotlin.coroutines.Continuation);
+  public static final java.lang.StringBuilder h(ai.pleos.playground.tts.factory.StreamTts);
+  public static final java.lang.String g(ai.pleos.playground.tts.factory.StreamTts);
+  public static final android.content.Context d(ai.pleos.playground.tts.factory.StreamTts);
+  public static final android.media.AudioAttributes b(ai.pleos.playground.tts.factory.StreamTts);
+  public static final java.lang.Integer c(ai.pleos.playground.tts.factory.StreamTts);
+  public static final void a(ai.pleos.playground.tts.factory.StreamTts);
+  public static final ai.pleos.playground.tts.service.TtsCallback i(ai.pleos.playground.tts.factory.StreamTts);
+  public static final com.google.gson.Gson f(ai.pleos.playground.tts.factory.StreamTts);
+  public static final java.lang.String e(ai.pleos.playground.tts.factory.StreamTts);
+  public static final void b(ai.pleos.playground.tts.factory.StreamTts, boolean);
+  public static final boolean j(ai.pleos.playground.tts.factory.StreamTts);
+  public static final boolean b(ai.pleos.playground.tts.factory.StreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsStream, java.lang.String);
+  public static final boolean a(ai.pleos.playground.tts.factory.StreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsStream, java.lang.String);
+  public static final boolean a(ai.pleos.playground.tts.factory.StreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsStream);
+  public static final void k(ai.pleos.playground.tts.factory.StreamTts);
+  public static final boolean c(ai.pleos.playground.tts.factory.StreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsStream);
+  public static final void a(ai.pleos.playground.tts.factory.StreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsStream, boolean);
+  public static final void b(ai.pleos.playground.tts.factory.StreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsStream);
+  public static final void d(ai.pleos.playground.tts.factory.StreamTts, ai.pleos.playground.caas.service.speech.aidl.ITtsStream);
+  public static final kotlin.Pair a(ai.pleos.playground.tts.factory.StreamTts, boolean);
+  public void b();
+  public void a(ai.pleos.playground.tts.listener.OnInitializeListener);
+  public void c();
+  public void a(ai.pleos.playground.tts.listener.EventListener);
+  public void b(ai.pleos.playground.tts.listener.EventListener);
+  public void a(java.lang.String, boolean, java.lang.String);
+  public void a(java.lang.String, boolean, boolean, java.lang.String);
+  public void a(java.lang.String, boolean, java.lang.String, java.lang.String);
+  public void a(java.lang.String, boolean, boolean, java.lang.String, java.lang.String);
+  public void e();
+  public void b(java.lang.String);
+  public void d(java.lang.String);
+  public void a(java.lang.String, java.lang.String, ai.pleos.playground.tts.listener.OnServerConnectionListener);
+  public void a(java.lang.String);
+  public void a();
+  public void a(android.media.AudioAttributes);
+  public void a(java.util.Locale);
+  public void c(java.lang.String);
+  public void a(int);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.tts.factory.StreamTts$Companion {
+  public ai.pleos.playground.tts.factory.StreamTts$Companion(kotlin.jvm.internal.DefaultConstructorMarker);
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.tts.factory.Tts {
+  public ai.pleos.playground.tts.factory.Tts();
+  public static void a(ai.pleos.playground.tts.factory.Tts, java.lang.String, boolean, java.lang.String, int, java.lang.Object);
+  public static void a(ai.pleos.playground.tts.factory.Tts, java.lang.String, boolean, boolean, java.lang.String, int, java.lang.Object);
+  public static void a(ai.pleos.playground.tts.factory.Tts, java.lang.String, boolean, java.lang.String, java.lang.String, int, java.lang.Object);
+  public static void a(ai.pleos.playground.tts.factory.Tts, java.lang.String, boolean, boolean, java.lang.String, java.lang.String, int, java.lang.Object);
+  public abstract void b();
+  public abstract void a(ai.pleos.playground.tts.listener.OnInitializeListener);
+  public abstract void c();
+  public abstract void a(ai.pleos.playground.tts.listener.EventListener);
+  public abstract void b(ai.pleos.playground.tts.listener.EventListener);
+  public abstract void a(android.media.AudioAttributes);
+  public abstract void a(java.lang.String, boolean, java.lang.String);
+  public abstract void a(java.lang.String, boolean, boolean, java.lang.String);
+  public abstract void e();
+  public abstract void b(java.lang.String);
+  public abstract void d(java.lang.String);
+  public abstract void a(java.lang.String, java.lang.String, ai.pleos.playground.tts.listener.OnServerConnectionListener);
+  public abstract void a(java.lang.String);
+  public abstract void a();
+  public abstract void a(java.util.Locale);
+  public abstract void c(java.lang.String);
+  public abstract void a(int);
+  public abstract void a(java.lang.String, boolean, java.lang.String, java.lang.String);
+  public abstract void a(java.lang.String, boolean, boolean, java.lang.String, java.lang.String);
+  public final android.media.AudioAttributes d();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.factory.TtsFactory {
+  public ai.pleos.playground.tts.factory.TtsFactory(android.content.Context);
+  public final ai.pleos.playground.tts.factory.Tts a(ai.pleos.playground.tts.constant.Mode);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.factory.TtsFactory$WhenMappings {
+  public static final int[] a;
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.tts.listener.EventListener {
+  public abstract void onStart();
+  public abstract void onReady();
+  public abstract void onDone();
+  public abstract void onError(ai.pleos.playground.tts.constant.ErrorType);
+  public abstract void onStop();
+  public abstract void onUpdatedRms(double);
+}
+
+Compiled from "SourceFile"
+public interface ai.pleos.playground.tts.listener.OnInitializeListener {
+  public abstract void onSuccess();
+  public abstract void onFailure(ai.pleos.playground.tts.constant.ErrorType);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.tts.listener.OnServerConnectionListener {
+  public abstract void onConnected();
+  public abstract void onFailed(ai.pleos.playground.tts.constant.ErrorType);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.service.TtsCallback extends ai.pleos.playground.caas.service.speech.aidl.ITtsCallback$Stub {
+  public ai.pleos.playground.tts.service.TtsCallback();
+  public final void a(ai.pleos.playground.tts.listener.EventListener);
+  public final void b(ai.pleos.playground.tts.listener.EventListener);
+  public final void a(ai.pleos.playground.tts.listener.OnServerConnectionListener);
+  public void onResponse(java.lang.String, java.lang.String);
+  public final void a(ai.pleos.playground.tts.constant.ErrorType);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.service.TtsServiceManager {
+  public ai.pleos.playground.tts.service.TtsServiceManager(android.content.Context);
+  public static void a(ai.pleos.playground.tts.service.TtsServiceManager, java.lang.String, boolean, java.lang.String, int, java.lang.Object);
+  public static void a(ai.pleos.playground.tts.service.TtsServiceManager, java.lang.String, boolean, boolean, java.lang.String, int, java.lang.Object);
+  public static final java.lang.Object a(ai.pleos.playground.tts.service.TtsServiceManager, kotlin.coroutines.Continuation);
+  public static final java.lang.String a(ai.pleos.playground.tts.service.TtsServiceManager);
+  public static final ai.pleos.playground.tts.ua.UAWrapper d(ai.pleos.playground.tts.service.TtsServiceManager);
+  public static final kotlinx.coroutines.channels.Channel b(ai.pleos.playground.tts.service.TtsServiceManager);
+  public static final ai.pleos.playground.tts.factory.Tts c(ai.pleos.playground.tts.service.TtsServiceManager);
+  public final void a(ai.pleos.playground.tts.constant.Mode);
+  public final void b();
+  public final void a(ai.pleos.playground.tts.listener.OnInitializeListener);
+  public final void c();
+  public final void a(ai.pleos.playground.tts.listener.EventListener);
+  public final void b(ai.pleos.playground.tts.listener.EventListener);
+  public final void a(android.media.AudioAttributes);
+  public final void d();
+  public final void a(java.lang.String, boolean, java.lang.String);
+  public final void a(java.lang.String, boolean, boolean, java.lang.String);
+  public final void a(java.lang.String, java.lang.String, ai.pleos.playground.tts.listener.OnServerConnectionListener);
+  public final void a(java.lang.String);
+  public final void a();
+  public final void a(java.util.Locale);
+  public final void c(java.lang.String);
+  public final void a(int);
+  public final void b(java.lang.String);
+  public final void d(java.lang.String);
+  public final void a(boolean);
+  public final void a(java.lang.String, java.lang.String, java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void a(java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+}
+Compiled from "SourceFile"
+abstract class ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest {
+  public ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest(kotlin.jvm.internal.DefaultConstructorMarker);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest$WithFirst extends ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest {
+  public ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest$WithFirst(java.lang.String, boolean, boolean, java.lang.String);
+  public static ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest$WithFirst a(ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest$WithFirst, java.lang.String, boolean, boolean, java.lang.String, int, java.lang.Object);
+  public final java.lang.String e();
+  public final boolean h();
+  public final boolean g();
+  public final java.lang.String f();
+  public final java.lang.String a();
+  public final boolean b();
+  public final boolean c();
+  public final java.lang.String d();
+  public final ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest$WithFirst a(java.lang.String, boolean, boolean, java.lang.String);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest$WithoutFirst extends ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest {
+  public ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest$WithoutFirst(java.lang.String, boolean, java.lang.String);
+  public static ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest$WithoutFirst a(ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest$WithoutFirst, java.lang.String, boolean, java.lang.String, int, java.lang.Object);
+  public final java.lang.String d();
+  public final boolean f();
+  public final java.lang.String e();
+  public final java.lang.String a();
+  public final boolean b();
+  public final java.lang.String c();
+  public final ai.pleos.playground.tts.service.TtsServiceManager$SpeakRequest$WithoutFirst a(java.lang.String, boolean, java.lang.String);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.tts.service.TtsServiceManager$VariantType extends java.lang.Enum<ai.pleos.playground.tts.service.TtsServiceManager$VariantType> {
+  public static final ai.pleos.playground.tts.service.TtsServiceManager$VariantType a;
+  public static final ai.pleos.playground.tts.service.TtsServiceManager$VariantType b;
+  public static final ai.pleos.playground.tts.service.TtsServiceManager$VariantType c;
+  public static ai.pleos.playground.tts.service.TtsServiceManager$VariantType[] values();
+  public static ai.pleos.playground.tts.service.TtsServiceManager$VariantType a(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.ua.UARepository {
+  public ai.pleos.playground.tts.ua.UARepository(android.content.Context);
+  public static final java.lang.String a(ai.pleos.playground.tts.ua.UARepository);
+  public final void a(java.lang.String, java.lang.String, java.lang.String, kotlin.jvm.functions.Function1<? super kotlin.Result<kotlin.Unit>, kotlin.Unit>);
+  public final void a(java.lang.String, kotlin.jvm.functions.Function1<? super kotlin.Result<kotlin.Unit>, kotlin.Unit>);
+  public final void a(kotlin.jvm.functions.Function1<? super kotlin.Result<kotlin.Unit>, kotlin.Unit>);
+  public final void a(ai.pleos.playground.security.ua.EnvironmentType);
+  public final void a(kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.ua.UAWrapper {
+  public ai.pleos.playground.tts.ua.UAWrapper(android.content.Context);
+  public static final java.lang.String b(ai.pleos.playground.tts.ua.UAWrapper);
+  public static final android.content.Context a(ai.pleos.playground.tts.ua.UAWrapper);
+  public final void a(java.lang.String, java.lang.String, java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void a(java.lang.String, kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void a(kotlin.jvm.functions.Function0<kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+  public final void a(ai.pleos.playground.security.ua.EnvironmentType);
+  public final void a(kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.String, kotlin.Unit>);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.utils.Log {
+  public static final ai.pleos.playground.tts.utils.Log a;
+  public final void a(java.lang.String, java.lang.String);
+  public final void c(java.lang.String, java.lang.String);
+  public final void b(java.lang.String, java.lang.String);
+  public final void d(java.lang.String, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.tts.utils.StringUtils {
+  public static final ai.pleos.playground.tts.utils.StringUtils a;
+  public static final java.lang.String b;
+  public final java.lang.String a(java.lang.String);
+}

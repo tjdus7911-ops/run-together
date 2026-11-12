@@ -1,0 +1,470 @@
+# ai.pleos.playground:FusedLocation:1.1.3
+## pom
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- This module was also published with a richer model, Gradle metadata,  -->
+  <!-- which should be used instead. Do not delete the following line which  -->
+  <!-- is to indicate to Gradle or any Gradle module metadata file consumer  -->
+  <!-- that they should prefer consuming it instead. -->
+  <!-- do_not_remove: published-with-gradle-metadata -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ai.pleos.playground</groupId>
+  <artifactId>FusedLocation</artifactId>
+  <version>1.1.3</version>
+  <packaging>aar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
+      <version>1.9.25</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>androidx.core</groupId>
+      <artifactId>core-ktx</artifactId>
+      <version>1.8.0</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-coroutines-android</artifactId>
+      <version>1.6.3</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-reflect</artifactId>
+      <version>1.9.25</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>ai.pleos.playground</groupId>
+      <artifactId>fused-location-aidl</artifactId>
+      <version>0.0.5</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>ai.pleos.playground</groupId>
+      <artifactId>fused-location-data</artifactId>
+      <version>0.0.3</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>
+
+## aar entries
+R.txt
+AndroidManifest.xml
+classes.jar
+proguard.txt
+res/
+res/values/
+res/values/values.xml
+META-INF/com/android/build/gradle/aar-metadata.properties
+## AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ai.pleos.playground.location.fused" >
+
+    <uses-sdk android:minSdkVersion="23" />
+
+    <queries>
+        <package android:name="ai.pleos.playground.service.location.fused" />
+    </queries>
+
+    <uses-permission android:name="ai.pleos.playground.service.location.fused.FUSED_LOCATION_BINDING" />
+
+    <uses-feature
+        android:name="android.hardware.type.automotive"
+        android:required="true" />
+
+    <application>
+        <meta-data
+            android:name="ai.pleos.playground.service.location.fused.min_version_name"
+            android:value="0.5.0" />
+        <meta-data
+            android:name="ai.pleos.playground.service.location.fused.min_version_code"
+            android:value="1" />
+        <meta-data
+            android:name="ai.pleos.playground.sdk.location.fused.current_version_name"
+            android:value="1.1.3" />
+        <meta-data
+            android:name="ai.pleos.playground.sdk.location.fused.current_version_code"
+            android:value="12" />
+    </application>
+
+</manifest>
+## 49 classes
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.FusedLocation {
+  public ai.pleos.playground.location.fused.FusedLocation(android.content.Context);
+  public static final android.content.Context access$getContext$p(ai.pleos.playground.location.fused.FusedLocation);
+  public final void initialize();
+  public final void release();
+  public final boolean isSupported();
+  public final void getLastKnownLocation(ai.pleos.playground.location.fused.listener.FusedLocationListener);
+  public final void registerFusedLocationCallback(ai.pleos.playground.location.fused.listener.FusedLocationListener);
+  public final void unregisterFusedLocationCallback(ai.pleos.playground.location.fused.listener.FusedLocationListener);
+  public final void addProximityAlert(ai.pleos.playground.location.fused.model.ProximityAlertRequest, ai.pleos.playground.location.fused.listener.ProximityAlertListener);
+  public final void removeProximityAlert(java.lang.String);
+  public final void showLocationAccessBlockedPopup();
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.FusedLocation$a extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function0<ai.pleos.playground.location.fused.service.b> {
+  public final ai.pleos.playground.location.fused.service.b a();
+  public java.lang.Object invoke();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.a {
+  public static final boolean a;
+  public static final java.lang.String b;
+  public static final java.lang.String c;
+  public static final java.lang.String d;
+  public static final java.lang.String e;
+  public static final java.lang.String f;
+  public static final java.lang.String g;
+  public ai.pleos.playground.location.fused.a();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.constant.Constants {
+  public static final ai.pleos.playground.location.fused.constant.Constants INSTANCE;
+  public static final java.lang.String SERVICE_PACKAGE_NAME;
+  public static final java.lang.String SERVICE_NAME;
+  public static final java.lang.String ACTION;
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.location.fused.listener.FusedLocationListener {
+  public abstract void onChanged(ai.pleos.playground.location.fused.model.LocationData);
+  public abstract void onError(java.lang.Exception);
+}
+Compiled from "SourceFile"
+public interface ai.pleos.playground.location.fused.listener.ProximityAlertListener {
+  public abstract void onRegistered(java.lang.String);
+  public abstract void onTransition(ai.pleos.playground.location.fused.model.ProximityAlertEvent);
+  public abstract void onError(java.lang.Exception);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.mapper.a {
+  public static final ai.pleos.playground.location.fused.model.LocationData a(ai.pleos.playground.location.fused.model.FusedLocationTransData);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.mapper.b {
+  public static final ai.pleos.playground.location.fused.model.ProximityAlertTransData a(ai.pleos.playground.location.fused.model.ProximityAlertRequest, java.lang.String);
+  public static final ai.pleos.playground.location.fused.model.ProximityAlertEvent a(ai.pleos.playground.location.fused.model.ProximityAlertEventTransData);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.mapper.b$a {
+  public static final int[] a;
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.model.LocationData {
+  public ai.pleos.playground.location.fused.model.LocationData(double, double, double, float, float, long);
+  public static ai.pleos.playground.location.fused.model.LocationData copy$default(ai.pleos.playground.location.fused.model.LocationData, double, double, double, float, float, long, int, java.lang.Object);
+  public final double getLatitude();
+  public final double getLongitude();
+  public final double getAltitude();
+  public final float getHeading();
+  public final float getConfidence();
+  public final long getTimestampMillis();
+  public final double component1();
+  public final double component2();
+  public final double component3();
+  public final float component4();
+  public final float component5();
+  public final long component6();
+  public final ai.pleos.playground.location.fused.model.LocationData copy(double, double, double, float, float, long);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.model.ProximityAlertEvent {
+  public ai.pleos.playground.location.fused.model.ProximityAlertEvent(java.lang.String, ai.pleos.playground.location.fused.model.ProximityTransition);
+  public static ai.pleos.playground.location.fused.model.ProximityAlertEvent copy$default(ai.pleos.playground.location.fused.model.ProximityAlertEvent, java.lang.String, ai.pleos.playground.location.fused.model.ProximityTransition, int, java.lang.Object);
+  public final java.lang.String getAlertId();
+  public final ai.pleos.playground.location.fused.model.ProximityTransition getTransition();
+  public final java.lang.String component1();
+  public final ai.pleos.playground.location.fused.model.ProximityTransition component2();
+  public final ai.pleos.playground.location.fused.model.ProximityAlertEvent copy(java.lang.String, ai.pleos.playground.location.fused.model.ProximityTransition);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.model.ProximityAlertRequest {
+  public ai.pleos.playground.location.fused.model.ProximityAlertRequest(double, double, float, java.util.Set<? extends ai.pleos.playground.location.fused.model.ProximityTransition>);
+  public static ai.pleos.playground.location.fused.model.ProximityAlertRequest copy$default(ai.pleos.playground.location.fused.model.ProximityAlertRequest, double, double, float, java.util.Set, int, java.lang.Object);
+  public final double getLatitude();
+  public final double getLongitude();
+  public final float getRadiusMeters();
+  public final java.util.Set<ai.pleos.playground.location.fused.model.ProximityTransition> getTransitionTypes();
+  public final java.lang.String validationErrorOrNull$FusedLocation_release();
+  public final double component1();
+  public final double component2();
+  public final float component3();
+  public final java.util.Set<ai.pleos.playground.location.fused.model.ProximityTransition> component4();
+  public final ai.pleos.playground.location.fused.model.ProximityAlertRequest copy(double, double, float, java.util.Set<? extends ai.pleos.playground.location.fused.model.ProximityTransition>);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.model.ProximityAlertRequestKt {
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.model.ProximityTransition extends java.lang.Enum<ai.pleos.playground.location.fused.model.ProximityTransition> {
+  public static final ai.pleos.playground.location.fused.model.ProximityTransition ENTER;
+  public static final ai.pleos.playground.location.fused.model.ProximityTransition EXIT;
+  public static ai.pleos.playground.location.fused.model.ProximityTransition[] values();
+  public static ai.pleos.playground.location.fused.model.ProximityTransition valueOf(java.lang.String);
+  public static kotlin.enums.EnumEntries<ai.pleos.playground.location.fused.model.ProximityTransition> getEntries();
+}
+Compiled from "SourceFile"
+public abstract class ai.pleos.playground.location.fused.service.a<IService extends android.os.IInterface> implements android.content.ServiceConnection {
+  public static final ai.pleos.playground.location.fused.service.a$a h;
+  public static final int i;
+  public static final long j;
+  public ai.pleos.playground.location.fused.service.a(android.content.Context, kotlin.jvm.functions.Function1<? super android.os.IBinder, ? extends IService>, kotlinx.coroutines.CoroutineScope);
+  public ai.pleos.playground.location.fused.service.a(android.content.Context, kotlin.jvm.functions.Function1, kotlinx.coroutines.CoroutineScope, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static final java.lang.String c(ai.pleos.playground.location.fused.service.a);
+  public static final void a(ai.pleos.playground.location.fused.service.a, ai.pleos.playground.location.fused.service.a$c);
+  public static final ai.pleos.playground.location.fused.service.a$c a(ai.pleos.playground.location.fused.service.a);
+  public static final android.content.Context b(ai.pleos.playground.location.fused.service.a);
+  public abstract void d();
+  public void onServiceConnected(android.content.ComponentName, android.os.IBinder);
+  public void onServiceDisconnected(android.content.ComponentName);
+  public final void a(android.content.Intent);
+  public final void b();
+  public final void a(kotlin.jvm.functions.Function1<? super IService, kotlin.Unit>, kotlin.jvm.functions.Function1<? super java.lang.Exception, kotlin.Unit>);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.service.a$a {
+  public ai.pleos.playground.location.fused.service.a$a(kotlin.jvm.internal.DefaultConstructorMarker);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.a$b extends java.lang.Enum<ai.pleos.playground.location.fused.service.a$b> {
+  public static final ai.pleos.playground.location.fused.service.a$b a;
+  public static final ai.pleos.playground.location.fused.service.a$b b;
+  public static final ai.pleos.playground.location.fused.service.a$b c;
+  public static ai.pleos.playground.location.fused.service.a$b[] values();
+  public static ai.pleos.playground.location.fused.service.a$b a(java.lang.String);
+  public static kotlin.enums.EnumEntries<ai.pleos.playground.location.fused.service.a$b> b();
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.a$c {
+  public ai.pleos.playground.location.fused.service.a$c(ai.pleos.playground.location.fused.service.a$b, boolean, kotlin.jvm.functions.Function0<kotlin.Unit>);
+  public ai.pleos.playground.location.fused.service.a$c(ai.pleos.playground.location.fused.service.a$b, boolean, kotlin.jvm.functions.Function0, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.location.fused.service.a$c a(ai.pleos.playground.location.fused.service.a$c, ai.pleos.playground.location.fused.service.a$b, boolean, kotlin.jvm.functions.Function0, int, java.lang.Object);
+  public final ai.pleos.playground.location.fused.service.a$b d();
+  public final boolean g();
+  public final kotlin.jvm.functions.Function0<kotlin.Unit> e();
+  public final boolean f();
+  public final boolean h();
+  public final ai.pleos.playground.location.fused.service.a$b a();
+  public final boolean b();
+  public final kotlin.jvm.functions.Function0<kotlin.Unit> c();
+  public final ai.pleos.playground.location.fused.service.a$c a(ai.pleos.playground.location.fused.service.a$b, boolean, kotlin.jvm.functions.Function0<kotlin.Unit>);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.a$d extends java.lang.Throwable {
+  public ai.pleos.playground.location.fused.service.a$d();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.service.a$e implements kotlinx.coroutines.flow.Flow<kotlin.Unit> {
+  public ai.pleos.playground.location.fused.service.a$e(kotlinx.coroutines.flow.Flow, ai.pleos.playground.location.fused.service.a);
+  public java.lang.Object collect(kotlinx.coroutines.flow.FlowCollector, kotlin.coroutines.Continuation);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.service.a$e$a<T> implements kotlinx.coroutines.flow.FlowCollector {
+  public ai.pleos.playground.location.fused.service.a$e$a(kotlinx.coroutines.flow.FlowCollector, ai.pleos.playground.location.fused.service.a);
+  public final java.lang.Object emit(java.lang.Object, kotlin.coroutines.Continuation);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.service.a$e$a$a extends kotlin.coroutines.jvm.internal.ContinuationImpl {
+  public ai.pleos.playground.location.fused.service.a$e$a$a(ai.pleos.playground.location.fused.service.a$e$a, kotlin.coroutines.Continuation);
+  public final java.lang.Object invokeSuspend(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.a$f extends kotlin.coroutines.jvm.internal.SuspendLambda implements kotlin.jvm.functions.Function4<kotlinx.coroutines.flow.FlowCollector<? super kotlin.Unit>, java.lang.Throwable, java.lang.Long, kotlin.coroutines.Continuation<? super java.lang.Boolean>, java.lang.Object> {
+  public final java.lang.Object invokeSuspend(java.lang.Object);
+  public final java.lang.Object a(kotlinx.coroutines.flow.FlowCollector<? super kotlin.Unit>, java.lang.Throwable, long, kotlin.coroutines.Continuation<? super java.lang.Boolean>);
+  public java.lang.Object invoke(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.a$g extends kotlin.coroutines.jvm.internal.SuspendLambda implements kotlin.jvm.functions.Function3<kotlinx.coroutines.flow.FlowCollector<? super kotlin.Unit>, java.lang.Throwable, kotlin.coroutines.Continuation<? super kotlin.Unit>, java.lang.Object> {
+  public final java.lang.Object invokeSuspend(java.lang.Object);
+  public final java.lang.Object a(kotlinx.coroutines.flow.FlowCollector<? super kotlin.Unit>, java.lang.Throwable, kotlin.coroutines.Continuation<? super kotlin.Unit>);
+  public java.lang.Object invoke(java.lang.Object, java.lang.Object, java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.a$h extends kotlin.jvm.internal.FunctionReferenceImpl implements kotlin.jvm.functions.Function0<kotlin.Unit> {
+  public final void a();
+  public java.lang.Object invoke();
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.a$i extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function1<java.lang.Exception, kotlin.Unit> {
+  public final void a(java.lang.Exception);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.a$j extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function1<java.lang.Exception, kotlin.Unit> {
+  public static final ai.pleos.playground.location.fused.service.a$j a;
+  public final void a(java.lang.Exception);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.service.b extends ai.pleos.playground.location.fused.service.a<ai.pleos.playground.location.fused.IFusedLocationService> {
+  public ai.pleos.playground.location.fused.service.b(android.content.Context, kotlin.jvm.functions.Function1<? super android.os.IBinder, ? extends ai.pleos.playground.location.fused.IFusedLocationService>, kotlinx.coroutines.CoroutineScope, kotlin.jvm.functions.Function0<java.lang.String>);
+  public ai.pleos.playground.location.fused.service.b(android.content.Context, kotlin.jvm.functions.Function1, kotlinx.coroutines.CoroutineScope, kotlin.jvm.functions.Function0, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static final ai.pleos.playground.location.fused.service.stub.a a(ai.pleos.playground.location.fused.service.b);
+  public static final java.util.concurrent.atomic.AtomicBoolean d(ai.pleos.playground.location.fused.service.b);
+  public static final ai.pleos.playground.location.fused.service.b$c a(ai.pleos.playground.location.fused.service.b, java.lang.String);
+  public static final java.lang.String c(ai.pleos.playground.location.fused.service.b);
+  public static final java.util.concurrent.CopyOnWriteArrayList b(ai.pleos.playground.location.fused.service.b);
+  public final void b(ai.pleos.playground.location.fused.listener.FusedLocationListener);
+  public final void c(ai.pleos.playground.location.fused.listener.FusedLocationListener);
+  public final void e(ai.pleos.playground.location.fused.listener.FusedLocationListener);
+  public final void a(ai.pleos.playground.location.fused.model.ProximityAlertRequest, ai.pleos.playground.location.fused.listener.ProximityAlertListener);
+  public final void c(java.lang.String);
+  public final void f();
+  public final void i();
+  public final void j();
+  public void d();
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$a extends kotlin.jvm.internal.FunctionReferenceImpl implements kotlin.jvm.functions.Function1<android.os.IBinder, ai.pleos.playground.location.fused.IFusedLocationService> {
+  public static final ai.pleos.playground.location.fused.service.b$a a;
+  public final ai.pleos.playground.location.fused.IFusedLocationService a(android.os.IBinder);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$b extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function0<java.lang.String> {
+  public static final ai.pleos.playground.location.fused.service.b$b a;
+  public final java.lang.String a();
+  public java.lang.Object invoke();
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$c {
+  public ai.pleos.playground.location.fused.service.b$c(ai.pleos.playground.location.fused.model.ProximityAlertTransData, ai.pleos.playground.location.fused.service.stub.b, java.util.concurrent.atomic.AtomicBoolean);
+  public ai.pleos.playground.location.fused.service.b$c(ai.pleos.playground.location.fused.model.ProximityAlertTransData, ai.pleos.playground.location.fused.service.stub.b, java.util.concurrent.atomic.AtomicBoolean, int, kotlin.jvm.internal.DefaultConstructorMarker);
+  public static ai.pleos.playground.location.fused.service.b$c a(ai.pleos.playground.location.fused.service.b$c, ai.pleos.playground.location.fused.model.ProximityAlertTransData, ai.pleos.playground.location.fused.service.stub.b, java.util.concurrent.atomic.AtomicBoolean, int, java.lang.Object);
+  public final ai.pleos.playground.location.fused.model.ProximityAlertTransData e();
+  public final ai.pleos.playground.location.fused.service.stub.b d();
+  public final java.util.concurrent.atomic.AtomicBoolean f();
+  public final ai.pleos.playground.location.fused.model.ProximityAlertTransData a();
+  public final ai.pleos.playground.location.fused.service.stub.b b();
+  public final java.util.concurrent.atomic.AtomicBoolean c();
+  public final ai.pleos.playground.location.fused.service.b$c a(ai.pleos.playground.location.fused.model.ProximityAlertTransData, ai.pleos.playground.location.fused.service.stub.b, java.util.concurrent.atomic.AtomicBoolean);
+  public java.lang.String toString();
+  public int hashCode();
+  public boolean equals(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$d extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function1<ai.pleos.playground.location.fused.IFusedLocationService, kotlin.Unit> {
+  public final void a(ai.pleos.playground.location.fused.IFusedLocationService);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$e extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function1<java.lang.Exception, kotlin.Unit> {
+  public final void a(java.lang.Exception);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$f extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function0<kotlin.Unit> {
+  public final void a();
+  public java.lang.Object invoke();
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$g extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function0<ai.pleos.playground.location.fused.service.stub.a> {
+  public final ai.pleos.playground.location.fused.service.stub.a a();
+  public java.lang.Object invoke();
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$h extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function1<ai.pleos.playground.location.fused.IFusedLocationService, kotlin.Unit> {
+  public final void a(ai.pleos.playground.location.fused.IFusedLocationService);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.service.b$h$a extends ai.pleos.playground.location.fused.callback.IFusedLocationCallback$Stub {
+  public void onChangeEvent(ai.pleos.playground.location.fused.model.FusedLocationTransData);
+  public void onErrorEvent(java.lang.String);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$i extends kotlin.jvm.internal.FunctionReferenceImpl implements kotlin.jvm.functions.Function1<java.lang.Exception, kotlin.Unit> {
+  public final void a(java.lang.Exception);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$j extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function1<ai.pleos.playground.location.fused.IFusedLocationService, kotlin.Unit> {
+  public final void a(ai.pleos.playground.location.fused.IFusedLocationService);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$k extends kotlin.jvm.internal.FunctionReferenceImpl implements kotlin.jvm.functions.Function1<java.lang.Exception, kotlin.Unit> {
+  public final void a(java.lang.Exception);
+  public java.lang.Object invoke(java.lang.Object);
+}
+
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$l extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function1<ai.pleos.playground.location.fused.IFusedLocationService, kotlin.Unit> {
+  public final void a(ai.pleos.playground.location.fused.IFusedLocationService);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$m extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function1<java.lang.Exception, kotlin.Unit> {
+  public final void a(java.lang.Exception);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$n extends kotlin.jvm.internal.Lambda implements kotlin.jvm.functions.Function1<ai.pleos.playground.location.fused.IFusedLocationService, kotlin.Unit> {
+  public final void a(ai.pleos.playground.location.fused.IFusedLocationService);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+final class ai.pleos.playground.location.fused.service.b$o extends kotlin.jvm.internal.FunctionReferenceImpl implements kotlin.jvm.functions.Function1<java.lang.Exception, kotlin.Unit> {
+  public final void a(java.lang.Exception);
+  public java.lang.Object invoke(java.lang.Object);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.service.stub.a extends ai.pleos.playground.location.fused.callback.IFusedLocationCallback$Stub {
+  public ai.pleos.playground.location.fused.service.stub.a(java.util.List<? extends ai.pleos.playground.location.fused.listener.FusedLocationListener>);
+  public void onChangeEvent(ai.pleos.playground.location.fused.model.FusedLocationTransData);
+  public void onErrorEvent(java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.service.stub.b extends ai.pleos.playground.location.fused.callback.IProximityAlertCallback$Stub {
+  public ai.pleos.playground.location.fused.service.stub.b(ai.pleos.playground.location.fused.listener.ProximityAlertListener, kotlin.jvm.functions.Function0<kotlin.Unit>);
+  public void onRegistered(java.lang.String);
+  public void onTransitionEvent(ai.pleos.playground.location.fused.model.ProximityAlertEventTransData);
+  public void onErrorEvent(java.lang.String);
+  public final void a();
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.utils.a {
+  public static final ai.pleos.playground.location.fused.utils.a a;
+  public final void a(java.lang.String, java.lang.String);
+  public final void c(java.lang.String, java.lang.String);
+  public final void b(java.lang.String, java.lang.String);
+  public final void d(java.lang.String, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.utils.b {
+  public static final ai.pleos.playground.location.fused.utils.b a;
+  public final boolean a(android.content.Context, java.lang.String);
+}
+Compiled from "SourceFile"
+public final class ai.pleos.playground.location.fused.utils.c {
+  public static final ai.pleos.playground.location.fused.utils.c a;
+  public static final java.lang.String b;
+  public final java.lang.String a(java.lang.String);
+}

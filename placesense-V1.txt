@@ -1,0 +1,102 @@
+# ai.pleos.playground:placesense:V1
+## pom
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ai.pleos.playground</groupId>
+  <artifactId>placesense</artifactId>
+  <version>V1</version>
+</project>
+
+## 9 classes
+Compiled from "FusedLocation.java"
+public class ai.pleos.playground.internal.placesense.FusedLocation implements android.os.Parcelable {
+  public int fusedLocationFlags;
+  public double latitude;
+  public double longitude;
+  public double altitude;
+  public float heading;
+  public float confidence;
+  public long timestampMillis;
+  public static final android.os.Parcelable$Creator<ai.pleos.playground.internal.placesense.FusedLocation> CREATOR;
+  public static final int HAS_LAT_LONG;
+  public static final int HAS_ALTITUDE;
+  public static final int HAS_HEADING;
+  public static final int HAS_CONFIDENCE;
+  public ai.pleos.playground.internal.placesense.FusedLocation();
+  public final int getStability();
+  public final void writeToParcel(android.os.Parcel, int);
+  public final void readFromParcel(android.os.Parcel);
+  public int describeContents();
+}
+Compiled from "IFusedLocationCallback.java"
+public interface ai.pleos.playground.internal.placesense.IFusedLocationCallback extends android.os.IInterface {
+  public static final int VERSION;
+  public static final java.lang.String HASH;
+  public static final java.lang.String DESCRIPTOR;
+  public abstract void onFusedLocationChanged(ai.pleos.playground.internal.placesense.FusedLocation) throws android.os.RemoteException;
+  public abstract int getInterfaceVersion() throws android.os.RemoteException;
+  public abstract java.lang.String getInterfaceHash() throws android.os.RemoteException;
+}
+Compiled from "IFusedLocationCallback.java"
+public class ai.pleos.playground.internal.placesense.IFusedLocationCallback$Default implements ai.pleos.playground.internal.placesense.IFusedLocationCallback {
+  public ai.pleos.playground.internal.placesense.IFusedLocationCallback$Default();
+  public void onFusedLocationChanged(ai.pleos.playground.internal.placesense.FusedLocation) throws android.os.RemoteException;
+  public int getInterfaceVersion();
+  public java.lang.String getInterfaceHash();
+  public android.os.IBinder asBinder();
+}
+Compiled from "IFusedLocationCallback.java"
+public abstract class ai.pleos.playground.internal.placesense.IFusedLocationCallback$Stub extends android.os.Binder implements ai.pleos.playground.internal.placesense.IFusedLocationCallback {
+  public ai.pleos.playground.internal.placesense.IFusedLocationCallback$Stub();
+  public static ai.pleos.playground.internal.placesense.IFusedLocationCallback asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "IFusedLocationCallback.java"
+class ai.pleos.playground.internal.placesense.IFusedLocationCallback$Stub$Proxy implements ai.pleos.playground.internal.placesense.IFusedLocationCallback {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void onFusedLocationChanged(ai.pleos.playground.internal.placesense.FusedLocation) throws android.os.RemoteException;
+  public int getInterfaceVersion() throws android.os.RemoteException;
+  public synchronized java.lang.String getInterfaceHash() throws android.os.RemoteException;
+}
+Compiled from "IPlacesenseService.java"
+public interface ai.pleos.playground.internal.placesense.IPlacesenseService extends android.os.IInterface {
+  public static final int VERSION;
+  public static final java.lang.String HASH;
+  public static final java.lang.String DESCRIPTOR;
+  public static final int ERROR_INVALID_ARGUMENT;
+  public static final int ERROR_ALREADY_INIT;
+  public static final int ERROR_GENERIC;
+  public abstract void subscribeFusedLocation(ai.pleos.playground.internal.placesense.IFusedLocationCallback) throws android.os.RemoteException;
+  public abstract void unsubscribeFusedLocation(ai.pleos.playground.internal.placesense.IFusedLocationCallback) throws android.os.RemoteException;
+  public abstract int getInterfaceVersion() throws android.os.RemoteException;
+  public abstract java.lang.String getInterfaceHash() throws android.os.RemoteException;
+}
+Compiled from "IPlacesenseService.java"
+public class ai.pleos.playground.internal.placesense.IPlacesenseService$Default implements ai.pleos.playground.internal.placesense.IPlacesenseService {
+  public ai.pleos.playground.internal.placesense.IPlacesenseService$Default();
+  public void subscribeFusedLocation(ai.pleos.playground.internal.placesense.IFusedLocationCallback) throws android.os.RemoteException;
+  public void unsubscribeFusedLocation(ai.pleos.playground.internal.placesense.IFusedLocationCallback) throws android.os.RemoteException;
+  public int getInterfaceVersion();
+  public java.lang.String getInterfaceHash();
+  public android.os.IBinder asBinder();
+}
+Compiled from "IPlacesenseService.java"
+public abstract class ai.pleos.playground.internal.placesense.IPlacesenseService$Stub extends android.os.Binder implements ai.pleos.playground.internal.placesense.IPlacesenseService {
+  public ai.pleos.playground.internal.placesense.IPlacesenseService$Stub();
+  public static ai.pleos.playground.internal.placesense.IPlacesenseService asInterface(android.os.IBinder);
+  public android.os.IBinder asBinder();
+  public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+}
+Compiled from "IPlacesenseService.java"
+class ai.pleos.playground.internal.placesense.IPlacesenseService$Stub$Proxy implements ai.pleos.playground.internal.placesense.IPlacesenseService {
+  public android.os.IBinder asBinder();
+  public java.lang.String getInterfaceDescriptor();
+  public void subscribeFusedLocation(ai.pleos.playground.internal.placesense.IFusedLocationCallback) throws android.os.RemoteException;
+  public void unsubscribeFusedLocation(ai.pleos.playground.internal.placesense.IFusedLocationCallback) throws android.os.RemoteException;
+  public int getInterfaceVersion() throws android.os.RemoteException;
+  public synchronized java.lang.String getInterfaceHash() throws android.os.RemoteException;
+}
