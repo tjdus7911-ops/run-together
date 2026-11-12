@@ -9,6 +9,9 @@ import com.runtogether.data.NavigationGateway
 import com.runtogether.data.VehicleDataSource
 import com.runtogether.data.VehicleDataSources
 import com.runtogether.data.VoiceAnnouncer
+import com.runtogether.data.pleos.PleosNaviGateway
+import com.runtogether.data.pleos.PleosTtsAnnouncer
+import com.runtogether.data.pleos.PleosVoiceAnswer
 import com.runtogether.demo.DemoScenario
 import com.runtogether.domain.Announcements
 import com.runtogether.domain.DrivingPolicy
@@ -29,14 +32,17 @@ import com.runtogether.state.Phase
 import com.runtogether.state.PlannedStop
 import com.runtogether.state.VoteResult
 import com.runtogether.state.formatClock
+import com.runtogether.state.formatDuration
 import com.runtogether.state.withMyVehicle
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * 모임 드라이브 상태를 들고 있는 곳.
@@ -45,8 +51,20 @@ import kotlinx.coroutines.launch
  */
 class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val voice: VoiceAnnouncer = AndroidTtsAnnouncer(app)
-    private val navigation: NavigationGateway = DemoNavigationGateway()
+    private val automotive = VehicleDataSources.isAutomotive(app)
+
+    /** 차량에서는 Pleos TextToSpeech SDK, 실패하거나 일반 기기면 안드로이드 기본 TTS */
+    private val voice: VoiceAnnouncer =
+        if (automotive) PleosTtsAnnouncer(app, fallback = AndroidTtsAnnouncer(app)) else AndroidTtsAnnouncer(app)
+
+    /** 차량에서는 Pleos NaviHelper SDK 로 경로·경유지를 넣는다 */
+    private val demoNavigation = DemoNavigationGateway()
+    private val pleosNavigation: PleosNaviGateway? = if (automotive) PleosNaviGateway(app, log = demoNavigation) else null
+    private val navigation: NavigationGateway = pleosNavigation ?: demoNavigation
+
+    /** 차량에서는 Pleos SpeechToText SDK 로 “좋아요 / 괜찮아요”를 말로 답한다 */
+    private val voiceAnswer: PleosVoiceAnswer? = if (automotive) PleosVoiceAnswer(app) else null
+
     private val vehicleSource: VehicleDataSource? = VehicleDataSources.create(app)
 
     private val _state = MutableStateFlow(DemoScenario.step(DemoScenario.STEP_CHECKIN))
@@ -57,6 +75,7 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
 
     private var liveVehicle: VehicleSnapshot? = null
     private var lastDriving: Boolean? = null
+    private var restSuggested = false
     private var vehicleJob: Job? = null
     private var alertJob: Job? = null
     private val scenarioJobs = mutableListOf<Job>()
@@ -133,7 +152,10 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
             )
         }
         voice.speak(spoken)
-        if (rec != null) startVote(fromId, signal, rec)
+        if (rec != null) {
+            startVote(fromId, signal, rec)
+            listenForVoiceAnswer()
+        }
         // 운전 중 알림 카드는 10초 뒤 자동으로 닫힌다 (투표는 오른쪽 패널에서 계속)
         alertJob?.cancel()
         alertJob = viewModelScope.launch {
@@ -182,7 +204,21 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
         launchScenario(RestVoteEngine.VOTE_WINDOW_MS + 100L) { _state.value.vote?.let { resolve(it) } }
     }
 
+    /** 안내 음성이 끝나면 말로 한 답을 듣는다 (자기 안내 음성을 듣지 않도록). */
+    private fun listenForVoiceAnswer() {
+        val stt = voiceAnswer ?: return
+        launchScenario(600L) {
+            viewModelScope.launch {
+                withTimeoutOrNull(8_000L) { caption.first { it == null } }
+                if (_state.value.vote?.voteOf(_state.value.meId) == null && _state.value.voteResult == null) {
+                    stt.listen { yes -> answerVote(yes) }
+                }
+            }
+        }
+    }
+
     fun answerVote(yes: Boolean) {
+        voiceAnswer?.cancel()
         alertJob?.cancel()
         _state.update { it.copy(alert = null) }
         castVote(_state.value.meId, if (yes) Vote.YES else Vote.NO)
@@ -280,6 +316,7 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
                 liveVehicle = snapshot
                 _state.update { it.withMyVehicle(snapshot) }
                 followVehicle(snapshot)
+                suggestRestIfLong(snapshot)
             }
         }
     }
@@ -300,8 +337,22 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** 연속 운전 2시간이 되기 전에 앱이 먼저 '쉬었다 갈까요?'를 묻는다 (차량의 주행 시간 데이터). */
+    private fun suggestRestIfLong(v: VehicleSnapshot) {
+        val minutes = v.tripDrivingMinutes ?: return
+        if (minutes < 10) restSuggested = false // 쉬고 다시 출발
+        val s = _state.value
+        if (restSuggested || s.phase != Phase.DRIVING || (s.vote != null && s.voteResult == null)) return
+        if (!DrivingPolicy.shouldSuggestRest(minutes)) return
+        restSuggested = true
+        voice.speak("연속 운전이 ${formatDuration(minutes)}째예요. 가까운 곳에서 쉬었다 갈까요?")
+        startVote(s.meId, StatusSignal.REST)
+    }
+
     override fun onCleared() {
         voice.shutdown()
+        voiceAnswer?.release()
+        pleosNavigation?.release()
         super.onCleared()
     }
 }

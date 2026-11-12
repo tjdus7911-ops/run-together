@@ -127,6 +127,7 @@ fun DriveUiState.withMyVehicle(live: VehicleSnapshot?): DriveUiState {
     if (live == null) return this
     return copy(
         vehicleLive = true,
+        continuousDrivingMin = live.tripDrivingMinutes ?: continuousDrivingMin,
         members = members.map { m ->
             if (m.member.id != meId) m else m.copy(
                 vehicle = m.vehicle.copy(
@@ -135,6 +136,7 @@ fun DriveUiState.withMyVehicle(live: VehicleSnapshot?): DriveUiState {
                     speedKmh = live.speedKmh,
                     energyPercent = live.energyPercent ?: m.vehicle.energyPercent,
                     rangeKm = live.rangeKm ?: m.vehicle.rangeKm,
+                    tripDrivingMinutes = live.tripDrivingMinutes ?: m.vehicle.tripDrivingMinutes,
                 ),
                 readiness = if (phase == Phase.PRE_DEPARTURE) {
                     if (live.ignitionOn) Readiness.READY else Readiness.WAITING

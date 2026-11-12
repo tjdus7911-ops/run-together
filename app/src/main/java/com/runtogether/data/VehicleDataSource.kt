@@ -7,6 +7,8 @@ import android.car.hardware.property.CarPropertyManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import com.runtogether.data.pleos.CombinedVehicleDataSource
+import com.runtogether.data.pleos.PleosVehicleDataSource
 import com.runtogether.domain.Gear
 import com.runtogether.domain.VehicleSnapshot
 import kotlinx.coroutines.channels.awaitClose
@@ -20,10 +22,19 @@ interface VehicleDataSource {
 }
 
 object VehicleDataSources {
-    /** 차량(AAOS)에서만 실제 차량 데이터를 쓴다. 일반 기기에서는 시연 값으로 동작한다. */
+    fun isAutomotive(context: Context): Boolean =
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE)
+
+    /**
+     * 차량(AAOS)에서만 실제 차량 데이터를 쓴다: AAOS 표준 속성(시동·속도) + Pleos Vehicle SDK(기어·연료·배터리·주행 가능 거리·연속 운전 시간).
+     * 일반 기기에서는 null 을 돌려주고 시연 값으로 동작한다.
+     */
     fun create(context: Context): VehicleDataSource? =
-        if (context.packageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE)) {
-            AaosVehicleDataSource(context.applicationContext)
+        if (isAutomotive(context)) {
+            CombinedVehicleDataSource(
+                aaos = AaosVehicleDataSource(context.applicationContext),
+                pleos = PleosVehicleDataSource(context.applicationContext),
+            )
         } else {
             null
         }

@@ -24,17 +24,21 @@
 
 ## 차량 데이터 · SDK
 
-| 기능 | 지금 | 다음 단계 |
+차량(Pleos Connect)에서 실행하면 아래 SDK를 쓰고, 일반 기기에서는 시연 데이터와 안드로이드 기본 기능으로 대신합니다.
+
+| 기능 | 쓰는 SDK·API | 앱에서 하는 일 |
 |---|---|---|
-| 시동·기어·속도·연료/배터리 | AAOS `CarPropertyManager` (차종별 지원 여부 확인 후 구독) | Pleos Vehicle SDK |
-| 음성 안내 | Android `TextToSpeech` + 화면 자막 | Pleos TextToSpeech SDK |
-| 말로 답하기 (“좋아요”) | – | Pleos SpeechToText SDK |
-| 경유지 추가 | 시연용 기록 | Pleos NaviHelper SDK |
-| 위치 | 시연 데이터 | Pleos Fused Location SDK |
-| 다른 차와 동기화 | 시연 시뮬레이션 | 동기화 서버(WebSocket) |
+| 기어·연료·배터리·주행 가능 거리·연속 운전 시간 | **Pleos Vehicle SDK** 2.3.2 | 주행/정차 화면 전환, 연료가 가장 적은 차 기준 집결지, 연속 운전 2시간 전 휴식 제안 |
+| 시동·속도 | AAOS `CarPropertyManager` | 시동 체크인, 주행 판단 (차종별 지원 여부 확인 후 구독) |
+| 경로·경유지 | **Pleos NaviHelper SDK** 3.0.5 | 모임 코스를 모두의 내비에 넣고, 투표가 통과되면 쉴 곳을 첫 경유지로 추가 |
+| 음성 안내 | **Pleos TextToSpeech SDK** 3.3.1 (실패 시 Android TTS) | “민지님이 졸리대요” 같은 상황 공유를 모든 차에서 읽어 줌 + 화면 자막 |
+| 말로 답하기 | **Pleos SpeechToText SDK** 3.3.1 | 투표에 “좋아요 / 괜찮아요”로 답하기 (안내 음성이 끝난 뒤 듣기 시작) |
+| 위치 | 시연 데이터 | 다음 단계: Pleos Fused Location SDK |
+| 다른 차와 동기화 | 시연 시뮬레이션 | 다음 단계: 동기화 서버(WebSocket) |
 
 Pleos SDK 저장소(`nexus-playground.pleos.ai`)는 `settings.gradle.kts`에 넣어 두었습니다.
-`Pleos SDK probe` 워크플로가 공개 SDK의 실제 함수 목록을 `ci/sdk-probe` 브랜치에 정리합니다.
+SDK 리스너는 `data/pleos/PleosBridge.java`에서 감싸 SDK 버전 변화에 덜 민감하게 했습니다.
+`Pleos SDK probe` 워크플로는 공개 SDK의 실제 함수 목록을 `ci/sdk-probe` 브랜치에 정리합니다.
 
 ## 실행
 

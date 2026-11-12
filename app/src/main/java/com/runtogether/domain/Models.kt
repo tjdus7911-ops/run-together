@@ -24,6 +24,8 @@ data class VehicleSnapshot(
     val energyPercent: Int? = null,
     /** 남은 주행 가능 거리 (km) */
     val rangeKm: Double? = null,
+    /** 이번 주행의 연속 운전 시간 (분), 차량이 알려 줄 때만 */
+    val tripDrivingMinutes: Int? = null,
 )
 
 enum class Readiness { READY, COMING, WAITING }
