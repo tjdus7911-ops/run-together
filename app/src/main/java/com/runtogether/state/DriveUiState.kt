@@ -2,6 +2,8 @@ package com.runtogether.state
 
 import com.runtogether.domain.Member
 import com.runtogether.domain.MemberState
+import com.runtogether.domain.NaviGuidance
+import com.runtogether.domain.QuickMessage
 import com.runtogether.domain.Readiness
 import com.runtogether.domain.Recommendation
 import com.runtogether.domain.RestVoteState
@@ -43,6 +45,17 @@ data class IncomingAlert(
 
 data class VoteResult(val accepted: Boolean, val title: String, val detail: String)
 
+/** ‘음성으로 상황 공유’ 진행 상태: 듣는 중 → 받아 적은 문장 확인(3초 뒤 자동 전송) → 보냄 / 실패 */
+data class VoiceShare(
+    val stage: Stage,
+    val text: String? = null,
+    /** 음성 인식이 없는 기기에서 예시 문장으로 보여 주는 시연인지 */
+    val demo: Boolean = false,
+    val problem: String? = null,
+) {
+    enum class Stage { LISTENING, CONFIRM, SENT, FAILED }
+}
+
 /** 집결지 도착 화면에 보여 줄 값 */
 data class RegroupInfo(
     val stopLabel: String,
@@ -83,6 +96,23 @@ data class DriveUiState(
     /** 실제 차량 데이터(AAOS)가 들어오고 있는지 */
     val vehicleLive: Boolean = false,
     val toast: String? = null,
+    /** 차량 내비(Pleos NaviHelper)에서 받은 길 안내. null 이면 화면이 시연 안내를 계산한다 ([shownGuidance]) */
+    val guidance: NaviGuidance? = null,
+    /** 다른 차 위치가 동기화 서버에서 실시간으로 오는지 (시연에서는 false → ‘시연 위치’로 표시) */
+    val groupLive: Boolean = false,
+    /** 휴대폰에서 만든 내 메시지 (차량에서는 고르기만 한다, 최대 6개) */
+    val myMessages: List<QuickMessage> = emptyList(),
+    /** 주행 화면에 내 메시지 고르기 패널이 떠 있는지 */
+    val messagePanelOpen: Boolean = false,
+    /** 방금 보낸 내 메시지 (버튼에 ‘보냈어요’ 표시) */
+    val sentMessageId: String? = null,
+    /** 30초 안에는 다시 보낼 수 없는 내 메시지 */
+    val coolingMessageIds: Set<String> = emptySet(),
+    /** 받은 내 메시지 · 음성 메시지를 읽어 줄지 (끄면 자막과 소식만) */
+    val readMessagesAloud: Boolean = true,
+    val voiceShare: VoiceShare? = null,
+    /** 실제 차량에서 받은 내 차 값 그대로 (화면의 ‘내 차량 상태’는 실차일 때 이 값만 보여 준다) */
+    val myLiveVehicle: VehicleSnapshot? = null,
 ) {
     val me: MemberState get() = members.first { it.member.id == meId }
     val nextStop: PlannedStop? get() = course.getOrNull(nextStopIndex)
@@ -131,6 +161,7 @@ fun DriveUiState.withMyVehicle(live: VehicleSnapshot?): DriveUiState {
     if (live == null) return this
     return copy(
         vehicleLive = true,
+        myLiveVehicle = live,
         continuousDrivingMin = live.tripDrivingMinutes ?: continuousDrivingMin,
         members = members.map { m ->
             if (m.member.id != meId) m else m.copy(
@@ -139,6 +170,7 @@ fun DriveUiState.withMyVehicle(live: VehicleSnapshot?): DriveUiState {
                     gear = live.gear,
                     speedKmh = live.speedKmh,
                     energyPercent = live.energyPercent ?: m.vehicle.energyPercent,
+                    energyKind = if (live.energyPercent != null) live.energyKind else m.vehicle.energyKind,
                     rangeKm = live.rangeKm ?: m.vehicle.rangeKm,
                     tripDrivingMinutes = live.tripDrivingMinutes ?: m.vehicle.tripDrivingMinutes,
                 ),

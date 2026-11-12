@@ -12,7 +12,9 @@ import com.runtogether.domain.RestVoteEngine
 import com.runtogether.domain.StatusSignal
 import com.runtogether.domain.Vote
 import com.runtogether.state.DriveUiState
+import com.runtogether.state.FeedItem
 import com.runtogether.state.IncomingAlert
+import com.runtogether.state.VoiceShare
 import com.runtogether.state.acceptRest
 import com.runtogether.ui.theme.RunTogetherTheme
 import org.junit.Rule
@@ -36,10 +38,10 @@ class ScreensSnapshotTest {
         maxPercentDifference = 1.0,
     )
 
-    private fun shot(name: String, state: DriveUiState, caption: String? = null) {
+    private fun shot(name: String, state: DriveUiState, caption: String? = null, speakerId: String? = null) {
         paparazzi.snapshot(name) {
             RunTogetherTheme {
-                AppScreen(state, caption, AppActions())
+                AppScreen(state, caption, AppActions(), speakerId)
             }
         }
     }
@@ -49,6 +51,35 @@ class ScreensSnapshotTest {
 
     @Test
     fun driving() = shot("2_driving", DemoScenario.step(DemoScenario.STEP_DRIVING))
+
+    @Test
+    fun myMessages() {
+        val base = DemoScenario.step(DemoScenario.STEP_DRIVING)
+        val first = base.myMessages.first()
+        shot(
+            "2b_my_messages",
+            base.copy(messagePanelOpen = true, sentMessageId = first.id, coolingMessageIds = setOf(first.id)),
+            caption = Announcements.customSent(first.text),
+        )
+    }
+
+    @Test
+    fun messageReceived() {
+        val base = DemoScenario.step(DemoScenario.STEP_DRIVING)
+        val text = DemoScenario.SUA_MESSAGE
+        shot(
+            "2c_message_received",
+            base.copy(feed = listOf(FeedItem(DemoScenario.sua.id, "방금", "내 메시지", text)) + base.feed),
+            caption = Announcements.customMessage(DemoScenario.sua.name, text),
+            speakerId = DemoScenario.sua.id,
+        )
+    }
+
+    @Test
+    fun voiceShare() {
+        val base = DemoScenario.step(DemoScenario.STEP_DRIVING)
+        shot("2d_voice_share", base.copy(voiceShare = VoiceShare(VoiceShare.Stage.CONFIRM, DemoScenario.DEMO_SPOKEN, demo = true)))
+    }
 
     @Test
     fun regroup() = shot("3_regroup", DemoScenario.step(DemoScenario.STEP_REGROUP))

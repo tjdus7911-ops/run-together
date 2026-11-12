@@ -39,6 +39,94 @@ public final class PleosBridge {
         void onFinished();
     }
 
+    /** NaviHelper 안내 값을 단순한 값으로 넘긴다 (거리 m · 시간 초로 본다). */
+    public interface NaviSink {
+        void onTurn(String turnType, double distance, String description);
+
+        void onDestination(String name, int remainDistance, int remainTime);
+
+        void onNextWaypoint(String name, int remainDistance, int remainTime);
+
+        void onNoWaypoint();
+
+        void onLocation(double latitude, double longitude, double heading);
+
+        void onCongestionStart();
+
+        void onCongestion(double offset, double distance, String type, String roadName);
+
+        void onCongestionEnd();
+
+        void onSpeedLimit(int kmh);
+    }
+
+    // ---------------- NaviHelper SDK ----------------
+
+    /**
+     * NaviHelper 이벤트 중 화면에 쓰는 것만 받는다: 다음 안내(TBT), 목적지·경유지 남은 거리·시간,
+     * 현재 위치·방향, 경로 교통 정보, 현재 도로 제한 속도. 나머지 이벤트는 SDK 기본 구현을 그대로 둔다.
+     */
+    public static ai.pleos.playground.navi.helper.listener.NaviHelperEventListener naviListener(NaviSink sink) {
+        return new ai.pleos.playground.navi.helper.listener.NaviHelperEventListener() {
+            @Override
+            public void onTBTInfo(java.util.List<ai.pleos.playground.navi.data.TBTInfo> list) {
+                if (list == null || list.isEmpty() || list.get(0) == null) return;
+                ai.pleos.playground.navi.data.TBTInfo first = list.get(0);
+                sink.onTurn(first.getType() == null ? null : first.getType().name(), first.getDistance(), first.getDescription());
+            }
+
+            @Override
+            public void onDestinationInfo(ai.pleos.playground.navi.data.DestinationInfo info) {
+                if (info == null) return;
+                sink.onDestination(info.getName(), info.getRemainDistance(), info.getRemainTime());
+            }
+
+            @Override
+            public void onWayPointInfo(java.util.List<ai.pleos.playground.navi.data.WaypointInfo> list) {
+                if (list == null || list.isEmpty() || list.get(0) == null) {
+                    sink.onNoWaypoint();
+                    return;
+                }
+                ai.pleos.playground.navi.data.WaypointInfo first = list.get(0);
+                sink.onNextWaypoint(first.getName(), first.getRemainDistance(), first.getRemainTime());
+            }
+
+            @Override
+            public void onCurrentLocationInfo(ai.pleos.playground.navi.data.CurrentLocationInfo info) {
+                if (info == null) return;
+                sink.onLocation(info.getLatitude(), info.getLongitude(), info.getHeading());
+            }
+
+            @Override
+            public void onRouteStateInfo(ai.pleos.playground.navi.data.RouteStateInfo info) {
+                if (info == null) return;
+                ai.pleos.playground.navi.data.TrafficStatus traffic = info.getTrafficStatus();
+                sink.onCongestionStart();
+                if (traffic != null && traffic.getCongestionItemList() != null) {
+                    for (ai.pleos.playground.navi.data.TrafficCongestionInfo c : traffic.getCongestionItemList()) {
+                        if (c == null) continue;
+                        sink.onCongestion(
+                                c.getOffset(),
+                                c.getDistance(),
+                                c.getTrafficCongestionType() == null ? null : c.getTrafficCongestionType().name(),
+                                c.getRoadName());
+                    }
+                }
+                sink.onCongestionEnd();
+            }
+
+            @Override
+            public void onCurrentRoadSpeedLimit(int speedLimit) {
+                sink.onSpeedLimit(speedLimit);
+            }
+
+            @Override
+            public void onError(ai.pleos.playground.navi.constants.NaviErrorCode error) {
+                Log.w(TAG, "navi error: " + error);
+            }
+        };
+    }
+
     // ---------------- Vehicle SDK ----------------
 
     /**

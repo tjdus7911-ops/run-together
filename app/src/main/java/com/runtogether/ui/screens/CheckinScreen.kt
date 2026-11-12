@@ -30,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.runtogether.domain.EnergyKind
 import com.runtogether.domain.JoinMode
 import com.runtogether.domain.MemberState
 import com.runtogether.domain.Readiness
@@ -151,7 +151,7 @@ private fun CourseRow(item: PlannedStop, index: Int, course: List<PlannedStop>) 
                 isLast -> Box(
                     Modifier.size(30.dp).clip(RoundedCornerShape(8.dp)).background(RtColors.Line2).padding(5.dp).clip(RoundedCornerShape(4.dp)).background(RtColors.Ink),
                 )
-                else -> Box(Modifier.size(30.dp).clip(CircleShape).background(Color.White).border(5.dp, RtColors.Accent, CircleShape))
+                else -> Box(Modifier.size(30.dp).clip(CircleShape).background(RtColors.Card).border(5.dp, RtColors.Accent, CircleShape))
             }
         }
         Spacer(Modifier.width(18.dp))
@@ -161,7 +161,7 @@ private fun CourseRow(item: PlannedStop, index: Int, course: List<PlannedStop>) 
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp)) {
             when {
-                isFirst -> Tag("지금 여기", RtColors.AccentSoft, RtColors.Accent)
+                isFirst -> Tag("지금 여기", RtColors.AccentSoft, RtColors.AccentText)
                 isLast -> Unit
                 index == 1 -> {
                     // 첫 집결지는 연료가 가장 적은 차 때문에 고른 곳이라 주유·충전 여부를 보여 준다
@@ -190,18 +190,18 @@ private fun ReadinessRow(m: MemberState, isMe: Boolean) {
             Text(sub, fontSize = 15.sp, color = RtColors.Muted)
         }
         val pct = m.vehicle.energyPercent
-        if (pct != null && m.member.isEv) {
-            Tag("배터리 $pct%", RtColors.Panel, RtColors.Ink2, icon = Icons.Outlined.Bolt)
+        if (pct != null && m.energyKind == EnergyKind.BATTERY) {
+            Tag("배터리 $pct%", if (pct <= 20) RtColors.WarnSoft else RtColors.Panel, if (pct <= 20) RtColors.Warn else RtColors.Ink2, icon = Icons.Outlined.Bolt)
             Spacer(Modifier.width(12.dp))
         } else if (pct != null && pct <= 20) {
-            Tag("연료 $pct%", RtColors.WarnSoft, RtColors.Warn)
+            Tag("연료 $pct%", RtColors.WarnSoft, RtColors.Warn, icon = Icons.Outlined.LocalGasStation)
             Spacer(Modifier.width(12.dp))
         }
         when (m.readiness) {
             Readiness.READY -> Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Check, contentDescription = null, tint = RtColors.Accent, modifier = Modifier.size(22.dp))
+                Icon(Icons.Outlined.Check, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(22.dp))
                 Spacer(Modifier.width(6.dp))
-                Text(if (m.member.joinMode == JoinMode.PHONE) "준비 완료" else "시동 켜짐", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = RtColors.Accent)
+                Text(if (m.member.joinMode == JoinMode.PHONE) "준비 완료" else "시동 켜짐", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = RtColors.AccentText)
             }
             Readiness.COMING -> Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Outlined.Schedule, contentDescription = null, tint = RtColors.Sub, modifier = Modifier.size(20.dp))

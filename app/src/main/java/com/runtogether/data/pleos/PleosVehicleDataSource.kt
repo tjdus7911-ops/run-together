@@ -4,6 +4,7 @@ import ai.pleos.playground.vehicle.Vehicle
 import android.content.Context
 import android.util.Log
 import com.runtogether.data.VehicleDataSource
+import com.runtogether.domain.EnergyKind
 import com.runtogether.domain.Gear
 import com.runtogether.domain.VehicleSnapshot
 import kotlinx.coroutines.channels.awaitClose
@@ -43,8 +44,13 @@ class PleosVehicleDataSource(private val context: Context) : VehicleDataSource {
         val unsubscribe = PleosBridge.subscribeVehicle(
             vehicle,
             { name -> update { it.copy(gear = gearOf(name)) } },
-            { percent -> if (percent != null) update { it.copy(energyPercent = percent) } },
-            { percent -> if (percent != null) update { it.copy(energyPercent = percent) } },
+            // 연료가 들어오면 연료, 배터리만 들어오면 배터리 (하이브리드는 연료를 보여 준다)
+            { percent -> if (percent != null) update { it.copy(energyPercent = percent, energyKind = EnergyKind.FUEL) } },
+            { percent ->
+                if (percent != null) {
+                    update { if (it.energyKind == EnergyKind.FUEL) it else it.copy(energyPercent = percent, energyKind = EnergyKind.BATTERY) }
+                }
+            },
             { range -> if (range != null) update { it.copy(rangeKm = rangeToKm(range)) } },
             { time -> if (time != null) update { it.copy(tripDrivingMinutes = drivingTimeToMinutes(time)) } },
         )
@@ -95,6 +101,7 @@ class CombinedVehicleDataSource(
             gear = if (p.gear != Gear.UNKNOWN) p.gear else a.gear,
             speedKmh = a.speedKmh,
             energyPercent = p.energyPercent ?: a.energyPercent,
+            energyKind = if (p.energyPercent != null) p.energyKind else a.energyKind,
             rangeKm = p.rangeKm ?: a.rangeKm,
             tripDrivingMinutes = p.tripDrivingMinutes ?: a.tripDrivingMinutes,
         )

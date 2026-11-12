@@ -21,6 +21,7 @@ import com.runtogether.domain.VoteOutcome
 import com.runtogether.state.DriveUiState
 import com.runtogether.state.FeedItem
 import com.runtogether.state.IncomingAlert
+import com.runtogether.state.VoiceShare
 import com.runtogether.state.acceptRest
 import com.runtogether.state.rejectRest
 import com.runtogether.ui.AppActions
@@ -56,7 +57,7 @@ class PreviewFramesTest {
 
     private val s = DemoScenario
 
-    private fun frame(name: String, state: DriveUiState, caption: String? = null) {
+    private fun frame(name: String, state: DriveUiState, caption: String? = null, speakerId: String? = null) {
         for (tile in 0 until W / TILE_W) {
             paparazzi.snapshot("${name}__$tile") {
                 Box(
@@ -65,7 +66,7 @@ class PreviewFramesTest {
                         layout(TILE_W, H) { placeable.place(-TILE_W * tile, 0) }
                     },
                 ) {
-                    RunTogetherTheme { AppScreen(state, caption, AppActions()) }
+                    RunTogetherTheme { AppScreen(state, caption, AppActions(), speakerId) }
                 }
             }
         }
@@ -102,6 +103,45 @@ class PreviewFramesTest {
         val drive = s.step(s.STEP_DRIVING)
         frame("drive_depart", drive, Announcements.departure(checkin.nextStop!!.stop.name))
         frame("drive", drive)
+
+        // ② 내 메시지: 고르기 → 보냄(완료 표시·같은 메시지 잠시 막힘) → 받은 메시지 읽어 주기 / 자막만
+        val mine = drive.myMessages.first()
+        frame("msg_panel", drive.copy(messagePanelOpen = true))
+        frame(
+            "msg_sent",
+            drive.copy(
+                messagePanelOpen = true,
+                sentMessageId = mine.id,
+                coolingMessageIds = setOf(mine.id),
+                feed = listOf(FeedItem(drive.meId, "방금", "내 메시지", mine.text, readAloud = false)) + drive.feed,
+            ),
+            Announcements.customSent(mine.text),
+        )
+        val fromSua = FeedItem(s.sua.id, "방금", "내 메시지", s.SUA_MESSAGE)
+        frame(
+            "msg_received",
+            drive.copy(feed = listOf(fromSua) + drive.feed),
+            Announcements.customMessage(s.sua.name, s.SUA_MESSAGE),
+            speakerId = s.sua.id,
+        )
+        frame(
+            "msg_received_quiet",
+            drive.copy(readMessagesAloud = false, feed = listOf(fromSua.copy(readAloud = false)) + drive.feed),
+            Announcements.customMessage(s.sua.name, s.SUA_MESSAGE),
+            speakerId = s.sua.id,
+        )
+
+        // ② 음성으로 상황 공유: 듣는 중 → 받아 적은 문장 확인 → 보냄
+        frame("voice_listening", drive.copy(voiceShare = VoiceShare(VoiceShare.Stage.LISTENING, demo = true)))
+        frame("voice_confirm", drive.copy(voiceShare = VoiceShare(VoiceShare.Stage.CONFIRM, s.DEMO_SPOKEN, demo = true)))
+        frame(
+            "voice_sent",
+            drive.copy(
+                voiceShare = VoiceShare(VoiceShare.Stage.SENT, s.DEMO_SPOKEN, demo = true),
+                feed = listOf(FeedItem(drive.meId, "방금", "음성 메시지", s.DEMO_SPOKEN, readAloud = false)) + drive.feed,
+            ),
+            Announcements.customSent(s.DEMO_SPOKEN),
+        )
 
         // ② 내가 누르는 상황 공유 4가지 → 쉬어가기 투표 → 과반 통과
         val mySignals = listOf(

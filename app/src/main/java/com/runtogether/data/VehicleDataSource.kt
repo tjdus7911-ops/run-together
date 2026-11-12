@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.util.Log
 import com.runtogether.data.pleos.CombinedVehicleDataSource
 import com.runtogether.data.pleos.PleosVehicleDataSource
+import com.runtogether.domain.EnergyKind
 import com.runtogether.domain.Gear
 import com.runtogether.domain.VehicleSnapshot
 import kotlinx.coroutines.channels.awaitClose
@@ -127,11 +128,18 @@ class AaosVehicleDataSource(private val context: Context) : VehicleDataSource {
                 s.copy(speedKmh = (((value as? Float) ?: 0f) * 3.6f).toDouble())
             VehiclePropertyIds.FUEL_LEVEL ->
                 if (fuelCapacity != null && fuelCapacity > 0f) {
-                    s.copy(energyPercent = (((value as? Float) ?: 0f) / fuelCapacity * 100f).roundToInt())
+                    s.copy(
+                        energyPercent = (((value as? Float) ?: 0f) / fuelCapacity * 100f).roundToInt(),
+                        energyKind = EnergyKind.FUEL,
+                    )
                 } else s
             VehiclePropertyIds.EV_BATTERY_LEVEL ->
-                if (batteryCapacity != null && batteryCapacity > 0f) {
-                    s.copy(energyPercent = (((value as? Float) ?: 0f) / batteryCapacity * 100f).roundToInt())
+                // 연료가 이미 들어온 차(하이브리드)는 연료를 보여 준다
+                if (batteryCapacity != null && batteryCapacity > 0f && s.energyKind != EnergyKind.FUEL) {
+                    s.copy(
+                        energyPercent = (((value as? Float) ?: 0f) / batteryCapacity * 100f).roundToInt(),
+                        energyKind = EnergyKind.BATTERY,
+                    )
                 } else s
             VehiclePropertyIds.RANGE_REMAINING ->
                 s.copy(rangeKm = (((value as? Float) ?: 0f) / 1000f).toDouble())

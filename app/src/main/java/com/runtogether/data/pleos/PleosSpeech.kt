@@ -111,6 +111,12 @@ class PleosVoiceAnswer(context: Context) {
     private var ready = false
     private var onAnswer: ((Boolean) -> Unit)? = null
 
+    /** ‘음성으로 상황 공유’: 말한 문장을 그대로 받는다 (못 알아들으면 null) */
+    private var onText: ((String?) -> Unit)? = null
+
+    /** 음성 인식을 쓸 수 있는지 (연결 전이거나 SDK 가 없으면 false) */
+    val isReady: Boolean get() = stt != null && ready
+
     private val stt: SpeechToText? = try {
         SpeechToText(context.applicationContext)
     } catch (t: Throwable) {
@@ -134,7 +140,14 @@ class PleosVoiceAnswer(context: Context) {
                             if (isFinal) interpret(text)
                         }
 
-                        override fun onFinished() = Unit
+                        override fun onFinished() {
+                            // 인식이 끝났는데 문장을 못 받았으면 (마지막 결과가 늦게 올 수 있어 잠깐 기다린다)
+                            main.postDelayed({
+                                val callback = onText ?: return@postDelayed
+                                onText = null
+                                callback(null)
+                            }, 700L)
+                        }
                     }),
                 )
             } catch (t: Throwable) {
@@ -147,12 +160,27 @@ class PleosVoiceAnswer(context: Context) {
     fun listen(onAnswer: (Boolean) -> Unit) {
         val engine = stt ?: return
         if (!ready) return
+        this.onText = null
         this.onAnswer = onAnswer
         safely { engine.request() }
     }
 
+    /**
+     * 말한 문장을 받아 적는다 (‘음성으로 상황 공유’). 끝나면 한 번만 [onText] 를 부른다 (못 알아들으면 null).
+     * 듣기 시작하지 못하면 false.
+     */
+    fun listenText(onText: (String?) -> Unit): Boolean {
+        val engine = stt ?: return false
+        if (!ready) return false
+        this.onAnswer = null
+        this.onText = onText
+        safely { engine.request() }
+        return true
+    }
+
     fun cancel() {
         onAnswer = null
+        onText = null
         safely { stt?.stop() }
     }
 
@@ -162,6 +190,14 @@ class PleosVoiceAnswer(context: Context) {
     }
 
     private fun interpret(text: String?) {
+        if (onText != null) {
+            main.post {
+                val callback = onText ?: return@post
+                onText = null
+                callback(text)
+            }
+            return
+        }
         val answer = VoiceAnswerParser.parse(text) ?: return
         main.post {
             val callback = onAnswer ?: return@post

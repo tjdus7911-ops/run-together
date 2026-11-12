@@ -122,9 +122,9 @@ fun RegroupScreen(state: DriveUiState, onDepart: () -> Unit, onParkedAction: (St
                 Spacer(Modifier.height(20.dp))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Lock, contentDescription = null, tint = RtColors.Accent, modifier = Modifier.size(22.dp))
+                Icon(Icons.Outlined.Lock, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(22.dp))
                 Spacer(Modifier.width(10.dp))
-                Text("정차 중에만 열려요", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = RtColors.Accent)
+                Text("정차 중에만 열려요", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = RtColors.AccentText)
             }
             Text("주행을 시작하면 자동으로 닫혀요", fontSize = 17.sp, color = RtColors.Sub)
             Spacer(Modifier.height(16.dp))
@@ -175,8 +175,8 @@ private fun ParkedWideButton(label: String, caption: String, icon: ImageVector, 
             .fillMaxWidth()
             .height(96.dp)
             .clip(shape)
-            .background(Color.White)
-            .border(2.dp, RtColors.Line, shape)
+            .background(RtColors.Panel)
+            .border(1.dp, RtColors.Line2, shape)
             .clickable(role = Role.Button, onClickLabel = label) { onClick(label) }
             .padding(horizontal = 24.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -234,7 +234,7 @@ private fun CourseStrip(state: DriveUiState) {
                             if (i == here) "지금 여기" else planned.label,
                             fontSize = 15.sp,
                             fontWeight = if (i == here) FontWeight.Bold else FontWeight.Medium,
-                            color = if (i == here) RtColors.Accent else RtColors.Faint,
+                            color = if (i == here) RtColors.AccentText else RtColors.Faint,
                         )
                     }
                 }
@@ -256,6 +256,6 @@ private fun CourseDot(passed: Boolean, current: Boolean, destination: Boolean) {
         destination -> Box(
             Modifier.size(DOT).clip(RoundedCornerShape(8.dp)).background(RtColors.Line2).padding(5.dp).clip(RoundedCornerShape(4.dp)).background(RtColors.Ink),
         )
-        else -> Box(Modifier.size(DOT).clip(CircleShape).background(Color.White).border(5.dp, RtColors.Accent, CircleShape))
+        else -> Box(Modifier.size(DOT).clip(CircleShape).background(RtColors.Card).border(5.dp, RtColors.Accent, CircleShape))
     }
 }

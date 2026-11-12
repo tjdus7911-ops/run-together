@@ -6,6 +6,8 @@ import com.runtogether.domain.Josa
 import com.runtogether.domain.MeetingPointEngine
 import com.runtogether.domain.Member
 import com.runtogether.domain.MemberState
+import com.runtogether.domain.MessageIcon
+import com.runtogether.domain.QuickMessage
 import com.runtogether.domain.Readiness
 import com.runtogether.domain.RecommendRequest
 import com.runtogether.domain.StopCandidate
@@ -32,12 +34,29 @@ object DemoScenario {
     const val STEP_SLEEPY = 3
     const val LAST_STEP = STEP_SLEEPY
 
-    val me = Member("me", "나", 0xFFC2410C, isLeader = true)
-    val minji = Member("minji", "민지", 0xFF4F46E5)
-    val sua = Member("sua", "수아", 0xFF0E7490)
-    val taehyun = Member("taehyun", "태현", 0xFF7C3AED, isEv = true)
-    val jiwon = Member("jiwon", "지원", 0xFFBE185D)
-    val haneul = Member("haneul", "하늘", 0xFF475569, joinMode = JoinMode.PHONE)
+    // 회원 색은 어두운 화면과 밝은 지도 양쪽에서 보이는 중간 밝기 (나 = 포인트 주황)
+    val me = Member("me", "나", 0xFFD66A32, isLeader = true)
+    val minji = Member("minji", "민지", 0xFF5B6CF0)
+    val sua = Member("sua", "수아", 0xFF0F94B0)
+    val taehyun = Member("taehyun", "태현", 0xFF8E5CF0, isEv = true)
+    val jiwon = Member("jiwon", "지원", 0xFFD9468A)
+    val haneul = Member("haneul", "하늘", 0xFF6F7F96, joinMode = JoinMode.PHONE)
+
+    /** 휴대폰 앱에서 만들어 계정에 저장된 ‘내 메시지’ (시연 값, 최대 6개) */
+    val myMessages = listOf(
+        QuickMessage("m1", "카페 들렀다 가요", MessageIcon.COFFEE, 1),
+        QuickMessage("m2", "사진 찍고 갈게요", MessageIcon.PHOTO, 2),
+        QuickMessage("m3", "조금 늦을 것 같아요", MessageIcon.LATE, 3),
+        QuickMessage("m4", "천천히 따라갈게요", MessageIcon.SLOW, 4),
+        QuickMessage("m5", "점심은 휴게소에서 먹어요", MessageIcon.FOOD, 5),
+        QuickMessage("m6", "도착하면 주차장에서 봐요", MessageIcon.PARKING, 6),
+    )
+
+    /** 주행 중(08:00) 수아가 보내는 내 메시지 */
+    const val SUA_MESSAGE = "주유하고 바로 따라갈게요"
+
+    /** 음성 인식이 없는 기기에서 ‘음성으로 상황 공유’를 보여 줄 예시 문장 */
+    const val DEMO_SPOKEN = "도착하면 커피는 제가 살게요"
 
     // 좌표는 시연용 대략값입니다.
     val jamsil = StopCandidate("jamsil", "잠실종합운동장 주차장", 0.0, lat = 37.5152, lng = 127.0729)
@@ -93,6 +112,7 @@ object DemoScenario {
         nextStopIndex = nextStopIndex,
         candidates = candidates,
         continuousDrivingMin = continuousDrivingMin,
+        myMessages = myMessages,
     )
 
     private fun checkin(): DriveUiState {

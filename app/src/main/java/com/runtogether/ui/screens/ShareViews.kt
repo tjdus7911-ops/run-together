@@ -68,9 +68,10 @@ fun AlertCard(
     Column(
         modifier
             .width(660.dp)
-            .shadow(30.dp, RoundedCornerShape(32.dp))
+            .shadow(16.dp, RoundedCornerShape(32.dp))
             .clip(RoundedCornerShape(32.dp))
-            .background(Color.White)
+            .background(RtColors.Card)
+            .border(1.dp, RtColors.Line, RoundedCornerShape(32.dp))
             .padding(start = 40.dp, end = 40.dp, top = 36.dp, bottom = 30.dp)
             .semantics { liveRegion = LiveRegionMode.Assertive },
         verticalArrangement = Arrangement.spacedBy(22.dp),
@@ -83,7 +84,7 @@ fun AlertCard(
                 Tag(
                     "방금 · ${alert.signal.label}",
                     if (isSleepy) RtColors.NightSoft else RtColors.AccentSoft,
-                    if (isSleepy) RtColors.Night else RtColors.Accent,
+                    if (isSleepy) RtColors.Night else RtColors.AccentText,
                     icon = if (isSleepy) Icons.Outlined.Bedtime else Icons.Outlined.LocalCafe,
                 )
                 Text(headline(from.name, alert.signal), fontSize = 42.sp, fontWeight = FontWeight.Black, lineHeight = 48.sp)
@@ -98,12 +99,12 @@ fun AlertCard(
                 .padding(horizontal = 18.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null, tint = RtColors.Accent, modifier = Modifier.size(24.dp))
+            Icon(Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(24.dp))
             Spacer(Modifier.width(10.dp))
             Text("모든 차에 음성으로 알렸어요", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = RtColors.Ink2)
             Spacer(Modifier.weight(1f))
-            Icon(Icons.Outlined.GraphicEq, contentDescription = null, tint = RtColors.Accent, modifier = Modifier.size(28.dp))
-            Icon(Icons.Outlined.GraphicEq, contentDescription = null, tint = RtColors.Accent, modifier = Modifier.size(28.dp))
+            Icon(Icons.Outlined.GraphicEq, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(28.dp))
+            Icon(Icons.Outlined.GraphicEq, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(28.dp))
         }
 
         val rec = alert.recommendation
@@ -115,7 +116,7 @@ fun AlertCard(
                     .background(RtColors.AccentSoft)
                     .padding(horizontal = 22.dp, vertical = 20.dp),
             ) {
-                Icon(Icons.Outlined.LocalCafe, contentDescription = null, tint = RtColors.Accent, modifier = Modifier.size(34.dp))
+                Icon(Icons.Outlined.LocalCafe, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(34.dp))
                 Spacer(Modifier.width(16.dp))
                 Column {
                     Text("${rec.stop.name}에서 ${alert.restMinutes}분 쉬었다 갈까요?", fontSize = 25.sp, fontWeight = FontWeight.Bold, lineHeight = 32.sp)
@@ -140,7 +141,7 @@ fun AlertCard(
                 modifier = Modifier.weight(1f).height(76.dp),
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (myVote == Vote.NO) Color.White else RtColors.Accent,
+                    containerColor = if (myVote == Vote.NO) RtColors.Raised else RtColors.Accent,
                     contentColor = if (myVote == Vote.NO) RtColors.Ink2 else Color.White,
                 ),
             ) {
@@ -185,7 +186,7 @@ fun VotePanel(state: DriveUiState, modifier: Modifier = Modifier) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             SectionLabel("쉬어가기 투표")
             Spacer(Modifier.weight(1f))
-            if (accepted) Tag("과반 동의", RtColors.AccentSoft, RtColors.Accent, icon = Icons.Outlined.Check)
+            if (accepted) Tag("과반 동의", RtColors.AccentSoft, RtColors.AccentText, icon = Icons.Outlined.Check)
             else if (state.voteResult == null) Tag("1분 뒤 마감", RtColors.Panel, RtColors.Sub, icon = Icons.Outlined.Schedule)
         }
         Spacer(Modifier.height(14.dp))
@@ -218,7 +219,7 @@ fun VotePanel(state: DriveUiState, modifier: Modifier = Modifier) {
                                     Text(member.name, fontSize = 17.sp, fontWeight = FontWeight.Bold)
                                     val (text, color) = when {
                                         id == vote.proposerId -> "제안 · ${state.voteSignal?.label ?: "쉬어 가요"}" to RtColors.Night
-                                        vote.voteOf(id) == Vote.YES -> "좋아요" to RtColors.Accent
+                                        vote.voteOf(id) == Vote.YES -> "좋아요" to RtColors.AccentText
                                         vote.voteOf(id) == Vote.NO -> "괜찮아요" to RtColors.Sub
                                         else -> "응답 기다리는 중" to RtColors.Muted
                                     }
@@ -251,8 +252,8 @@ fun ResultCard(result: VoteResult) {
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(28.dp))
-            .background(Color.White)
+            .clip(RoundedCornerShape(24.dp))
+            .background(RtColors.Card)
             .padding(horizontal = 26.dp, vertical = 22.dp),
         verticalAlignment = Alignment.Top,
     ) {
@@ -260,7 +261,7 @@ fun ResultCard(result: VoteResult) {
             Modifier
                 .size(44.dp)
                 .clip(CircleShape)
-                .background(if (result.accepted) RtColors.Accent else Color.White)
+                .background(if (result.accepted) RtColors.Accent else RtColors.Card)
                 .border(2.dp, if (result.accepted) RtColors.Accent else RtColors.Line2, CircleShape),
             contentAlignment = Alignment.Center,
         ) {

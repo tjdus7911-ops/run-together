@@ -62,4 +62,29 @@ object Announcements {
 
     fun departure(nextStopName: String): String =
         "곧 출발해요. 다음 집결지는 ${nextStopName}${Josa.ieyo(nextStopName)}. 따라오지 않아도 돼요, 거기서 만나요."
+
+    // ---------------- 내 메시지 · 음성 메시지 ----------------
+
+    /** 받는 차에서 읽는 문장: "민지님이 메시지를 보냈어요. 카페 들렀다 가요." */
+    fun customMessage(name: String?, text: String, anonymous: Boolean = false): String =
+        "${subject(name, anonymous)} 메시지를 보냈어요. ${spoken(text)}"
+
+    /** 받는 차에서 읽는 문장: "민지님이 음성 메시지를 보냈어요. 10분 뒤 도착해요." */
+    fun voiceMessage(name: String?, text: String, anonymous: Boolean = false): String =
+        "${subject(name, anonymous)} 음성 메시지를 보냈어요. ${spoken(text)}"
+
+    /** 보낸 차에서 확인: "모두에게 ‘카페 들렀다 가요’를 보냈어요." */
+    fun customSent(text: String): String =
+        "모두에게 ‘${text}’${Josa.eulReul(text)} 보냈어요."
+
+    /** 읽을 때 소리 내기 어색한 기호를 정리한다 (물결표, 가운뎃점, 겹친 문장부호) */
+    fun spoken(text: String): String {
+        val t = text.trim()
+            .replace("~", "")
+            .replace("·", ", ")
+            .replace(Regex("([!?.])\\1+"), "$1")
+            .replace(Regex("\\s+"), " ")
+            .trim()
+        return if (t.isEmpty() || t.last() in ".!?") t else "$t."
+    }
 }

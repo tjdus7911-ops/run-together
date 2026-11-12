@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="rt_bg">#F5F0EA</color>
-    <color name="rt_accent">#C2410C</color>
+    <!-- 차콜 × 번트 오렌지 (Compose 테마 RtColors 와 같은 값) -->
+    <color name="rt_bg">#25282D</color>
+    <color name="rt_accent">#D66A32</color>
 
-    <style name="Theme.RunTogether" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.RunTogether" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/rt_bg</item>
         <item name="android:statusBarColor">@color/rt_bg</item>
         <item name="android:navigationBarColor">@color/rt_bg</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:colorAccent">@color/rt_accent</item>
     </style>
 </resources>

@@ -4,7 +4,7 @@ name: Preview frames
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, 'design/**' ]
     paths:
       - 'app/src/**'
       - '.github/workflows/preview-frames.yml'
@@ -46,9 +46,11 @@ jobs:
           mkdir -p out
           cp app/src/test/snapshots/images/*PreviewFramesTest*.png out/
           cd out
-          git init -q -b ci/preview-frames
+          TARGET=ci/preview-frames
+          if [ "$GITHUB_REF_NAME" != "main" ]; then TARGET="ci/preview-frames-${GITHUB_REF_NAME//\//-}"; fi
+          git init -q -b "$TARGET"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -q -m "Preview frames (${GITHUB_SHA::7})"
-          git push -q -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci/preview-frames
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$TARGET"

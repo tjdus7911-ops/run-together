@@ -15,17 +15,22 @@ data class Member(
 
 enum class Gear { PARK, REVERSE, NEUTRAL, DRIVE, UNKNOWN }
 
+/** 잔량이 연료인지 배터리인지. 차종마다 주는 데이터가 달라서, 값이 들어온 쪽으로 정한다. */
+enum class EnergyKind { FUEL, BATTERY }
+
 /** 차량 데이터 한 시점 값. 휴대폰 참여자는 대부분 비어 있다. */
 data class VehicleSnapshot(
     val ignitionOn: Boolean = false,
     val gear: Gear = Gear.PARK,
     val speedKmh: Double = 0.0,
-    /** 연료 또는 배터리 잔량 (%) */
+    /** 연료 또는 배터리 잔량 (%) — 어느 쪽인지는 [energyKind] */
     val energyPercent: Int? = null,
     /** 남은 주행 가능 거리 (km) */
     val rangeKm: Double? = null,
     /** 이번 주행의 연속 운전 시간 (분), 차량이 알려 줄 때만 */
     val tripDrivingMinutes: Int? = null,
+    /** 차량이 알려 준 잔량 종류. 시연 데이터처럼 비어 있으면 회원 정보(전기차 여부)로 정한다 */
+    val energyKind: EnergyKind? = null,
 )
 
 enum class Readiness { READY, COMING, WAITING }
@@ -41,7 +46,19 @@ data class MemberState(
     val arrived: Boolean = false,
     /** 다음 지점까지 남은 시간 (분), 알 때만 */
     val etaMinutes: Int? = null,
-)
+) {
+    /**
+     * 화면에 보여 줄 잔량 종류. 잔량 값이 없으면 null 이라 아무것도 보여 주지 않는다.
+     * (내연기관차에 배터리, 전기차에 연료를 보여 주는 일이 없게)
+     */
+    val energyKind: EnergyKind?
+        get() = when {
+            vehicle.energyPercent == null -> null
+            vehicle.energyKind != null -> vehicle.energyKind
+            member.isEv -> EnergyKind.BATTERY
+            else -> EnergyKind.FUEL
+        }
+}
 
 /** 집결지·쉴 곳 후보 (휴게소, 졸음쉼터 등). 좌표는 내비 경유지 설정에 쓴다. */
 data class StopCandidate(

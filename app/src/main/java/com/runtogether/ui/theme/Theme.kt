@@ -3,51 +3,100 @@ package com.runtogether.ui.theme
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-/** 기획서·화면 시안과 같은 주황·차콜 팔레트 */
+/**
+ * 차콜 × 번트 오렌지 디자인 토큰 (차량 인포테인먼트, 어두운 화면).
+ * 주황(Accent)은 로고 · 지금 고른 것 · 주요 버튼 · 내 차 위치와 주행 경로 · 집결지 진행 · 중요한 상태에만 쓴다.
+ * 이름은 이전 밝은 테마와 같게 두어 화면 코드가 그대로 따라온다 (Ink = 기본 글자, Card = 카드 바탕 …).
+ */
 object RtColors {
-    val Bg = Color(0xFFF5F0EA)
-    val Card = Color(0xFFFFFFFF)
-    val Ink = Color(0xFF1C1917)
-    val Ink2 = Color(0xFF292524)
-    val Sub = Color(0xFF57534E)
-    val Muted = Color(0xFF6B635C)
-    val Faint = Color(0xFF9C928A)
-    val Line = Color(0xFFE2D9CF)
-    val Line2 = Color(0xFFD7CEC4)
-    val Divider = Color(0xFFEDE6DE)
-    val Panel = Color(0xFFF8F4EF)
-    val Pending = Color(0xFFE6DED5)
+    // 바탕
+    val Bg = Color(0xFF25282D)
+    val Card = Color(0xFF363A40)
+    /** 카드 안의 한 단계 낮은 면 (타일·입력 칸) */
+    val Panel = Color(0xFF2D3035)
+    /** 카드 위로 올라온 면 (보조 버튼·칩) */
+    val Raised = Color(0xFF42464D)
+    /** 지도 위에 뜨는 어두운 패널 */
+    val Overlay = Color(0xF5262A2F)
 
-    val Accent = Color(0xFFC2410C)
-    val AccentSoft = Color(0x1FC2410C)
-    val AccentRing = Color(0x47C2410C)
+    // 글자
+    val Ink = Color(0xFFF3F1ED)
+    val Ink2 = Color(0xFFE5E3DF)
+    val Sub = Color(0xFFB8B9BD)
+    val Muted = Color(0xFF9EA0A6)
+    val Faint = Color(0xFF7E8187)
+
+    // 선
+    val Line = Color(0xFF50545B)
+    val Line2 = Color(0xFF5E636A)
+    val Divider = Color(0xFF464A51)
+    /** 투표 막대의 아직 답하지 않은 칸 */
+    val Pending = Color(0xFF4B4F56)
+
+    // 포인트 (번트 오렌지)
+    val Accent = Color(0xFFD66A32)
+    /** 어두운 바탕 위 주황 글자 (작은 글자도 읽히게 조금 밝게) */
+    val AccentText = Color(0xFFF08B57)
+    val AccentSoft = Color(0x2ED66A32)
+    val AccentRing = Color(0x59D66A32)
+    val OnAccent = Color(0xFFFFFFFF)
 
     /** '졸려요' = 밤·달 */
-    val Night = Color(0xFF3730A3)
-    val NightSoft = Color(0xFFEEF0FF)
-    val NightLine = Color(0xFFC7CAF6)
+    val Night = Color(0xFFA9B0FF)
+    val NightSoft = Color(0x29A9B0FF)
+    val NightLine = Color(0x5CA9B0FF)
 
-    /** 연료 부족·간격 벌어짐 같은 주의 */
-    val Warn = Color(0xFF7A3B06)
-    val WarnSub = Color(0xFF6B3A0C)
-    val WarnSoft = Color(0xFFFCF3E6)
-    val WarnIcon = Color(0xFF9A4A07)
-    val WarnLine = Color(0xFFB45309)
+    /** 주의: 연료 부족 · 간격 벌어짐 */
+    val Warn = Color(0xFFF4C76E)
+    val WarnSub = Color(0xFFDCBB7C)
+    val WarnSoft = Color(0x24F4C76E)
+    val WarnIcon = Color(0xFFF4C76E)
+    val WarnLine = Color(0xFFE5AC3C)
 
-    val MapLand = Color(0xFFECE5DC)
-    val MapPark = Color(0xFFDEE3D1)
-    val MapRoadEdge = Color(0xFFDDD4CA)
-    val MapHighwayEdge = Color(0xFFD4CABE)
-    val Scrim = Color(0x571C1917)
-    val CaptionBg = Color(0xF21C1917)
+    /** 위험: 도움 요청 · 차에 문제 */
+    val Danger = Color(0xFFFF8478)
+    val DangerSoft = Color(0x26FF8478)
+
+    /** 정상 · 실시간 연결됨 */
+    val Good = Color(0xFF6CCB97)
+    val GoodSoft = Color(0x246CCB97)
+
+    // 지도 (밝은 내비 지도: 어두운 화면 가운데에서도 길이 잘 보이게)
+    val MapLand = Color(0xFFEFEFEA)
+    val MapPark = Color(0xFFD5E7C8)
+    val MapForest = Color(0xFFC6DEB6)
+    val MapWater = Color(0xFFB6D4EA)
+    val MapWaterEdge = Color(0xFF9DC2DD)
+    val MapBuilding = Color(0xFFDEDDD6)
+    val MapBuildingEdge = Color(0xFFCDCCC4)
+    val MapRoad = Color(0xFFFFFFFF)
+    val MapRoadEdge = Color(0xFFD5D4CC)
+    val MapHighway = Color(0xFFFFFFFF)
+    val MapHighwayEdge = Color(0xFFBCB7AA)
+    val MapLabel = Color(0xFF5B5F66)
+    val MapLabelStrong = Color(0xFF30343A)
+    val MapShield = Color(0xFF2C5DA6)
+    /** 지난 길(내 차 뒤) */
+    val MapRoutePassed = Color(0xFFE8B79C)
+
+    // 교통 (주황 경로와 섞이지 않게 초록 · 노랑 · 진홍)
+    val TrafficSmooth = Color(0xFF2E9F68)
+    val TrafficSlow = Color(0xFFE8B928)
+    val TrafficJam = Color(0xFFCC3340)
+
+    val Scrim = Color(0x8C141618)
+    val CaptionBg = Color(0xF5191B1F)
 }
 
 /**
@@ -64,16 +113,59 @@ val KoreanTextStyle = TextStyle(
     ),
 )
 
+/** 글자 단계. 운전 중에 읽는 값은 크게, 보조 설명은 작게. 모두 [KoreanTextStyle] 위에 쌓는다. */
+object RtType {
+    /** 큰 숫자 · 다음 안내 거리 */
+    val Display = KoreanTextStyle.copy(fontSize = 40.sp, fontWeight = FontWeight.Black, letterSpacing = (-0.6).sp, lineHeight = 46.sp)
+    /** 화면 제목 · 집결지 이름 */
+    val Title = KoreanTextStyle.copy(fontSize = 27.sp, fontWeight = FontWeight.Black, letterSpacing = (-0.4).sp, lineHeight = 34.sp)
+    /** 카드 제목 */
+    val Heading = KoreanTextStyle.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold, lineHeight = 27.sp)
+    /** 본문 · 소식 */
+    val Body = KoreanTextStyle.copy(fontSize = 19.sp, fontWeight = FontWeight.Medium, lineHeight = 26.sp)
+    /** 버튼 글자 */
+    val Button = KoreanTextStyle.copy(fontSize = 21.sp, fontWeight = FontWeight.Bold, lineHeight = 26.sp)
+    /** 이름 · 작은 제목 */
+    val Label = KoreanTextStyle.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold, lineHeight = 22.sp)
+    /** 보조 설명 */
+    val Caption = KoreanTextStyle.copy(fontSize = 15.sp, fontWeight = FontWeight.Medium, lineHeight = 20.sp)
+    /** 지도 위 작은 글자 */
+    val Micro = KoreanTextStyle.copy(fontSize = 13.sp, fontWeight = FontWeight.Bold, lineHeight = 17.sp)
+}
+
+/** 간격 · 모서리 · 크기 (1600×900 설계 기준 dp) */
+object RtDimens {
+    val ScreenPaddingH = 24.dp
+    val ScreenPaddingTop = 16.dp
+    val ScreenPaddingBottom = 20.dp
+    val Gap = 16.dp
+    val GapSmall = 12.dp
+    val CardRadius = 24.dp
+    val InnerRadius = 16.dp
+    val ButtonRadius = 18.dp
+    val CardPaddingH = 24.dp
+    val CardPaddingV = 20.dp
+    val HeaderHeight = 64.dp
+    val BottomBarHeight = 112.dp
+    val RightColumnWidth = 552.dp
+    /** 운전 중 누르는 버튼의 최소 크기 */
+    val TouchMin = 64.dp
+    val ButtonHeight = 76.dp
+}
+
 @Composable
 fun RunTogetherTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = lightColorScheme(
+        colorScheme = darkColorScheme(
             primary = RtColors.Accent,
-            onPrimary = Color.White,
+            onPrimary = RtColors.OnAccent,
             background = RtColors.Bg,
             onBackground = RtColors.Ink,
             surface = RtColors.Card,
             onSurface = RtColors.Ink,
+            surfaceVariant = RtColors.Panel,
+            onSurfaceVariant = RtColors.Sub,
+            outline = RtColors.Line,
         ),
     ) {
         CompositionLocalProvider(
