@@ -53,13 +53,16 @@ import com.runtogether.ui.components.PrimaryButton
 import com.runtogether.ui.components.RtCard
 import com.runtogether.ui.components.SectionLabel
 import com.runtogether.ui.components.Tag
+import com.runtogether.ui.components.VerticalSectionDivider
 import com.runtogether.ui.theme.RtColors
+import com.runtogether.ui.theme.RtType
 
 /** ① 출발 전 — 오늘 코스 확인 · 시동 체크인 · 출발 안내 */
 @Composable
 fun CheckinScreen(state: DriveUiState, onDepart: () -> Unit) {
-    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-        RtCard(Modifier.weight(1f).fillMaxHeight()) {
+    // 두 구역은 상자 없이, 사이에 가는 세로선 하나
+    Row(Modifier.fillMaxSize().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(40.dp)) {
+        RtCard(Modifier.weight(1f).fillMaxHeight().padding(bottom = 4.dp)) {
             val first = state.course.first()
             val last = state.course.last()
             val totalKm = last.stop.kmFromStart - first.stop.kmFromStart
@@ -70,37 +73,38 @@ fun CheckinScreen(state: DriveUiState, onDepart: () -> Unit) {
                     Spacer(Modifier.height(6.dp))
                     Text(
                         "총 ${formatKm(totalKm)}km · 약 ${formatDuration(last.plannedClock - first.plannedClock)}",
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Black,
+                        style = RtType.Title,
                     )
                 }
-                Text("휴식 ${restCount}번 포함", fontSize = 17.sp, color = RtColors.Sub)
+                Text("휴식 ${restCount}번 포함", style = RtType.Meta, color = RtColors.Sub)
             }
             Spacer(Modifier.height(22.dp))
             state.course.forEachIndexed { i, stop ->
                 CourseRow(stop, i, state.course)
             }
             Spacer(Modifier.weight(1f))
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                HorizontalDivider(color = RtColors.Divider)
                 state.notices.forEach { n ->
                     NoticeRow(if (n.warning) Icons.Outlined.LocalGasStation else Icons.Outlined.Check, n.text, n.warning)
                 }
             }
         }
 
-        RtCard(Modifier.width(640.dp).fillMaxHeight(), padding = PaddingValues(horizontal = 32.dp, vertical = 28.dp)) {
+        VerticalSectionDivider()
+        RtCard(Modifier.width(600.dp).fillMaxHeight().padding(bottom = 4.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
                 Column(Modifier.weight(1f)) {
                     SectionLabel("출발 준비")
                     Text(
                         buildAnnotatedString {
-                            withStyle(SpanStyle(fontSize = 52.sp, fontWeight = FontWeight.Bold)) { append("${state.readyCount}") }
-                            withStyle(SpanStyle(fontSize = 30.sp, fontWeight = FontWeight.Bold, color = RtColors.Muted)) { append("/${state.members.size}") }
-                            withStyle(SpanStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold)) { append("  준비 완료") }
+                            withStyle(RtType.NumL.toSpanStyle()) { append("${state.readyCount}") }
+                            withStyle(RtType.Title.toSpanStyle().copy(color = RtColors.Muted)) { append("/${state.members.size}") }
+                            withStyle(RtType.Headline.toSpanStyle()) { append("  준비 완료") }
                         },
                     )
                 }
-                Text("시동을 켜면 자동으로 체크", fontSize = 17.sp, color = RtColors.Sub)
+                Text("시동을 켜면 자동으로 체크", style = RtType.Meta, color = RtColors.Sub, modifier = Modifier.padding(bottom = 8.dp))
             }
             Spacer(Modifier.height(8.dp))
             state.members.forEachIndexed { i, m ->
@@ -112,7 +116,7 @@ fun CheckinScreen(state: DriveUiState, onDepart: () -> Unit) {
             Spacer(Modifier.height(12.dp))
             Text(
                 "안내를 보내면 모임 위치 공유가 시작되고, 모임이 끝나면 자동 삭제돼요",
-                fontSize = 16.sp,
+                style = RtType.Caption,
                 color = RtColors.Sub,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -137,27 +141,26 @@ private fun CourseRow(item: PlannedStop, index: Int, course: List<PlannedStop>) 
             if (!isLast) {
                 Box(
                     Modifier
-                        .padding(top = 34.dp)
-                        .width(4.dp)
+                        .padding(top = 34.dp, bottom = 2.dp)
+                        .width(2.dp)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(2.dp))
                         .background(RtColors.Line),
                 )
             }
             when {
                 isFirst -> Box(
-                    Modifier.size(30.dp).border(6.dp, RtColors.AccentRing, CircleShape).padding(6.dp).clip(CircleShape).background(RtColors.Accent),
+                    Modifier.size(30.dp).clip(CircleShape).background(RtColors.LiveRing).padding(6.dp).clip(CircleShape).background(RtColors.Accent),
                 )
                 isLast -> Box(
-                    Modifier.size(30.dp).clip(RoundedCornerShape(8.dp)).background(RtColors.Line2).padding(5.dp).clip(RoundedCornerShape(4.dp)).background(RtColors.Ink),
+                    Modifier.size(30.dp).padding(5.dp).clip(RoundedCornerShape(5.dp)).background(RtColors.Ink),
                 )
-                else -> Box(Modifier.size(30.dp).clip(CircleShape).background(RtColors.Card).border(5.dp, RtColors.Accent, CircleShape))
+                else -> Box(Modifier.size(30.dp).padding(3.dp).clip(CircleShape).background(RtColors.Bg).border(3.dp, RtColors.Accent, CircleShape))
             }
         }
         Spacer(Modifier.width(18.dp))
         Column(Modifier.weight(1f)) {
-            Text(caption, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = RtColors.Sub)
-            Text(item.stop.name, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+            Text(caption, style = RtType.Meta, color = RtColors.Sub)
+            Text(item.stop.name, style = RtType.Headline)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp)) {
             when {
@@ -181,13 +184,13 @@ private fun ReadinessRow(m: MemberState, isMe: Boolean) {
         MemberAvatar(m.member, 44.dp)
         Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
-            Text(m.member.name, fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(m.member.name, style = RtType.BodyStrong)
             val sub = buildList {
                 if (m.member.isLeader) add("모임장")
                 add(if (m.member.joinMode == JoinMode.PHONE) "폰 참여" else "차량 연동")
                 if (m.member.isEv) add("전기차")
             }.joinToString(" · ")
-            Text(sub, fontSize = 15.sp, color = RtColors.Muted)
+            Text(sub, style = RtType.Caption, color = RtColors.Muted)
         }
         val pct = m.vehicle.energyPercent
         if (pct != null && m.energyKind == EnergyKind.BATTERY) {
@@ -198,21 +201,21 @@ private fun ReadinessRow(m: MemberState, isMe: Boolean) {
             Spacer(Modifier.width(12.dp))
         }
         when (m.readiness) {
+            // 준비된 차는 조용하게(회색 체크), 아직인 차를 굵게 — 눈은 빠진 사람에게 간다
             Readiness.READY -> Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Check, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(22.dp))
+                Icon(Icons.Outlined.Check, contentDescription = null, tint = RtColors.Muted, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
-                Text(if (m.member.joinMode == JoinMode.PHONE) "준비 완료" else "시동 켜짐", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = RtColors.AccentText)
+                Text(if (m.member.joinMode == JoinMode.PHONE) "준비 완료" else "시동 켜짐", style = RtType.Meta, color = RtColors.Sub)
             }
             Readiness.COMING -> Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Schedule, contentDescription = null, tint = RtColors.Sub, modifier = Modifier.size(20.dp))
+                Icon(Icons.Outlined.Schedule, contentDescription = null, tint = RtColors.Ink2, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
-                Text("오는 중 · 약 ${m.etaMinutes ?: 1}분", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = RtColors.Sub)
+                Text("오는 중 · 약 ${m.etaMinutes ?: 1}분", style = RtType.Label, color = RtColors.Ink)
             }
             Readiness.WAITING -> Text(
                 if (isMe) "시동을 켜 주세요" else if (m.member.joinMode == JoinMode.PHONE) "준비 버튼 대기" else "시동 대기",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = RtColors.Sub,
+                style = RtType.Label,
+                color = if (isMe) RtColors.AccentText else RtColors.Ink,
             )
         }
     }

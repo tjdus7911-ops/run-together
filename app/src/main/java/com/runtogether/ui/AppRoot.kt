@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
@@ -45,11 +46,14 @@ import com.runtogether.ui.components.AppHeader
 import com.runtogether.ui.components.CaptionBar
 import com.runtogether.ui.components.RoundIconButton
 import com.runtogether.ui.components.Tag
+import com.runtogether.ui.components.dashedOutline
+import com.runtogether.ui.components.floatSurface
 import com.runtogether.ui.screens.CheckinScreen
 import com.runtogether.ui.screens.DrivingScreen
 import com.runtogether.ui.screens.RegroupScreen
 import com.runtogether.ui.theme.RtColors
 import com.runtogether.ui.theme.RtDimens
+import com.runtogether.ui.theme.RtType
 
 /** 시안 기준 크기. 어떤 차량 화면에서도 이 비율을 유지하고, 남는 가로 폭은 지도·카드가 나눠 쓴다. */
 private const val DESIGN_WIDTH = 1600f
@@ -199,25 +203,24 @@ private fun Header(state: DriveUiState, actions: AppActions) {
 private fun ToastBar(text: String, onClose: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(RtColors.CaptionBg)
-            .border(1.dp, RtColors.Line, RoundedCornerShape(16.dp))
+            .floatSurface(RoundedCornerShape(RtDimens.InnerRadius))
             .padding(start = 22.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text, color = RtColors.Ink, fontSize = 18.sp)
-        TextButton(onClick = onClose) { Text("닫기", color = RtColors.AccentText, fontSize = 17.sp, fontWeight = FontWeight.Bold) }
+        Text(text, style = RtType.Meta, color = RtColors.Ink)
+        TextButton(onClick = onClose) { Text("닫기", style = RtType.Label, color = RtColors.AccentText) }
     }
 }
 
-/** 시연용 단계 이동 (PT에서 시나리오 A를 순서대로 보여 줄 때) — 맨 위 줄 가운데 */
+/**
+ * 시연용 단계 이동 (PT에서 시나리오 A를 순서대로 보여 줄 때) — 맨 위 줄 가운데.
+ * 제품 화면이 아니라는 뜻으로 점선 테두리만 두른다.
+ */
 @Composable
 private fun DemoBar(state: DriveUiState, onPrevious: () -> Unit, onNext: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(RtColors.Panel)
-            .border(1.dp, RtColors.Line, RoundedCornerShape(999.dp))
+            .dashedOutline(RtColors.Faint, RtDimens.InnerRadius)
             .padding(horizontal = 4.dp, vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -226,28 +229,27 @@ private fun DemoBar(state: DriveUiState, onPrevious: () -> Unit, onNext: () -> U
             label = "이전 단계",
             onClick = onPrevious,
             size = 52.dp,
-            background = RtColors.Panel,
+            background = Color.Transparent,
             enabled = state.demoStep > 0,
         )
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(
                 "시연 ${state.demoStep + 1}/${DemoScenario.LAST_STEP + 1}",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = RtColors.Sub,
+                style = RtType.Caption,
+                color = RtColors.Muted,
             )
-            Text(state.stepTitle, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(state.stepTitle, style = RtType.CaptionStrong)
         }
         RoundIconButton(
             Icons.AutoMirrored.Outlined.KeyboardArrowRight,
             label = "다음 단계",
             onClick = onNext,
             size = 52.dp,
-            background = RtColors.Panel,
+            background = Color.Transparent,
             enabled = state.demoStep < DemoScenario.LAST_STEP,
         )
         if (state.vehicleLive) {
-            Tag("실차 데이터", RtColors.GoodSoft, RtColors.Good, fontSize = 13)
+            Tag("실차 데이터", RtColors.GoodSoft, RtColors.Good)
             Spacer(Modifier.width(8.dp))
         }
     }

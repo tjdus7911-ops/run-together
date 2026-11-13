@@ -102,9 +102,7 @@ import com.runtogether.state.formatKm
 import com.runtogether.state.nextStopEta
 import com.runtogether.state.shownGuidance
 import com.runtogether.ui.AppActions
-import com.runtogether.ui.components.AccentBrush
 import com.runtogether.ui.components.AccentCircle
-import com.runtogether.ui.components.AccentEdge
 import com.runtogether.ui.components.CaptionBar
 import com.runtogether.ui.components.CarGlyph
 import com.runtogether.ui.components.MemberAvatar
@@ -112,10 +110,12 @@ import com.runtogether.ui.components.PrimaryButton
 import com.runtogether.ui.components.ReadAloudMark
 import com.runtogether.ui.components.RoundIconButton
 import com.runtogether.ui.components.RtCard
+import com.runtogether.ui.components.SectionDivider
+import com.runtogether.ui.components.SectionLabel
+import com.runtogether.ui.components.floatSurface
 import com.runtogether.ui.components.SecondaryButton
 import com.runtogether.ui.components.SourceBadge
 import com.runtogether.ui.components.StatusButtons
-import com.runtogether.ui.components.accentGlow
 import com.runtogether.ui.map.LocalGroupMapRenderer
 import com.runtogether.ui.map.MapCamera
 import com.runtogether.ui.map.toMapModel
@@ -136,18 +136,20 @@ fun DrivingScreen(
     captionSpeakerId: String? = null,
 ) {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(RtDimens.Gap)) {
-        Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(RtDimens.Gap)) {
+        Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(28.dp)) {
             MapArea(state, gap, caption, captionSpeakerId, actions, Modifier.weight(1f).fillMaxHeight())
             Column(
-                Modifier.width(RtDimens.RightColumnWidth).fillMaxHeight(),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
+                Modifier.width(RtDimens.RightColumnWidth - 12.dp).fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
                 if (state.vote != null) {
                     VotePanel(state, Modifier.weight(1f).fillMaxWidth())
                     state.voteResult?.let { ResultCard(it) }
                 } else {
                     GroupStatusCard(state, gap)
+                    SectionDivider()
                     MyCarCard(state)
+                    SectionDivider()
                     FeedCard(state, actions.onToggleReadAloud, Modifier.weight(1f).fillMaxWidth())
                 }
             }
@@ -207,16 +209,14 @@ private fun MapArea(
 /** 다음 안내 (내비 TBT) · 남은 거리 · 도착 예정. 내비가 없으면 ‘시연 안내’로 표시 */
 @Composable
 private fun TurnCard(g: NaviGuidance, modifier: Modifier) {
-    val shape = RoundedCornerShape(20.dp)
+    val shape = RoundedCornerShape(RtDimens.CardRadius)
     Column(
         modifier
-            .clip(shape)
-            .background(RtColors.Overlay)
-            .border(1.dp, RtColors.Line, shape)
+            .floatSurface(shape)
             .padding(horizontal = 18.dp, vertical = 16.dp),
     ) {
         if (!g.hasTurn) {
-            Text("내비 경로 안내를 기다리는 중이에요", style = RtType.Heading)
+            Text("내비 경로 안내를 기다리는 중이에요", style = RtType.Headline)
             Spacer(Modifier.height(4.dp))
             Text("차량 내비에 모임 코스를 넣으면 다음 안내가 여기에 나와요", style = RtType.Caption, color = RtColors.Sub)
             Spacer(Modifier.height(10.dp))
@@ -227,10 +227,8 @@ private fun TurnCard(g: NaviGuidance, modifier: Modifier) {
             Box(
                 Modifier
                     .size(64.dp)
-                    .accentGlow(16.dp, spread = 10.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(AccentBrush)
-                    .border(1.dp, AccentEdge, RoundedCornerShape(16.dp)),
+                    .clip(RoundedCornerShape(RtDimens.InnerRadius))
+                    .background(RtColors.Accent),
                 contentAlignment = Alignment.Center,
             ) {
                 TurnGlyph(g.turn ?: TurnKind.STRAIGHT, Modifier.size(42.dp))
@@ -240,13 +238,13 @@ private fun TurnCard(g: NaviGuidance, modifier: Modifier) {
                 val parts = formatDistanceM(g.turnDistanceM ?: 0.0).split(" ")
                 Text(
                     buildAnnotatedString {
-                        withStyle(SpanStyle(fontSize = 38.sp, fontWeight = FontWeight.Black, letterSpacing = (-0.5).sp)) { append(parts.first()) }
-                        withStyle(SpanStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)) { append(" ${parts.getOrElse(1) { "" }} 후") }
+                        withStyle(RtType.NumM.toSpanStyle()) { append(parts.first()) }
+                        withStyle(RtType.BodyStrong.toSpanStyle()) { append(" ${parts.getOrElse(1) { "" }} 후") }
                     },
-                    lineHeight = 42.sp,
+                    lineHeight = 44.sp,
                     maxLines = 1,
                 )
-                Text(g.turnText.orEmpty(), fontSize = 18.sp, fontWeight = FontWeight.Medium, color = RtColors.Ink2, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(g.turnText.orEmpty(), style = RtType.Meta, color = RtColors.Ink2, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
         // 10km 안에 막히는 구간이 있으면 한 줄로
@@ -268,16 +266,16 @@ private fun TurnCard(g: NaviGuidance, modifier: Modifier) {
             }
         }
         Spacer(Modifier.height(12.dp))
-        Box(Modifier.fillMaxWidth().height(1.dp).background(RtColors.Line))
+        Box(Modifier.fillMaxWidth().height(1.dp).background(RtColors.Divider))
         Spacer(Modifier.height(10.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("남은 거리", style = RtType.Micro, color = RtColors.Sub)
-                Text(g.destinationRemainM?.let { formatDistanceM(it.toDouble()) } ?: "–", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+                Text("남은 거리", style = RtType.Caption, color = RtColors.Sub)
+                Text(g.destinationRemainM?.let { formatDistanceM(it.toDouble()) } ?: "–", style = RtType.BodyStrong)
             }
             Column(Modifier.weight(1f)) {
-                Text("예상 도착", style = RtType.Micro, color = RtColors.Sub)
-                Text(g.destinationEtaClock?.let { formatClock(it) } ?: "–", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+                Text("예상 도착", style = RtType.Caption, color = RtColors.Sub)
+                Text(g.destinationEtaClock?.let { formatClock(it) } ?: "–", style = RtType.BodyStrong)
             }
             SourceBadge(live = g.live, liveText = "내비 연동", demoText = "시연 안내")
         }
@@ -374,9 +372,11 @@ private fun MapControls(camera: MapCamera, onChange: (MapCamera) -> Unit, modifi
             Icons.Outlined.MyLocation,
             label = if (camera.followMe) "모임 전체 보기" else "내 차 따라가기",
             onClick = { onChange(camera.copy(followMe = !camera.followMe, zoomStep = 0)) },
+            modifier = Modifier.floatSurface(RoundedCornerShape(RtDimens.InnerRadius)),
             background = if (camera.followMe) RtColors.Accent else RtColors.Overlay,
+            tint = if (camera.followMe) RtColors.OnAccent else RtColors.Ink,
         )
-        Column(Modifier.clip(RoundedCornerShape(18.dp)).background(RtColors.Overlay)) {
+        Column(Modifier.floatSurface(RoundedCornerShape(RtDimens.InnerRadius))) {
             RoundIconButton(
                 Icons.Outlined.Add,
                 label = "지도 확대",
@@ -384,7 +384,7 @@ private fun MapControls(camera: MapCamera, onChange: (MapCamera) -> Unit, modifi
                 background = Color.Transparent,
                 enabled = camera.zoomStep < MapCamera.MAX_STEP,
             )
-            Box(Modifier.width(RtDimens.TouchMin).height(1.dp).background(RtColors.Line))
+            Box(Modifier.width(RtDimens.TouchMin).height(1.dp).background(RtColors.Divider))
             RoundIconButton(
                 Icons.Outlined.Remove,
                 label = "지도 축소",
@@ -405,15 +405,15 @@ private fun GroupStatusCard(state: DriveUiState, gap: GroupGap) {
     val sameRoute = state.members.count { it.onPlannedRoute }
     val ordered = state.members.filter { it.onPlannedRoute }.sortedByDescending { it.progressKm } +
         state.members.filter { !it.onPlannedRoute }
-    RtCard(Modifier.fillMaxWidth(), padding = PaddingValues(horizontal = 22.dp, vertical = 18.dp)) {
+    RtCard(Modifier.fillMaxWidth(), padding = PaddingValues(top = 4.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("모임 주행 중", style = RtType.Heading)
+            SectionLabel("모임 주행 중")
             Spacer(Modifier.width(10.dp))
-            Text("같은 길 $sameRoute/${state.members.size}", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = RtColors.AccentText)
+            Text("같은 길 $sameRoute/${state.members.size}", style = RtType.Label, color = RtColors.Ink)
             Spacer(Modifier.weight(1f))
             SourceBadge(live = state.groupLive, liveText = "실시간 연동", demoText = "시연 위치")
         }
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(16.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             ordered.forEach { m ->
                 val isMe = m.member.id == state.meId
@@ -433,8 +433,8 @@ private fun GroupStatusCard(state: DriveUiState, gap: GroupGap) {
                         if (m.member.joinMode == JoinMode.PHONE) {
                             // 휴대폰으로 참여 (위치는 휴대폰 GPS)
                             Box(
-                                Modifier.align(Alignment.BottomEnd).size(20.dp).clip(CircleShape).background(RtColors.Card)
-                                    .border(1.5.dp, RtColors.Line2, CircleShape),
+                                Modifier.align(Alignment.BottomEnd).size(20.dp).clip(CircleShape).background(RtColors.Bg)
+                                    .border(1.dp, RtColors.Line, CircleShape),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Icon(Icons.Outlined.PhoneAndroid, contentDescription = "휴대폰 참여", tint = RtColors.Ink2, modifier = Modifier.size(13.dp))
@@ -442,14 +442,12 @@ private fun GroupStatusCard(state: DriveUiState, gap: GroupGap) {
                         }
                     }
                     Spacer(Modifier.height(6.dp))
-                    Text(m.member.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1)
-                    Text(sub, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = subColor, maxLines = 1)
+                    Text(m.member.name, style = RtType.CaptionStrong, maxLines = 1)
+                    Text(sub, style = RtType.Caption, color = subColor, maxLines = 1)
                 }
             }
         }
-        Spacer(Modifier.height(12.dp))
-        Box(Modifier.fillMaxWidth().height(1.dp).background(RtColors.Divider))
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(14.dp))
         // 따라잡으라는 안내 대신 간격을 보여 주기만 한다
         val behind = gap.largestGapBehindId?.let { state.member(it) }
         val ahead = gap.largestGapAheadId?.let { state.member(it) }
@@ -488,7 +486,7 @@ private fun InfoLine(icon: ImageVector?, text: String, warn: Boolean) {
             Icon(icon, contentDescription = null, tint = if (warn) RtColors.WarnIcon else RtColors.Sub, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(6.dp))
         }
-        Text(text, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = if (warn) RtColors.Warn else RtColors.Sub, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(text, style = RtType.Caption, color = if (warn) RtColors.Warn else RtColors.Sub, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -504,9 +502,9 @@ private fun MyCarCard(state: DriveUiState) {
     val kind = if (live) vehicle.energyKind else me.energyKind
     val energy = vehicle.energyPercent?.takeIf { kind != null }
     val drivingMin = if (live) vehicle.tripDrivingMinutes else state.continuousDrivingMin
-    RtCard(Modifier.fillMaxWidth(), padding = PaddingValues(horizontal = 22.dp, vertical = 16.dp)) {
+    RtCard(Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("내 차량 상태", style = RtType.Heading)
+            SectionLabel("내 차량 상태")
             Spacer(Modifier.weight(1f))
             SourceBadge(live = live, liveText = "실차 데이터", demoText = "시연 값")
         }
@@ -516,7 +514,7 @@ private fun MyCarCard(state: DriveUiState) {
             if (energy != null) {
                 Column(Modifier.width(112.dp)) {
                     Text(if (kind == EnergyKind.BATTERY) "배터리" else "연료", style = RtType.Caption, color = RtColors.Sub)
-                    Text("$energy%", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = if (energy <= 20) RtColors.Warn else RtColors.Ink)
+                    Text("$energy%", style = RtType.Headline, color = if (energy <= 20) RtColors.Warn else RtColors.Ink)
                     Spacer(Modifier.height(6.dp))
                     Box(Modifier.width(92.dp).height(6.dp).clip(RoundedCornerShape(3.dp)).background(RtColors.Panel)) {
                         Box(
@@ -550,7 +548,7 @@ private fun MyCarCard(state: DriveUiState) {
 private fun Metric(label: String, value: String, warn: Boolean = false) {
     Column {
         Text(label, style = RtType.Caption, color = RtColors.Sub)
-        Text(value, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = if (warn) RtColors.Warn else RtColors.Ink, maxLines = 1)
+        Text(value, style = RtType.Headline, color = if (warn) RtColors.Warn else RtColors.Ink, maxLines = 1)
     }
 }
 
@@ -564,9 +562,9 @@ private fun MetricDivider() {
 /** 모임 소식: 상황 공유 · 내 메시지 · 말로 보낸 메시지. 오른쪽 위에서 받은 메시지 읽어 주기를 켜고 끈다. */
 @Composable
 private fun FeedCard(state: DriveUiState, onToggleReadAloud: () -> Unit, modifier: Modifier = Modifier) {
-    RtCard(modifier, padding = PaddingValues(horizontal = 22.dp, vertical = 16.dp)) {
+    RtCard(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("모임 소식", style = RtType.Heading)
+            SectionLabel("모임 소식")
             Spacer(Modifier.weight(1f))
             ReadAloudToggle(state.readMessagesAloud, onToggleReadAloud)
         }
@@ -578,7 +576,7 @@ private fun FeedCard(state: DriveUiState, onToggleReadAloud: () -> Unit, modifie
             Column(verticalArrangement = Arrangement.spacedBy(rowGap)) {
                 state.feed.take(fits).forEach { item -> FeedRow(state, item, Modifier.height(rowHeight)) }
                 if (state.feed.isEmpty()) {
-                    Text("아직 소식이 없어요", fontSize = 18.sp, color = RtColors.Muted)
+                    Text("아직 소식이 없어요", style = RtType.Meta, color = RtColors.Muted)
                 }
             }
         }
@@ -593,11 +591,11 @@ private fun FeedRow(state: DriveUiState, item: FeedItem, modifier: Modifier) {
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(member.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(member.name, style = RtType.CaptionStrong)
                 Spacer(Modifier.width(8.dp))
-                Text("${item.whenText} · ${item.kindText}", fontSize = 14.sp, color = RtColors.Sub, maxLines = 1)
+                Text("${item.whenText} · ${item.kindText}", style = RtType.Caption, color = RtColors.Muted, maxLines = 1)
             }
-            Text(item.text, fontSize = 19.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(item.text, style = RtType.Body, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         if (item.readAloud) ReadAloudMark()
     }
@@ -605,13 +603,13 @@ private fun FeedRow(state: DriveUiState, item: FeedItem, modifier: Modifier) {
 
 @Composable
 private fun ReadAloudToggle(on: Boolean, onToggle: () -> Unit) {
-    val shape = RoundedCornerShape(999.dp)
+    val shape = RoundedCornerShape(RtDimens.InnerRadius)
     Row(
         Modifier
             .height(48.dp)
             .clip(shape)
-            .background(RtColors.Panel)
-            .border(1.dp, if (on) RtColors.Line2 else RtColors.Line, shape)
+            .background(RtColors.Raised)
+            .border(1.dp, RtColors.Line, shape)
             .toggleable(value = on, role = Role.Switch, onValueChange = { onToggle() })
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -623,7 +621,7 @@ private fun ReadAloudToggle(on: Boolean, onToggle: () -> Unit) {
             modifier = Modifier.size(20.dp),
         )
         Spacer(Modifier.width(6.dp))
-        Text(if (on) "메시지 읽어 주기 켬" else "메시지 읽어 주기 끔", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = if (on) RtColors.Ink else RtColors.Sub)
+        Text(if (on) "메시지 읽어 주기 켬" else "메시지 읽어 주기 끔", style = RtType.CaptionStrong, color = if (on) RtColors.Ink else RtColors.Sub)
     }
 }
 
@@ -631,17 +629,15 @@ private fun ReadAloudToggle(on: Boolean, onToggle: () -> Unit) {
 
 @Composable
 private fun DriveBottomBar(state: DriveUiState, actions: AppActions) {
+    SectionDivider()
     Row(
         Modifier
             .fillMaxWidth()
-            .height(RtDimens.BottomBarHeight)
-            .clip(RoundedCornerShape(RtDimens.CardRadius))
-            .background(RtColors.Card)
-            .padding(horizontal = 20.dp),
+            .height(RtDimens.BottomBarHeight - RtDimens.Gap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         NextStopBlock(state, Modifier.width(430.dp))
-        Box(Modifier.width(1.dp).height(64.dp).background(RtColors.Line))
+        Box(Modifier.width(1.dp).height(64.dp).background(RtColors.Divider))
         Spacer(Modifier.width(18.dp))
         CourseStepper(state.course, state.nextStopIndex, Modifier.weight(1f))
         Spacer(Modifier.width(18.dp))
@@ -664,28 +660,23 @@ private fun NextStopBlock(state: DriveUiState, modifier: Modifier) {
     val eta = state.nextStopEta()
     val isDestination = next != null && next == state.course.lastOrNull()
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            Modifier.size(60.dp).clip(RoundedCornerShape(16.dp)).background(RtColors.Panel),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(Icons.Outlined.Flag, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(28.dp))
-        }
-        Spacer(Modifier.width(14.dp))
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(if (isDestination) "목적지" else "다음 집결지", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = RtColors.Sub)
+                Icon(Icons.Outlined.Flag, contentDescription = null, tint = RtColors.Sub, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(6.dp))
+                Text(if (isDestination) "목적지" else "다음 집결지", style = RtType.CaptionStrong, color = RtColors.Sub)
                 if (next != null) {
-                    Spacer(Modifier.width(8.dp))
-                    Icon(Icons.Outlined.Check, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(15.dp))
-                    Spacer(Modifier.width(2.dp))
-                    Text("모두의 내비에 추가됨", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = RtColors.AccentText)
+                    Spacer(Modifier.width(10.dp))
+                    Icon(Icons.Outlined.Check, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(3.dp))
+                    Text("모두의 내비에 추가됨", style = RtType.CaptionStrong, color = RtColors.AccentText)
                 }
             }
-            Text(next?.stop?.name ?: "모두 도착했어요", fontSize = 27.sp, fontWeight = FontWeight.Black, letterSpacing = (-0.4).sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(next?.stop?.name ?: "모두 도착했어요", style = RtType.Title, maxLines = 1, overflow = TextOverflow.Ellipsis)
             if (eta != null) {
                 Text(
                     "${formatKm(eta.km)}km · 약 ${formatDuration(eta.minutes)} · ${formatClock(eta.arriveClock)} 도착",
-                    fontSize = 16.sp,
+                    style = RtType.Meta,
                     color = RtColors.Sub,
                     maxLines = 1,
                 )
@@ -710,10 +701,10 @@ private fun CourseStepper(course: List<PlannedStop>, nextIndex: Int, modifier: M
                 val heading = i + 1 == nextIndex
                 val done = i + 1 < nextIndex
                 drawLine(
-                    color = if (done || heading) RtColors.Accent else RtColors.Line2,
+                    color = if (done || heading) RtColors.Accent else RtColors.Line,
                     start = Offset(cell * (i + 0.5f) + inset, y),
                     end = Offset(cell * (i + 1.5f) - inset, y),
-                    strokeWidth = 4.dp.toPx(),
+                    strokeWidth = 3.dp.toPx(),
                     cap = StrokeCap.Round,
                     pathEffect = if (heading) PathEffect.dashPathEffect(floatArrayOf(10f, 8f)) else null,
                 )
@@ -726,16 +717,14 @@ private fun CourseStepper(course: List<PlannedStop>, nextIndex: Int, modifier: M
                     Spacer(Modifier.height(6.dp))
                     Text(
                         stop.stop.shortName,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
+                        style = RtType.CaptionStrong,
                         color = if (i <= nextIndex) RtColors.Ink else RtColors.Sub,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
                         if (i == nextIndex) "${stop.label} · 다음" else stop.label,
-                        fontSize = 13.sp,
-                        fontWeight = if (i == nextIndex) FontWeight.Bold else FontWeight.Medium,
+                        style = if (i == nextIndex) RtType.CaptionStrong else RtType.Caption,
                         color = if (i == nextIndex) RtColors.AccentText else RtColors.Muted,
                         maxLines = 1,
                     )
@@ -752,14 +741,13 @@ private fun StepDot(passed: Boolean, next: Boolean, destination: Boolean) {
             Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(17.dp))
         }
         next -> Box(
-            Modifier.size(STEP_DOT).clip(CircleShape).background(RtColors.AccentRing).padding(5.dp).clip(CircleShape)
-                .background(RtColors.Card).border(4.dp, RtColors.Accent, CircleShape),
+            Modifier.size(STEP_DOT).clip(CircleShape).background(RtColors.LiveRing).padding(5.dp).clip(CircleShape)
+                .background(RtColors.Bg).border(4.dp, RtColors.Accent, CircleShape),
         )
         destination -> Box(
-            Modifier.size(STEP_DOT).clip(RoundedCornerShape(8.dp)).background(RtColors.Line2).padding(6.dp)
-                .clip(RoundedCornerShape(3.dp)).background(RtColors.Ink2),
+            Modifier.size(STEP_DOT).padding(5.dp).clip(RoundedCornerShape(5.dp)).background(RtColors.Ink),
         )
-        else -> Box(Modifier.size(STEP_DOT).clip(CircleShape).background(RtColors.Card).border(3.dp, RtColors.Line2, CircleShape))
+        else -> Box(Modifier.size(STEP_DOT).padding(2.dp).clip(CircleShape).background(RtColors.Bg).border(2.5.dp, RtColors.Line2, CircleShape))
     }
 }
 
@@ -771,19 +759,17 @@ private fun StepDot(passed: Boolean, next: Boolean, destination: Boolean) {
  */
 @Composable
 internal fun MyMessagePanel(state: DriveUiState, actions: AppActions, modifier: Modifier) {
-    val shape = RoundedCornerShape(24.dp)
+    val shape = RoundedCornerShape(RtDimens.CardRadius)
     Column(
         modifier
             .fillMaxWidth()
-            .clip(shape)
-            .background(RtColors.Overlay)
-            .border(1.dp, RtColors.Line, shape)
+            .floatSurface(shape, elevation = 12.dp)
             .pointerInput(Unit) { detectTapGestures { } }
             .padding(horizontal = 22.dp, vertical = 20.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("내 메시지", fontSize = 24.sp, fontWeight = FontWeight.Black)
+                Text("내 메시지", style = RtType.Headline)
                 Text(
                     "누르면 모임 전체에 바로 보내요 · 만들기와 고치기는 휴대폰 ‘같이 달려’ 앱에서",
                     style = RtType.Caption,
@@ -791,12 +777,12 @@ internal fun MyMessagePanel(state: DriveUiState, actions: AppActions, modifier: 
                     maxLines = 1,
                 )
             }
-            RoundIconButton(Icons.Outlined.Close, label = "닫기", onClick = actions.onCloseMyMessages, background = RtColors.Raised)
+            RoundIconButton(Icons.Outlined.Close, label = "닫기", onClick = actions.onCloseMyMessages, background = RtColors.Panel)
         }
         Spacer(Modifier.height(16.dp))
         val messages = QuickMessagePolicy.forCar(state.myMessages)
         if (messages.isEmpty()) {
-            Text("아직 만든 메시지가 없어요", style = RtType.Heading)
+            Text("아직 만든 메시지가 없어요", style = RtType.Headline)
             Text("휴대폰 ‘같이 달려’ 앱 → 내 메시지에서 6개까지 만들 수 있어요", style = RtType.Body, color = RtColors.Sub)
             return@Column
         }
@@ -844,14 +830,14 @@ private fun MessageButton(
     modifier: Modifier,
     compact: Boolean = false,
 ) {
-    val shape = RoundedCornerShape(if (compact) 16.dp else 18.dp)
+    val shape = RoundedCornerShape(RtDimens.InnerRadius)
     Row(
         modifier
             .height((if (compact) MessageGrid.COMPACT_ROW_DP else MessageGrid.ROW_DP).dp)
             .alpha(if (cooling) 0.45f else 1f)
             .clip(shape)
-            .background(if (sent) RtColors.AccentSoft else RtColors.Card)
-            .border(if (sent) 2.dp else 1.dp, if (sent) RtColors.Accent else RtColors.Line, shape)
+            .background(if (sent) RtColors.AccentSoft else RtColors.Raised)
+            .border(if (sent) 1.5.dp else 1.dp, if (sent) RtColors.Accent else RtColors.Line2, shape)
             .clickable(enabled = !sent && !cooling, onClickLabel = m.text, role = Role.Button, onClick = onClick)
             .padding(horizontal = if (compact) 12.dp else 16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -859,8 +845,8 @@ private fun MessageButton(
         Box(
             Modifier
                 .size(if (compact) 40.dp else 48.dp)
-                .clip(RoundedCornerShape(if (compact) 12.dp else 14.dp))
-                .then(if (sent) Modifier.background(AccentBrush) else Modifier.background(RtColors.Raised)),
+                .clip(CircleShape)
+                .then(if (sent) Modifier.background(RtColors.Accent) else Modifier),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
@@ -873,17 +859,17 @@ private fun MessageButton(
         Spacer(Modifier.width(if (compact) 12.dp else 14.dp))
         if (compact) {
             // 간단 목록: 문장 한 줄 + 오른쪽 끝에 짧은 상태
-            Text(m.text, fontSize = 19.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            Text(m.text, style = RtType.BodyStrong, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
             when {
-                sent -> Text("보냈어요", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = RtColors.AccentText)
-                cooling -> Text("잠시 뒤", fontSize = 13.sp, color = RtColors.Sub)
+                sent -> Text("보냈어요", style = RtType.CaptionStrong, color = RtColors.AccentText)
+                cooling -> Text("잠시 뒤", style = RtType.Caption, color = RtColors.Sub)
             }
         } else {
             Column(Modifier.weight(1f)) {
-                Text(m.text, fontSize = 20.sp, fontWeight = FontWeight.Bold, lineHeight = 25.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(m.text, style = RtType.BodyStrong, lineHeight = 25.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 when {
-                    sent -> Text("보냈어요", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = RtColors.AccentText)
-                    cooling -> Text("잠시 뒤 다시 보낼 수 있어요", fontSize = 13.sp, color = RtColors.Sub, maxLines = 1)
+                    sent -> Text("보냈어요", style = RtType.CaptionStrong, color = RtColors.AccentText)
+                    cooling -> Text("잠시 뒤 다시 보낼 수 있어요", style = RtType.Caption, color = RtColors.Sub, maxLines = 1)
                 }
             }
         }
@@ -913,22 +899,20 @@ private fun iconOf(icon: MessageIcon): ImageVector = when (icon) {
  */
 @Composable
 private fun VoiceSharePanel(share: VoiceShare, actions: AppActions, modifier: Modifier) {
-    val shape = RoundedCornerShape(28.dp)
+    val shape = RoundedCornerShape(RtDimens.CardRadius)
     Column(
         modifier
             .width(620.dp)
-            .clip(shape)
-            .background(RtColors.Card)
-            .border(1.dp, RtColors.Line, shape)
+            .floatSurface(shape, elevation = 16.dp)
             .padding(horizontal = 36.dp, vertical = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         when (share.stage) {
             VoiceShare.Stage.LISTENING -> {
-                AccentCircle(88.dp) {
+                AccentCircle(88.dp, live = true) {
                     Icon(Icons.Outlined.Mic, contentDescription = null, tint = Color.White, modifier = Modifier.size(44.dp))
                 }
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(6.dp))
                 Text("듣고 있어요", style = RtType.Title)
                 Spacer(Modifier.height(6.dp))
                 Text("모임에 보낼 말을 해 주세요 · 예: “10분 뒤 도착해요”", style = RtType.Body, color = RtColors.Sub, textAlign = TextAlign.Center)
@@ -940,7 +924,7 @@ private fun VoiceSharePanel(share: VoiceShare, actions: AppActions, modifier: Mo
             VoiceShare.Stage.CONFIRM -> {
                 Text("이렇게 보낼까요?", style = RtType.Label, color = RtColors.Sub)
                 Spacer(Modifier.height(10.dp))
-                Text("“${share.text.orEmpty()}”", fontSize = 30.sp, fontWeight = FontWeight.Bold, lineHeight = 38.sp, textAlign = TextAlign.Center)
+                Text("“${share.text.orEmpty()}”", style = RtType.Title, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(8.dp))
                 Text(
                     if (share.demo) "‘보내기’를 눌러야 모두에게 보내요" else "‘보내기’를 누르거나 “보내”라고 말해 주세요",
@@ -964,11 +948,11 @@ private fun VoiceSharePanel(share: VoiceShare, actions: AppActions, modifier: Mo
                 Text("“${share.text.orEmpty()}”", style = RtType.Body, color = RtColors.Sub, textAlign = TextAlign.Center)
             }
             VoiceShare.Stage.FAILED -> {
-                Box(Modifier.size(80.dp).clip(CircleShape).background(RtColors.Raised), contentAlignment = Alignment.Center) {
+                Box(Modifier.size(80.dp).clip(CircleShape).background(RtColors.Panel), contentAlignment = Alignment.Center) {
                     Icon(Icons.Outlined.MicOff, contentDescription = null, tint = RtColors.Ink, modifier = Modifier.size(40.dp))
                 }
                 Spacer(Modifier.height(16.dp))
-                Text(share.problem ?: "잘 알아듣지 못했어요", style = RtType.Heading, textAlign = TextAlign.Center)
+                Text(share.problem ?: "잘 알아듣지 못했어요", style = RtType.Headline, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(22.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     PrimaryButton("다시 말하기", Icons.Outlined.Mic, actions.onVoiceShare, Modifier.weight(1f))
@@ -980,7 +964,7 @@ private fun VoiceSharePanel(share: VoiceShare, actions: AppActions, modifier: Mo
             Spacer(Modifier.height(16.dp))
             Text(
                 "시연 모드 · 음성 인식이 없는 기기라 예시 문장을 받아 적은 것처럼 보여 줘요",
-                fontSize = 13.sp,
+                style = RtType.Caption,
                 color = RtColors.Muted,
                 textAlign = TextAlign.Center,
             )

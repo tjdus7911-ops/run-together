@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -53,27 +54,31 @@ import com.runtogether.ui.components.MemberAvatar
 import com.runtogether.ui.components.PrimaryButton
 import com.runtogether.ui.components.RtCard
 import com.runtogether.ui.components.SectionLabel
+import com.runtogether.ui.components.VerticalSectionDivider
 import com.runtogether.ui.theme.RtColors
+import com.runtogether.ui.theme.RtDimens
+import com.runtogether.ui.theme.RtType
 
 /** ③ 집결지 도착 — 도착 현황 · 주유 자동 확인 · 정차 중 모드 */
 @Composable
 fun RegroupScreen(state: DriveUiState, onDepart: () -> Unit, onParkedAction: (String) -> Unit) {
     val info = state.regroup
-    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-        RtCard(Modifier.weight(1f).fillMaxHeight(), padding = PaddingValues(horizontal = 36.dp, vertical = 32.dp)) {
+    // 두 구역은 상자 없이, 사이에 가는 세로선 하나
+    Row(Modifier.fillMaxSize().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(40.dp)) {
+        RtCard(Modifier.weight(1f).fillMaxHeight().padding(bottom = 4.dp)) {
             SectionLabel(if (info != null) "${info.stopLabel} · ${info.stopName}" else "집결지")
-            Spacer(Modifier.height(22.dp))
+            Spacer(Modifier.height(18.dp))
             Text(
                 buildAnnotatedString {
-                    withStyle(SpanStyle(fontSize = 104.sp, fontWeight = FontWeight.Bold, letterSpacing = (-3).sp)) {
+                    withStyle(RtType.NumXL.toSpanStyle()) {
                         append("${state.arrivedCount}")
                     }
-                    withStyle(SpanStyle(fontSize = 104.sp, fontWeight = FontWeight.Bold, color = RtColors.Muted, letterSpacing = (-3).sp)) {
+                    withStyle(RtType.NumXL.toSpanStyle().copy(color = RtColors.Muted)) {
                         append("/${state.members.size}")
                     }
-                    withStyle(SpanStyle(fontSize = 36.sp, fontWeight = FontWeight.Black)) { append(" 도착") }
+                    withStyle(RtType.Title.toSpanStyle()) { append(" 도착") }
                 },
-                lineHeight = 108.sp,
+                lineHeight = 92.sp,
             )
             Spacer(Modifier.height(18.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -84,20 +89,23 @@ fun RegroupScreen(state: DriveUiState, onDepart: () -> Unit, onParkedAction: (St
             val pending = info?.pendingMemberId?.let { state.member(it) }
             if (pending != null) {
                 Spacer(Modifier.height(18.dp))
-                Text("${pending.name}님이 약 ${info?.pendingEtaMinutes ?: 1}분 뒤 도착해요", fontSize = 21.sp, color = RtColors.Ink2)
+                Text("${pending.name}님이 약 ${info?.pendingEtaMinutes ?: 1}분 뒤 도착해요", style = RtType.Body, color = RtColors.Ink2)
             }
             Spacer(Modifier.height(24.dp))
             HorizontalDivider(color = RtColors.Divider)
             Spacer(Modifier.height(24.dp))
             if (info != null) {
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                // 숫자 칸은 면 없이, 사이에 가는 세로선
+                Row(Modifier.height(IntrinsicSize.Min)) {
                     StatTile("휴식", "${info.restMinutes}분", "${formatClock(info.departClock)} 출발 예정", Modifier.weight(1f))
                     val refuel = info.refuelMemberId?.let { state.member(it) }
                     if (refuel != null) {
+                        StatDivider()
                         StatTile("${refuel.name}님 주유 완료", "${info.refuelFrom}% → ${info.refuelTo}%", "차량 연료량으로 자동 확인", Modifier.weight(1f))
                     }
                     val late = info.lateJoinMemberId?.let { state.member(it) }
                     if (late != null) {
+                        StatDivider()
                         StatTile("${late.name}님 합류", "+${info.lateJoinMinutes}분", "다른 길로 왔지만 함께 도착", Modifier.weight(1f))
                     }
                 }
@@ -106,27 +114,29 @@ fun RegroupScreen(state: DriveUiState, onDepart: () -> Unit, onParkedAction: (St
             CourseStrip(state)
         }
 
-        RtCard(Modifier.width(600.dp).fillMaxHeight(), padding = PaddingValues(horizontal = 32.dp, vertical = 28.dp)) {
+        VerticalSectionDivider()
+        RtCard(Modifier.width(560.dp).fillMaxHeight().padding(bottom = 4.dp)) {
             val next = state.nextStop
             if (next != null && info != null) {
                 val minutes = state.minutesTo(next.stop)
-                Text("다음 구간", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = RtColors.Sub)
-                Text(next.stop.name, fontSize = 32.sp, fontWeight = FontWeight.Black)
+                SectionLabel("다음 구간")
+                Spacer(Modifier.height(4.dp))
+                Text(next.stop.name, style = RtType.Title)
                 Text(
                     "${formatKm(state.distanceTo(next.stop))}km · 약 ${formatDuration(minutes)} · ${formatClock(info.departClock + minutes)} 도착 예정",
-                    fontSize = 20.sp,
+                    style = RtType.Body,
                     color = RtColors.Sub,
                 )
-                Spacer(Modifier.height(22.dp))
+                Spacer(Modifier.height(24.dp))
                 HorizontalDivider(color = RtColors.Divider)
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(22.dp))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Lock, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(22.dp))
-                Spacer(Modifier.width(10.dp))
-                Text("정차 중에만 열려요", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = RtColors.AccentText)
+                Icon(Icons.Outlined.Lock, contentDescription = null, tint = RtColors.Sub, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("정차 중에만 열려요", style = RtType.Label, color = RtColors.Ink2)
             }
-            Text("주행을 시작하면 자동으로 닫혀요", fontSize = 17.sp, color = RtColors.Sub)
+            Text("주행을 시작하면 자동으로 닫혀요", style = RtType.Caption, color = RtColors.Sub)
             Spacer(Modifier.height(16.dp))
             ParkedWideButton(
                 label = "코스 바꾸기",
@@ -139,7 +149,7 @@ fun RegroupScreen(state: DriveUiState, onDepart: () -> Unit, onParkedAction: (St
                 val pending = info.pendingMemberId?.let { state.member(it) }
                 Text(
                     "출발 예정 ${formatClock(info.departClock)}" + if (pending != null) " · ${pending.name}님이 도착하면 알려 드릴게요" else "",
-                    fontSize = 16.sp,
+                    style = RtType.Caption,
                     color = RtColors.Sub,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
@@ -154,28 +164,31 @@ fun RegroupScreen(state: DriveUiState, onDepart: () -> Unit, onParkedAction: (St
 @Composable
 private fun StatTile(title: String, value: String, caption: String, modifier: Modifier = Modifier) {
     Column(
-        modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(RtColors.Panel)
-            .padding(horizontal = 24.dp, vertical = 22.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        modifier.padding(end = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Text(title, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = RtColors.Ink2)
-        Text(value, fontSize = 36.sp, fontWeight = FontWeight.Bold)
-        Text(caption, fontSize = 16.sp, color = RtColors.Sub)
+        Text(title, style = RtType.Label, color = RtColors.Sub)
+        Text(value, style = RtType.NumM)
+        Text(caption, style = RtType.Caption, color = RtColors.Sub)
     }
+}
+
+@Composable
+private fun StatDivider() {
+    Box(Modifier.width(1.dp).fillMaxHeight().background(RtColors.Divider))
+    Spacer(Modifier.width(24.dp))
 }
 
 /** 정차 중에만 누를 수 있는 넓은 버튼 */
 @Composable
 private fun ParkedWideButton(label: String, caption: String, icon: ImageVector, onClick: (String) -> Unit) {
-    val shape = RoundedCornerShape(20.dp)
+    val shape = RoundedCornerShape(RtDimens.InnerRadius)
     Row(
         Modifier
             .fillMaxWidth()
             .height(96.dp)
             .clip(shape)
-            .background(RtColors.Panel)
+            .background(RtColors.Raised)
             .border(1.dp, RtColors.Line2, shape)
             .clickable(role = Role.Button, onClickLabel = label) { onClick(label) }
             .padding(horizontal = 24.dp),
@@ -184,10 +197,10 @@ private fun ParkedWideButton(label: String, caption: String, icon: ImageVector, 
         Icon(icon, contentDescription = null, tint = RtColors.Ink, modifier = Modifier.size(32.dp))
         Spacer(Modifier.width(18.dp))
         Column(Modifier.weight(1f)) {
-            Text(label, fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(caption, fontSize = 16.sp, color = RtColors.Sub, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(label, style = RtType.BodyStrong)
+            Text(caption, style = RtType.Caption, color = RtColors.Sub, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
-        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = RtColors.Faint, modifier = Modifier.size(28.dp))
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = RtColors.Muted, modifier = Modifier.size(28.dp))
     }
 }
 
@@ -200,7 +213,7 @@ private fun CourseStrip(state: DriveUiState) {
     if (stops.size < 2) return
     val here = (state.nextStopIndex - 1).coerceIn(0, stops.lastIndex)
     Column(Modifier.fillMaxWidth()) {
-        Text("오늘 코스", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = RtColors.Sub)
+        SectionLabel("오늘 코스")
         Spacer(Modifier.height(16.dp))
         Box(Modifier.fillMaxWidth()) {
             Canvas(Modifier.fillMaxWidth().height(DOT)) {
@@ -209,10 +222,10 @@ private fun CourseStrip(state: DriveUiState) {
                 val inset = DOT.toPx() / 2 + 8.dp.toPx()
                 for (i in 0 until stops.lastIndex) {
                     drawLine(
-                        color = if (i < here) RtColors.Accent else RtColors.Line2,
+                        color = if (i < here) RtColors.Accent else RtColors.Line,
                         start = Offset(step * (i + 0.5f) + inset, y),
                         end = Offset(step * (i + 1.5f) - inset, y),
-                        strokeWidth = 4.dp.toPx(),
+                        strokeWidth = 3.dp.toPx(),
                         cap = StrokeCap.Round,
                     )
                 }
@@ -224,17 +237,15 @@ private fun CourseStrip(state: DriveUiState) {
                         Spacer(Modifier.height(10.dp))
                         Text(
                             planned.stop.shortName,
-                            fontSize = 19.sp,
-                            fontWeight = FontWeight.Bold,
+                            style = RtType.BodyStrong,
                             color = if (i <= here) RtColors.Ink else RtColors.Sub,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                         Text(
                             if (i == here) "지금 여기" else planned.label,
-                            fontSize = 15.sp,
-                            fontWeight = if (i == here) FontWeight.Bold else FontWeight.Medium,
-                            color = if (i == here) RtColors.AccentText else RtColors.Faint,
+                            style = if (i == here) RtType.CaptionStrong else RtType.Caption,
+                            color = if (i == here) RtColors.AccentText else RtColors.Muted,
                         )
                     }
                 }
@@ -248,14 +259,14 @@ private fun CourseStrip(state: DriveUiState) {
 private fun CourseDot(passed: Boolean, current: Boolean, destination: Boolean) {
     when {
         current -> Box(
-            Modifier.size(DOT).border(6.dp, RtColors.AccentRing, CircleShape).padding(6.dp).clip(CircleShape).background(RtColors.Accent),
+            Modifier.size(DOT).clip(CircleShape).background(RtColors.LiveRing).padding(6.dp).clip(CircleShape).background(RtColors.Accent),
         )
         passed -> Box(Modifier.size(DOT).clip(CircleShape).background(RtColors.Accent), contentAlignment = Alignment.Center) {
             Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
         }
         destination -> Box(
-            Modifier.size(DOT).clip(RoundedCornerShape(8.dp)).background(RtColors.Line2).padding(5.dp).clip(RoundedCornerShape(4.dp)).background(RtColors.Ink),
+            Modifier.size(DOT).padding(5.dp).clip(RoundedCornerShape(5.dp)).background(RtColors.Ink),
         )
-        else -> Box(Modifier.size(DOT).clip(CircleShape).background(RtColors.Card).border(5.dp, RtColors.Accent, CircleShape))
+        else -> Box(Modifier.size(DOT).padding(3.dp).clip(CircleShape).background(RtColors.Bg).border(3.dp, RtColors.Accent, CircleShape))
     }
 }

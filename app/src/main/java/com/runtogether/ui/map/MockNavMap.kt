@@ -62,6 +62,7 @@ import com.runtogether.domain.JoinMode
 import com.runtogether.domain.TrafficLevel
 import com.runtogether.state.formatKm
 import com.runtogether.ui.components.MemberAvatar
+import com.runtogether.ui.components.dashedOutline
 import com.runtogether.ui.theme.KoreanTextStyle
 import com.runtogether.ui.theme.RtColors
 import kotlin.math.PI
@@ -675,10 +676,10 @@ private fun MapChip(text: String, modifier: Modifier = Modifier, background: Col
     Text(
         text,
         modifier
-            .shadow(2.dp, RoundedCornerShape(999.dp))
-            .clip(RoundedCornerShape(999.dp))
+            .shadow(2.dp, RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(background)
-            .border(1.dp, border, RoundedCornerShape(999.dp))
+            .border(1.dp, border, RoundedCornerShape(8.dp))
             .padding(horizontal = 10.dp, vertical = 4.dp),
         fontSize = 14.sp,
         fontWeight = FontWeight.Bold,
@@ -741,10 +742,10 @@ private fun OffscreenStop(view: MapView, fromKm: Double, stop: MapStop, distance
     MapLabelAt(last, view) {
         Row(
             Modifier
-                .shadow(4.dp, RoundedCornerShape(999.dp))
-                .clip(RoundedCornerShape(999.dp))
+                .shadow(4.dp, RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(10.dp))
                 .background(RtColors.Bg)
-                .border(2.dp, Color.White, RoundedCornerShape(999.dp))
+                .border(2.dp, Color.White, RoundedCornerShape(10.dp))
                 .padding(start = 10.dp, end = 12.dp, top = 6.dp, bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -877,9 +878,9 @@ private fun ScaleBar(view: MapView) {
     val label = if (km < 1) "${(km * 1000).roundToInt()} m" else "${km.roundToInt()} km"
     Column(
         Modifier
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(Color.White.copy(alpha = 0.92f))
-            .border(1.dp, RtColors.MapRoadEdge, RoundedCornerShape(10.dp))
+            .border(1.dp, RtColors.MapRoadEdge, RoundedCornerShape(8.dp))
             .padding(horizontal = 10.dp, vertical = 5.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -892,16 +893,18 @@ private fun ScaleBar(view: MapView) {
 /** 실제 지도가 아니라는 표시 (항상 보이게) */
 @Composable
 private fun DemoMapBadge() {
+    // 시연판 표식: 점선 테두리 (제품 화면과 구분)
     Row(
         Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(RtColors.Overlay)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color.White.copy(alpha = 0.94f))
+            .dashedOutline(RtColors.Faint, 8.dp)
+            .padding(horizontal = 12.dp, vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(Icons.Outlined.Info, contentDescription = null, tint = RtColors.Sub, modifier = Modifier.size(16.dp))
         Spacer(Modifier.width(6.dp))
-        Text("시연용 지도 · 실제 위치와 다를 수 있어요", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = RtColors.Ink, maxLines = 1)
+        Text("시연용 지도 · 실제 위치와 다를 수 있어요", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = RtColors.Ink2, maxLines = 1)
     }
 }
 
@@ -909,9 +912,9 @@ private fun DemoMapBadge() {
 private fun TrafficLegend() {
     Row(
         Modifier
-            .clip(RoundedCornerShape(999.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(Color.White.copy(alpha = 0.92f))
-            .border(1.dp, RtColors.MapRoadEdge, RoundedCornerShape(999.dp))
+            .border(1.dp, RtColors.MapRoadEdge, RoundedCornerShape(8.dp))
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
