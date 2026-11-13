@@ -4,6 +4,7 @@
 
 여러 대가 함께 떠나는 날, 차량 데이터와 원터치 음성 상황 공유로 코스·집결지·휴식을 모임 전체에 맞춰
 “따라가지 않아도 함께, 안전하게 도착하게” 해 주는 차량용 앱입니다.
+Pleos 차량이 아닌 차와 동승자는 설치 없이 초대 링크로 여는 **휴대폰 웹앱(PWA, `mobile/`)** 으로 함께합니다.
 
 ## 화면
 
@@ -17,8 +18,8 @@
 | ![집결지 도착](docs/screenshots/3_regroup.png) | ![상황 공유 알림](docs/screenshots/4_share_alert.png) |
 | **④ 투표 통과 → 모두의 내비에 추가** | **② 내 메시지 — 큰 버튼으로 골라 바로 보내기** |
 | ![투표 결과](docs/screenshots/5_share_result.png) | ![내 메시지](docs/screenshots/6_my_messages.png) |
-| **② 받은 메시지 — 보낸 사람 얼굴과 함께 읽어 줌** | **② 음성으로 상황 공유 — 받아 적은 문장 확인 후 전송** |
-| ![받은 메시지](docs/screenshots/7_message_received.png) | ![음성으로 상황 공유](docs/screenshots/8_voice_share.png) |
+| **② 받은 메시지 — 보낸 사람 얼굴과 함께 읽어 줌** | **② 말로 메시지 보내기 — 받아 적은 글자를 확인하고 ‘보내기’ 또는 “보내”** |
+| ![받은 메시지](docs/screenshots/7_message_received.png) | ![말로 메시지 보내기](docs/screenshots/8_voice_share.png) |
 
 화면은 현대차그룹 SDV 인포테인먼트 Pleos Connect 에 맞춘 디지털 콘셉트입니다 (`ui/theme/Theme.kt`).
 - 글꼴: Pleos Connect 시스템 글꼴 **Asta Sans** (42dot, SIL OFL 1.1 — `assets/licenses/asta_sans_OFL.txt`)
@@ -31,7 +32,7 @@
 | 화면 | 내용 |
 |---|---|
 | ① 출발 전 | 오늘 코스, 시동 체크인(시동을 켜면 자동 체크), 연료가 가장 적은 차에 맞춘 첫 집결지 안내, 출발 안내 음성 |
-| ② 주행 중 | 지도(다음 안내 · 남은 거리 · 도착 예정, 모임 차 위치와 간격, 교통), 모임 주행 현황, 내 차량 상태(차가 주는 값만), 모임 소식(읽어 주기 켬/끔), 다음 집결지와 코스 진행, 원터치 상황 공유 4개, **내 메시지**, **음성으로 상황 공유** |
+| ② 주행 중 | 지도(다음 안내 · 남은 거리 · 도착 예정, 모임 차 위치와 간격, 교통), 모임 주행 현황, 내 차량 상태(차가 주는 값만), 모임 소식(읽어 주기 켬/끔), 다음 집결지와 코스 진행, 원터치 상황 공유 4개, **내 메시지**, **말로 메시지 보내기**(목소리는 보내지 않고 받아 적은 글자만 · 자동 전송 없음) |
 | ③ 집결지 도착 | 도착 현황, 주유 자동 확인, 오늘 코스 진행, 다음 구간, 정차 중에만 열리는 코스 바꾸기 |
 | ④ 상황 공유 | “민지님이 졸리대요” 음성 알림 → 가장 가까운 쉴 곳 제안 → 쉬어가기 투표(과반·1분 마감) → 모두의 경로에 추가 |
 
@@ -55,14 +56,32 @@
 | 길 안내 값 | **Pleos NaviHelper SDK** 3.0.5 | 다음 안내(TBT) · 목적지/경유지 남은 거리·시간 · 현재 위치·방향 · 경로 교통을 주행 화면에 (없으면 ‘시연 안내’) |
 | 지도 | 시연용 그림 지도 (`ui/map/MockNavMap.kt`) | NaviHelper 는 지도를 그려 주지 않아 `GroupMapRenderer` 뒤에 두었고, 실제 지도 SDK 로 바꿔 끼울 수 있음. 화면에 ‘시연용 지도’ 표시 |
 | 음성 안내 | **Pleos TextToSpeech SDK** 3.3.1 (실패 시 Android TTS) | “민지님이 졸리대요” 같은 상황 공유를 모든 차에서 읽어 줌 + 화면 자막. `VoiceQueue` 가 한 번에 하나 · 안전 안내 먼저 · 내비 길 안내 중에는 대기 |
-| 말로 답하기 · 음성 공유 | **Pleos SpeechToText SDK** 3.3.1 | 투표에 “좋아요 / 괜찮아요”로 답하기, ‘음성으로 상황 공유’ 받아 적기 (일반 기기에서는 예시 문장으로 시연) |
+| 말로 답하기 · 말로 메시지 보내기 | **Pleos SpeechToText SDK** 3.3.1 | 투표에 “좋아요 / 괜찮아요”로 답하기, ‘말로 메시지 보내기’ 받아 적기와 “보내 / 취소” 확인 (12초 안에 답이 없으면 보내지 않음 · 일반 기기에서는 예시 문장으로 시연) |
+| 음성 비서 연동 | **Gleo AI** (Pleos Connect App Schema · Gleo Action · Callback) | “같이 달려에서 졸리다고 알려 줘” → 상황 공유 + 쉬어가기 투표, “모임에 10분 늦는다고 보내 줘” → 모임에 메시지, “좋다고 해 줘” → 투표 답. `assets/schema.json`(기능 3개) · `gleo/GleoActionReceiver` 가 받아 처리하고 결과를 Gleo 로 돌려줌. Pleos 검토·승인 뒤 차량에서 켜짐 |
 | 위치 | 시연 데이터 | 다음 단계: Pleos Fused Location SDK, 휴대폰 참여자는 휴대폰 GPS |
-| 다른 차와 동기화 | 시연 시뮬레이션 (`GroupChannel`) | 기본 상황 공유 · 내 메시지 · 음성 메시지가 같은 통로. 다음 단계: 동기화 서버(WebSocket) |
+| 다른 차와 동기화 | 시연 시뮬레이션 (`GroupChannel`) | 기본 상황 공유 · 내 메시지 · 말로 보낸 메시지가 같은 통로. 다음 단계: 동기화 서버(WebSocket) |
 | 내 메시지 목록 | 시연 데이터 (`MyMessageRepository`) | 휴대폰 앱에서 만들고 계정에 저장 → 차량 앱은 받아서 고르기만. 설계: [docs/my-messages.md](docs/my-messages.md) |
 
 Pleos SDK 저장소(`nexus-playground.pleos.ai`)는 `settings.gradle.kts`에 넣어 두었습니다.
 SDK 리스너는 `data/pleos/PleosBridge.java`에서 감싸 SDK 버전 변화에 덜 민감하게 했습니다.
 `Pleos SDK probe` 워크플로는 공개 SDK의 실제 함수 목록을 `ci/sdk-probe` 브랜치에 정리합니다.
+
+## 휴대폰 웹앱 (PWA · `mobile/`)
+
+피그마 ‘06 디자인 — 모바일 앱’ M-01 ~ M-15 를 React + TypeScript 로 옮긴 웹앱입니다. 설치 없이 초대 링크로 열고, 홈 화면에 추가할 수 있습니다.
+차량 앱과 같은 시나리오 A · 같은 규칙(내 메시지 검사 · 보내기 제한 · 쉬어가기 투표 · 안내 문장)을 씁니다. 자세한 내용: [mobile/README.md](mobile/README.md)
+
+| 참여 (M-01 ~ M-03) |
+|---|
+| ![휴대폰 참여](docs/screenshots/mobile_1_join.png) |
+| **여행 중 — 운전자는 잠금 · 소리, 동승자는 지도 · 투표 (M-06 ~ M-09)** |
+| ![휴대폰 여행 중](docs/screenshots/mobile_2_trip.png) |
+| **도착 · 홈 · 내 메시지 (M-10 · M-11 · M-04 · M-13 · M-14)** |
+| ![휴대폰 도착과 내 메시지](docs/screenshots/mobile_3_more.png) |
+
+- 브라우저 기능: 소리 내어 읽기(speechSynthesis) · 말로 투표(SpeechRecognition) · 위치(Geolocation, 출발 안내부터 여행이 끝날 때까지만) · 운전 중 화면 켜 두기(Wake Lock) · 진동 · 공유 시트 · 다른 내비로 열기
+- 시연판: 동기화 서버 없이 다른 차의 움직임·응답은 시연 데이터, 위치·메시지는 기기 밖으로 나가지 않음. 화면 왼쪽 ‘시연’ 탭에서 장면을 넘김
+- 실행: `cd mobile && npm install && npm run dev` · 테스트 `npm test` · 빌드 `npm run build` (`Mobile PWA` 워크플로가 `dist` 를 Artifacts 로 올림)
 
 ## 실행
 
@@ -81,9 +100,12 @@ SDK 리스너는 `data/pleos/PleosBridge.java`에서 감싸 SDK 버전 변화에
 ## 구조
 
 ```
+mobile/     휴대폰 웹앱 (React + TypeScript · Vite · PWA, src/domain 은 차량 앱 규칙과 같음)
+app/src/main/assets/schema.json   Gleo AI 가 부르는 기능 3개
 app/src/main/java/com/runtogether/
   domain/   모임 엔진 (안드로이드 의존 없음, 단위 테스트)
   data/     차량 데이터 · 음성 · 내비 연결부
+  gleo/     Gleo AI 음성 명령 받기 (GleoActionReceiver)
   demo/     시나리오 A 시연 데이터
   state/    화면 상태와 상태 전이 (투표 통과·부결 → 코스 갱신), 시연 길 안내
   ui/       Compose 화면 (시안 1600×900 비율 유지, 한국어 어절 단위 줄바꿈)

@@ -1,0 +1,43 @@
+name: Mobile PWA
+
+# 휴대폰 웹앱(mobile/): 도메인 테스트 → 타입 검사 → 빌드 → dist 를 Artifacts 로 올린다 (배포는 하지 않는다)
+on:
+  push:
+    branches: [ main, 'design/**' ]
+    paths: [ 'mobile/**', '.github/workflows/mobile.yml' ]
+  pull_request:
+    paths: [ 'mobile/**', '.github/workflows/mobile.yml' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Unit tests (모임 규칙 · 메시지 검사 · 투표)
+        run: npm test
+
+      - name: Type check and build
+        run: npm run build
+
+      - name: Upload PWA build
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-together-mobile-pwa
+          path: mobile/dist
