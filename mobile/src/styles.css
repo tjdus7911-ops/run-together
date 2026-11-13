@@ -1,6 +1,7 @@
 /* 같이 달려 휴대폰 웹앱 — 조용한 계기판 (Quiet Instrument)
    면 대신 선과 여백으로 나누고, 파랑은 ‘지금 누를 것 · 내 위치 · 고른 것’에만, 숫자는 크게.
-   값은 디자인 리뉴얼 제안 STEP 3 과 같다 (차량 앱 RtColors · RtType 과 같은 이름). */
+   값은 디자인 리뉴얼 제안 STEP 3 과 같다 (차량 앱 RtColors · RtType 과 같은 이름).
+   글자: 44 숫자 · 24 · 20 · 17 · 16 버튼 · 15 본문 · 13 · 12 (+ 컨트롤 14, 시연 표식 · 지도 이름표 11). */
 :root {
   /* 색: 푸른 기가 도는 회색 + 디지털 블루 한 색 + 상태색 */
   --surface: #ffffff;
@@ -1336,8 +1337,8 @@ button.list-row:active {
 
 .stat b {
   display: block;
-  font-size: 22px;
-  line-height: 28px;
+  font-size: 24px;
+  line-height: 32px;
   font-weight: 700;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
@@ -1963,8 +1964,8 @@ button.list-row:active {
 }
 
 .mini-num b {
-  font-size: 30px;
-  line-height: 36px;
+  font-size: 24px;
+  line-height: 32px;
   font-weight: 800;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
@@ -2550,10 +2551,10 @@ button.list-row:active {
   border-radius: 0 var(--r-sm) var(--r-sm) 0;
   background: rgba(255, 255, 255, 0.94);
   color: var(--text-3);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 15px;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   writing-mode: vertical-rl;
 }
 
