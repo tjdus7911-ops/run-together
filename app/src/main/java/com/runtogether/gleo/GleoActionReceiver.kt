@@ -21,8 +21,14 @@ class GleoActionReceiver : BroadcastReceiver() {
         val command = GleoCommand.parse(action, readParams(intent))
         val result = when (command) {
             null -> GleoCommand.askingFor(action)
-            else -> GleoBridge.handle(command)
-                ?: GleoResult.fail("Open the Run Together app and join a group drive first.")
+            else -> try {
+                GleoBridge.handle(command)
+                    ?: GleoResult.fail("Open the Run Together app and join a group drive first.")
+            } catch (t: Throwable) {
+                // 처리 중 문제가 생겨도 앱이 꺼지지 않고 Gleo 에 실패로 답한다
+                Log.w(TAG, "Gleo command failed", t)
+                GleoResult.fail("Run Together could not finish the request. Please try again.")
+            }
         }
         reply(context, action, result)
     }
