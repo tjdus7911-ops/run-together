@@ -104,9 +104,8 @@ export function MockMap({ markers, flagF = 0.915, gapBetween, gapText }: { marke
       {/* 고속도로 바탕 */}
       <path d={pathUpTo(0, 1)} stroke="#CDD5DF" strokeWidth="16" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       <path d={pathUpTo(0, 1)} stroke="#FFFFFF" strokeWidth="11" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      {/* 지나온 길 · 앞길 (앞길은 은은한 빛) */}
+      {/* 지나온 길 · 앞길 (빛은 내 위치 둘레에만) */}
       <path d={pathUpTo(0, meF)} stroke="#AEB8C5" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d={pathUpTo(meF, flagF)} stroke="#3D8BFF" strokeOpacity="0.14" strokeWidth="24" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       <path d={pathUpTo(meF, flagF)} stroke="#2563EB" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       <path d={pathUpTo(flagF, 1)} stroke="#93B4F5" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -47,6 +48,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -65,27 +67,58 @@ import com.runtogether.ui.theme.RtColors
 import com.runtogether.ui.theme.RtDimens
 import com.runtogether.ui.theme.RtType
 
-/** 카드 (차콜 면, 큰 둥근 모서리) */
+/**
+ * 구역: 상자(바탕 · 테두리) 없이 여백만 준다. 구역 사이는 [SectionDivider] · [VerticalSectionDivider] 가는 선으로 나눈다.
+ * (예전 카드 자리. 지도 위에 뜨는 층만 [floatSurface] 로 면을 쓴다)
+ */
 @Composable
 fun RtCard(
     modifier: Modifier = Modifier,
-    padding: PaddingValues = PaddingValues(horizontal = 34.dp, vertical = 30.dp),
+    padding: PaddingValues = PaddingValues(0.dp),
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(
-        modifier
-            .clip(RoundedCornerShape(RtDimens.CardRadius))
-            .background(RtColors.Card)
-            .border(1.dp, RtColors.Divider, RoundedCornerShape(RtDimens.CardRadius))
-            .padding(padding),
-        content = content,
-    )
+    Column(modifier.padding(padding), content = content)
 }
 
-/** 카드 안의 작은 제목 */
+/** 구역 사이의 가는 가로선 */
+@Composable
+fun SectionDivider(modifier: Modifier = Modifier) {
+    Box(modifier.fillMaxWidth().height(1.dp).background(RtColors.Divider))
+}
+
+/** 나란히 놓인 두 구역 사이의 가는 세로선 */
+@Composable
+fun VerticalSectionDivider(modifier: Modifier = Modifier) {
+    Box(modifier.width(1.dp).fillMaxHeight().background(RtColors.Divider))
+}
+
+/** 구역 이름표: 굵기보다 회색과 여백으로 (내용이 주인공) */
 @Composable
 fun SectionLabel(text: String, color: Color = RtColors.Sub) {
-    Text(text, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = color)
+    Text(text, style = RtType.Label, color = color)
+}
+
+/** 지도 위에 뜨는 층: 흰 면 + 그림자 한 단계 (shadow-float). 테두리는 쓰지 않는다 */
+fun Modifier.floatSurface(shape: Shape, elevation: Dp = 8.dp): Modifier =
+    this
+        .shadow(elevation, shape, ambientColor = RtColors.FloatShadow.copy(alpha = 0.10f), spotColor = RtColors.FloatShadow.copy(alpha = 0.16f))
+        .clip(shape)
+        .background(RtColors.Overlay)
+
+/** 시연판에서만 보이는 것: 점선 테두리로 제품 화면과 구분 */
+fun Modifier.dashedOutline(color: Color = RtColors.Faint, corner: Dp = RtDimens.InnerRadius): Modifier = drawBehind {
+    dashedRoundRect(color, corner.toPx())
+}
+
+private fun DrawScope.dashedRoundRect(color: Color, corner: Float) {
+    val w = 1.5.dp.toPx()
+    drawRoundRect(
+        color = color,
+        topLeft = Offset(w / 2, w / 2),
+        size = Size(size.width - w, size.height - w),
+        cornerRadius = CornerRadius(corner, corner),
+        style = Stroke(width = w, pathEffect = PathEffect.dashPathEffect(floatArrayOf(7f, 5f))),
+    )
 }
 
 /** 같이 달려 로고: 길 하나 위에 이어진 세 점 */
@@ -144,7 +177,7 @@ fun MemberAvatar(
     }
 }
 
-/** 작은 알약 모양 표시 */
+/** 상태 칩: 상태를 알릴 때만 쓴다 (모서리 8, 알약 모양은 쓰지 않는다) */
 @Composable
 fun Tag(
     text: String,
@@ -156,38 +189,42 @@ fun Tag(
 ) {
     Row(
         modifier
-            .clip(RoundedCornerShape(999.dp))
+            .clip(RoundedCornerShape(RtDimens.ChipRadius))
             .background(background)
-            .padding(horizontal = 12.dp, vertical = 5.dp),
+            .padding(horizontal = 10.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
-            Icon(icon, contentDescription = null, tint = foreground, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = null, tint = foreground, modifier = Modifier.size(17.dp))
             Spacer(Modifier.width(5.dp))
         }
         Text(text, color = foreground, fontSize = fontSize.sp, fontWeight = FontWeight.Bold, maxLines = 1)
     }
 }
 
-/** 테두리만 있는 알약 (점선 가능) */
+/** 테두리만 있는 칩 (점선 가능) */
 @Composable
 fun OutlineTag(text: String, color: Color = RtColors.Ink2, dashed: Boolean = false, modifier: Modifier = Modifier) {
-    val borderColor = if (dashed) color else RtColors.Line2
+    val borderColor = if (dashed) color else RtColors.Line
+    val chip = RtDimens.ChipRadius
     Box(
         modifier
             .drawBehind {
+                val w = (if (dashed) 1.5f else 1f) * density
                 drawRoundRect(
                     color = borderColor,
-                    cornerRadius = CornerRadius(size.height / 2, size.height / 2),
+                    topLeft = Offset(w / 2, w / 2),
+                    size = Size(size.width - w, size.height - w),
+                    cornerRadius = CornerRadius(chip.toPx(), chip.toPx()),
                     style = Stroke(
-                        width = (if (dashed) 2 else 1).dp.toPx(),
+                        width = w,
                         pathEffect = if (dashed) PathEffect.dashPathEffect(floatArrayOf(8f, 6f)) else null,
                     ),
                 )
             }
-            .padding(horizontal = 14.dp, vertical = 6.dp),
+            .padding(horizontal = 10.dp, vertical = 4.dp),
     ) {
-        Text(text, color = color, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+        Text(text, style = RtType.Caption, color = color, maxLines = 1)
     }
 }
 
@@ -196,30 +233,24 @@ fun OutlineTag(text: String, color: Color = RtColors.Ink2, dashed: Boolean = fal
 fun SourceBadge(live: Boolean, liveText: String, demoText: String, modifier: Modifier = Modifier) {
     Row(
         modifier
-            .clip(RoundedCornerShape(999.dp))
+            .clip(RoundedCornerShape(RtDimens.ChipRadius))
             .background(if (live) RtColors.GoodSoft else RtColors.Panel)
-            .padding(horizontal = 10.dp, vertical = 4.dp),
+            .padding(horizontal = 10.dp, vertical = 3.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(8.dp).clip(CircleShape).background(if (live) RtColors.Good else RtColors.Faint))
+        Box(Modifier.size(7.dp).clip(CircleShape).background(if (live) RtColors.Good else RtColors.Faint))
         Spacer(Modifier.width(6.dp))
-        Text(if (live) liveText else demoText, style = RtType.Micro, color = if (live) RtColors.Good else RtColors.Sub, maxLines = 1)
+        Text(if (live) liveText else demoText, style = RtType.Caption, color = if (live) RtColors.Good else RtColors.Sub, maxLines = 1)
     }
 }
 
+/** 맨 위 줄 오른쪽 상태 한 줄: 면 없이 아이콘 + 글자 */
 @Composable
 fun HeaderPill(icon: ImageVector, text: String) {
-    Row(
-        Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(RtColors.Panel)
-            .border(1.dp, RtColors.Line, RoundedCornerShape(999.dp))
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(icon, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(21.dp))
-        Spacer(Modifier.width(9.dp))
-        Text(text, fontSize = 17.sp, fontWeight = FontWeight.Medium, color = RtColors.Ink2, maxLines = 1)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, contentDescription = null, tint = RtColors.Sub, modifier = Modifier.size(20.dp))
+        Spacer(Modifier.width(8.dp))
+        Text(text, style = RtType.Meta, color = RtColors.Ink2, maxLines = 1)
     }
 }
 
@@ -241,12 +272,12 @@ fun AppHeader(
         Row(Modifier.align(Alignment.CenterStart), verticalAlignment = Alignment.CenterVertically) {
             LogoMark(Modifier.size(40.dp))
             Spacer(Modifier.width(10.dp))
-            Text("같이 달려", fontSize = 24.sp, fontWeight = FontWeight.Black, letterSpacing = (-0.5).sp)
-            Spacer(Modifier.width(18.dp))
-            Box(Modifier.width(1.dp).height(30.dp).background(RtColors.Line))
-            Spacer(Modifier.width(18.dp))
+            Text("같이 달려", style = RtType.Headline)
+            Spacer(Modifier.width(20.dp))
+            Box(Modifier.width(1.dp).height(32.dp).background(RtColors.Divider))
+            Spacer(Modifier.width(20.dp))
             Column {
-                Text(groupName, fontSize = 19.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+                Text(groupName, style = RtType.Label, maxLines = 1)
                 Text(subtitle, style = RtType.Caption, color = RtColors.Sub, maxLines = 1)
             }
         }
@@ -256,10 +287,10 @@ fun AppHeader(
         Row(Modifier.align(Alignment.CenterEnd), verticalAlignment = Alignment.CenterVertically) {
             HeaderPill(pillIcon, pillText)
             if (clock != null) {
-                Spacer(Modifier.width(16.dp))
-                Text(clock, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = RtColors.Ink)
+                Spacer(Modifier.width(24.dp))
+                Text(clock, style = RtType.Headline, color = RtColors.Ink)
             }
-            Spacer(Modifier.width(14.dp))
+            Spacer(Modifier.width(16.dp))
             Icon(Icons.Outlined.SignalCellularAlt, contentDescription = null, tint = RtColors.Sub, modifier = Modifier.size(22.dp))
             Spacer(Modifier.width(10.dp))
             Icon(
@@ -272,46 +303,19 @@ fun AppHeader(
     }
 }
 
-// ---------------- 디지털 블루 면 · 빛 ----------------
+// ---------------- 디지털 블루 ----------------
 
-/** 포인트 면: 왼쪽 위 밝은 디지털 블루 → 오른쪽 아래 깊은 블루 */
+/** 주요 버튼 면: 위 → 아래 아주 옅은 세로 그라데이션 (주요 버튼에만) */
 val AccentBrush: Brush
-    get() = Brush.linearGradient(listOf(RtColors.AccentHi, RtColors.AccentLo))
+    get() = Brush.verticalGradient(listOf(RtColors.AccentHi, RtColors.AccentLo))
 
-/** 포인트 면 위쪽 가장자리에만 도는 얇은 빛 (아래로 갈수록 사라진다) */
+/** 포인트 면 위쪽 가장자리의 얇은 밝은 선 (아래로 갈수록 사라진다) */
 val AccentEdge: Brush
-    get() = Brush.verticalGradient(0f to Color.White.copy(alpha = 0.36f), 0.55f to Color.White.copy(alpha = 0f))
+    get() = Brush.verticalGradient(0f to Color.White.copy(alpha = 0.16f), 0.4f to Color.White.copy(alpha = 0f))
 
 /**
- * 버튼 뒤의 은은한 바깥 빛. 흐림 필터 없이 반투명 둥근 사각형을 겹쳐 그려
- * 차량 화면과 미리보기(Paparazzi)에서 똑같이 보인다. 가장자리 쪽이 가장 진하고 [spread] 만큼 퍼지며 옅어진다.
- * 움직이지 않는 빛이라 운전 중 시선을 끌지 않는다.
- */
-fun Modifier.accentGlow(
-    corner: Dp,
-    spread: Dp = 16.dp,
-    color: Color = RtColors.AccentGlow,
-    strength: Float = 0.065f,
-    layers: Int = 9,
-    offsetY: Dp = 3.dp,
-): Modifier = drawBehind {
-    val s = spread.toPx()
-    val c = corner.toPx()
-    val dy = offsetY.toPx()
-    for (i in layers downTo 1) {
-        val e = s * i / layers
-        drawRoundRect(
-            color = color.copy(alpha = strength),
-            topLeft = Offset(-e, -e + dy),
-            size = Size(size.width + 2 * e, size.height + 2 * e),
-            cornerRadius = CornerRadius(c + e, c + e),
-        )
-    }
-}
-
-/**
- * 큰 포인트 버튼 (화면의 주요 동작 하나에만).
- * 디지털 블루 그라데이션 + 위쪽 가장자리 빛 + 은은한 바깥 빛. 글자는 흰색(그라데이션 어디서나 큰 글자 3:1 이상).
+ * 주요 버튼 (화면의 주요 동작 하나에만).
+ * 아주 옅은 세로 그라데이션 면, 바깥 빛 없음. 글자는 흰색(어디서나 4.5:1 이상).
  */
 @Composable
 fun PrimaryButton(
@@ -326,7 +330,6 @@ fun PrimaryButton(
     Row(
         modifier
             .height(RtDimens.ButtonHeight)
-            .accentGlow(corner)
             .clip(shape)
             .background(AccentBrush)
             .border(1.dp, AccentEdge, shape)
@@ -339,25 +342,28 @@ fun PrimaryButton(
             Icon(icon, contentDescription = null, tint = RtColors.OnAccent, modifier = Modifier.size(26.dp))
             Spacer(Modifier.width(12.dp))
         }
-        Text(text, fontSize = textSize, fontWeight = FontWeight.Bold, color = RtColors.OnAccent, maxLines = 1)
+        Text(text, style = RtType.Button, fontSize = textSize, color = RtColors.OnAccent, maxLines = 1)
     }
 }
 
-/** 포인트 동그라미 (음성 듣는 중 · 보냈어요): 그라데이션 + 바깥 빛 */
+/**
+ * 포인트 동그라미 (음성 듣는 중 · 보냈어요): 단색 디지털 블루.
+ * [live] (지금 듣는 중) 일 때만 둘레에 옅은 고리를 둔다.
+ */
 @Composable
-fun AccentCircle(size: Dp, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun AccentCircle(size: Dp, modifier: Modifier = Modifier, live: Boolean = false, content: @Composable () -> Unit) {
+    val ring = 12.dp
     Box(
         modifier
-            .size(size)
-            .accentGlow(size / 2, spread = 16.dp)
-            .clip(CircleShape)
-            .background(AccentBrush)
-            .border(1.dp, AccentEdge, CircleShape),
+            .size(if (live) size + ring * 2 else size)
+            .then(if (live) Modifier.clip(CircleShape).background(RtColors.LiveRing) else Modifier),
         contentAlignment = Alignment.Center,
-    ) { content() }
+    ) {
+        Box(Modifier.size(size).clip(CircleShape).background(RtColors.Accent), contentAlignment = Alignment.Center) { content() }
+    }
 }
 
-/** 보조 버튼 (어두운 면 + 테두리). [selected] 면 지금 열려 있는 것 (포인트 테두리 + 옅은 빛) */
+/** 보조 버튼 (흰 면 + 테두리). [selected] 면 지금 열려 있는 것 (옅은 파랑 면 + 파란 테두리, 빛 없음) */
 @Composable
 fun SecondaryButton(
     text: String,
@@ -372,10 +378,9 @@ fun SecondaryButton(
         modifier
             .height(RtDimens.ButtonHeight)
             .alpha(if (enabled) 1f else 0.45f)
-            .then(if (selected) Modifier.accentGlow(RtDimens.ButtonRadius, spread = 10.dp, strength = 0.04f) else Modifier)
             .clip(shape)
             .background(if (selected) RtColors.AccentSoft else RtColors.Raised)
-            .border(if (selected) 2.dp else 1.dp, if (selected) RtColors.Accent else RtColors.Line2, shape)
+            .border(if (selected) 1.5.dp else 1.dp, if (selected) RtColors.Accent else RtColors.Line2, shape)
             .clickable(enabled = enabled, onClickLabel = text, role = Role.Button, onClick = onClick)
             .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.Center,
@@ -397,7 +402,7 @@ fun RoundIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     size: Dp = RtDimens.TouchMin,
-    shape: Shape = RoundedCornerShape(18.dp),
+    shape: Shape = RoundedCornerShape(RtDimens.InnerRadius),
     background: Color = RtColors.Overlay,
     tint: Color = RtColors.Ink,
     enabled: Boolean = true,
@@ -415,20 +420,13 @@ fun RoundIconButton(
     }
 }
 
-/** 카드 안의 안내 줄 (주의면 노랑) */
+/** 안내 한 줄: 면 없이 아이콘 + 글자 (주의면 갈색 글자 · 노랑 아이콘) */
 @Composable
 fun NoticeRow(icon: ImageVector, text: String, warning: Boolean) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(RtDimens.InnerRadius))
-            .background(if (warning) RtColors.WarnSoft else RtColors.Panel)
-            .padding(horizontal = 18.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(icon, contentDescription = null, tint = if (warning) RtColors.WarnIcon else RtColors.AccentText, modifier = Modifier.size(22.dp))
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, contentDescription = null, tint = if (warning) RtColors.WarnIcon else RtColors.Sub, modifier = Modifier.size(22.dp))
         Spacer(Modifier.width(12.dp))
-        Text(text, fontSize = 18.sp, fontWeight = FontWeight.Medium, color = if (warning) RtColors.Warn else RtColors.Ink)
+        Text(text, style = RtType.Meta, color = if (warning) RtColors.Warn else RtColors.Ink2)
     }
 }
 
@@ -436,9 +434,9 @@ fun NoticeRow(icon: ImageVector, text: String, warning: Boolean) {
 @Composable
 fun ReadAloudMark() {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null, tint = RtColors.Sub, modifier = Modifier.size(19.dp))
+        Icon(Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null, tint = RtColors.Muted, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(4.dp))
-        Text("읽어 줌", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = RtColors.Sub)
+        Text("읽어 줌", style = RtType.Caption, color = RtColors.Muted)
     }
 }
 
@@ -458,8 +456,8 @@ fun StatusButtons(onSignal: (StatusSignal) -> Unit, modifier: Modifier = Modifie
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom,
         ) {
-            Text("상황 공유", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = RtColors.Ink2)
-            Text("한 번 누르면 모두에게 음성으로 알려요", fontSize = 16.sp, color = RtColors.Sub)
+            Text("상황 공유", style = RtType.Label, color = RtColors.Ink2)
+            Text("한 번 누르면 모두에게 음성으로 알려요", style = RtType.Caption, color = RtColors.Sub)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             StatusButton(StatusSignal.SLEEPY, Icons.Outlined.Bedtime, night = true, onSignal = onSignal, modifier = Modifier.weight(1f).height(88.dp))
@@ -470,24 +468,30 @@ fun StatusButtons(onSignal: (StatusSignal) -> Unit, modifier: Modifier = Modifie
     }
 }
 
-/** 지도 오른쪽 가장자리의 상황 공유 줄 */
+/** 지도 오른쪽 가장자리의 상황 공유 줄: 흰 층 하나에 버튼 넷, 사이는 가는 선 */
 @Composable
 private fun StatusRail(onSignal: (StatusSignal) -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier
             .width(128.dp)
-            .clip(RoundedCornerShape(22.dp))
-            .background(RtColors.Overlay)
-            .padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+            .floatSurface(RoundedCornerShape(RtDimens.CardRadius))
+            .padding(horizontal = 6.dp, vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("상황 공유", style = RtType.Micro, color = RtColors.Sub, modifier = Modifier.padding(top = 4.dp))
+        Text("상황 공유", style = RtType.Caption, color = RtColors.Sub, modifier = Modifier.padding(top = 6.dp, bottom = 4.dp))
         StatusButton(StatusSignal.SLEEPY, Icons.Outlined.Bedtime, night = true, onSignal = onSignal, modifier = Modifier.fillMaxWidth().height(100.dp))
+        RailDivider()
         StatusButton(StatusSignal.REST, Icons.Outlined.LocalCafe, night = false, onSignal = onSignal, modifier = Modifier.fillMaxWidth().height(100.dp))
+        RailDivider()
         StatusButton(StatusSignal.TOILET, Icons.Outlined.Wc, night = false, onSignal = onSignal, modifier = Modifier.fillMaxWidth().height(100.dp))
+        RailDivider()
         StatusButton(StatusSignal.ENERGY, Icons.Outlined.LocalGasStation, night = false, onSignal = onSignal, modifier = Modifier.fillMaxWidth().height(100.dp))
     }
+}
+
+@Composable
+private fun RailDivider() {
+    Box(Modifier.padding(horizontal = 10.dp).fillMaxWidth().height(1.dp).background(RtColors.Divider))
 }
 
 @Composable
@@ -498,12 +502,10 @@ private fun StatusButton(
     onSignal: (StatusSignal) -> Unit,
     modifier: Modifier,
 ) {
-    val shape = RoundedCornerShape(18.dp)
+    val shape = RoundedCornerShape(RtDimens.InnerRadius)
     Column(
         modifier
             .clip(shape)
-            .background(if (night) RtColors.NightSoft else RtColors.Card)
-            .border(1.dp, if (night) RtColors.NightLine else RtColors.Line, shape)
             .clickable(role = Role.Button, onClickLabel = signal.label) { onSignal(signal) }
             .padding(horizontal = 4.dp, vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -514,13 +516,12 @@ private fun StatusButton(
         // 한 줄에 다 들어가게 잡되, 차마다 글꼴이 달라 넘치면 말줄임 대신 어절 단위로 두 줄
         Text(
             signal.label,
+            style = RtType.CaptionStrong,
             color = if (night) RtColors.Night else RtColors.Ink,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            lineHeight = 19.sp,
+            lineHeight = 20.sp,
         )
     }
 }
@@ -534,11 +535,8 @@ fun CaptionBar(text: String, modifier: Modifier = Modifier, speaker: Member? = n
     Row(
         modifier
             .widthIn(max = 1100.dp)
-            .shadow(6.dp, RoundedCornerShape(999.dp), ambientColor = RtColors.Ink.copy(alpha = 0.25f), spotColor = RtColors.Ink.copy(alpha = 0.25f))
-            .clip(RoundedCornerShape(999.dp))
-            .background(RtColors.CaptionBg)
-            .border(1.dp, RtColors.Line, RoundedCornerShape(999.dp))
-            .padding(start = if (speaker != null) 12.dp else 24.dp, end = 26.dp, top = 12.dp, bottom = 12.dp)
+            .floatSurface(RoundedCornerShape(RtDimens.CardRadius))
+            .padding(start = if (speaker != null) 12.dp else 20.dp, end = 24.dp, top = 12.dp, bottom = 12.dp)
             .semantics { liveRegion = LiveRegionMode.Polite },
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -548,7 +546,7 @@ fun CaptionBar(text: String, modifier: Modifier = Modifier, speaker: Member? = n
         }
         Icon(Icons.Outlined.GraphicEq, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(24.dp))
         Spacer(Modifier.width(10.dp))
-        Text(text, color = RtColors.Ink, fontSize = 19.sp, fontWeight = FontWeight.Medium, maxLines = 2, lineHeight = 25.sp)
+        Text(text, style = RtType.Body, color = RtColors.Ink, maxLines = 2)
     }
 }
 

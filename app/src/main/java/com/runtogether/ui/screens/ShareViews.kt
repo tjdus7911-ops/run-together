@@ -53,7 +53,10 @@ import com.runtogether.ui.components.PrimaryButton
 import com.runtogether.ui.components.RtCard
 import com.runtogether.ui.components.SectionLabel
 import com.runtogether.ui.components.Tag
+import com.runtogether.ui.components.floatSurface
 import com.runtogether.ui.theme.RtColors
+import com.runtogether.ui.theme.RtDimens
+import com.runtogether.ui.theme.RtType
 
 /** ④ 상황 공유 알림: "민지님이 졸리대요" — 큰 버튼 하나로 답하고, 10초 뒤 자동으로 닫힌다 */
 @Composable
@@ -69,13 +72,10 @@ fun AlertCard(
     Column(
         modifier
             .width(660.dp)
-            .shadow(16.dp, RoundedCornerShape(32.dp))
-            .clip(RoundedCornerShape(32.dp))
-            .background(RtColors.Card)
-            .border(1.dp, RtColors.Line, RoundedCornerShape(32.dp))
-            .padding(start = 40.dp, end = 40.dp, top = 36.dp, bottom = 30.dp)
+            .floatSurface(RoundedCornerShape(RtDimens.CardRadius), elevation = 16.dp)
+            .padding(start = 40.dp, end = 40.dp, top = 34.dp, bottom = 28.dp)
             .semantics { liveRegion = LiveRegionMode.Assertive },
-        verticalArrangement = Arrangement.spacedBy(22.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             MemberAvatar(from, 80.dp)
@@ -88,39 +88,27 @@ fun AlertCard(
                     if (isSleepy) RtColors.Night else RtColors.AccentText,
                     icon = if (isSleepy) Icons.Outlined.Bedtime else Icons.Outlined.LocalCafe,
                 )
-                Text(headline(from.name, alert.signal), fontSize = 42.sp, fontWeight = FontWeight.Black, lineHeight = 48.sp)
+                Text(headline(from.name, alert.signal), style = RtType.Display)
             }
         }
 
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(18.dp))
-                .background(RtColors.Panel)
-                .padding(horizontal = 18.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(10.dp))
-            Text("모든 차에 음성으로 알렸어요", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = RtColors.Ink2)
-            Spacer(Modifier.weight(1f))
-            Icon(Icons.Outlined.GraphicEq, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(28.dp))
-            Icon(Icons.Outlined.GraphicEq, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(28.dp))
+        // 읽어 줬다는 표시는 면 없이 한 줄
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null, tint = RtColors.Sub, modifier = Modifier.size(22.dp))
+            Spacer(Modifier.width(8.dp))
+            Text("모든 차에 음성으로 알렸어요", style = RtType.Meta, color = RtColors.Sub)
+            Spacer(Modifier.width(8.dp))
+            Icon(Icons.Outlined.GraphicEq, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(24.dp))
         }
 
         val rec = alert.recommendation
         if (rec != null) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(22.dp))
-                    .background(RtColors.AccentSoft)
-                    .padding(horizontal = 22.dp, vertical = 20.dp),
-            ) {
-                Icon(Icons.Outlined.LocalCafe, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(34.dp))
-                Spacer(Modifier.width(16.dp))
+            // 묻는 말은 상자 대신 위쪽 가는 선 아래 큰 글자로
+            Column(Modifier.fillMaxWidth()) {
+                HorizontalDivider(color = RtColors.Divider)
+                Spacer(Modifier.height(20.dp))
                 Column {
-                    Text("${rec.stop.name}에서 ${alert.restMinutes}분 쉬었다 갈까요?", fontSize = 25.sp, fontWeight = FontWeight.Bold, lineHeight = 32.sp)
+                    Text("${rec.stop.name}에서 ${alert.restMinutes}분 쉬었다 갈까요?", style = RtType.Title)
                     val facilities = buildList {
                         if (rec.stop.hasFuel) add("주유소")
                         if (rec.stop.hasCharger) add("충전소")
@@ -129,8 +117,8 @@ fun AlertCard(
                     val reason = if ("가장 가까운 쉴 곳" in rec.reasons) "가장 가까운 쉴 곳" else "추천 쉴 곳"
                     Text(
                         "$reason · ${formatKm(rec.distanceKm)}km · 약 ${rec.etaMinutes}분" + if (facilities.isNotEmpty()) " · $facilities" else "",
-                        fontSize = 18.sp,
-                        color = RtColors.Ink2,
+                        style = RtType.Meta,
+                        color = RtColors.Sub,
                     )
                 }
             }
@@ -142,28 +130,28 @@ fun AlertCard(
                 Button(
                     onClick = { onVote(true) },
                     modifier = Modifier.weight(1f).height(76.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = RtColors.Raised, contentColor = RtColors.Ink2),
+                    shape = RoundedCornerShape(RtDimens.ButtonRadius),
+                    colors = ButtonDefaults.buttonColors(containerColor = RtColors.Panel, contentColor = RtColors.Ink2),
                 ) {
                     Icon(Icons.Outlined.Check, contentDescription = null, modifier = Modifier.size(26.dp))
                     Spacer(Modifier.width(10.dp))
-                    Text("좋아요", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                    Text("좋아요", style = RtType.Headline, color = RtColors.Ink2)
                 }
             } else {
-                PrimaryButton("좋아요", Icons.Outlined.Check, { onVote(true) }, Modifier.weight(1f), textSize = 26.sp, corner = 20.dp)
+                PrimaryButton("좋아요", Icons.Outlined.Check, { onVote(true) }, Modifier.weight(1f), textSize = 24.sp)
             }
             OutlinedButton(
                 onClick = { onVote(false) },
                 modifier = Modifier.weight(1f).height(76.dp),
-                shape = RoundedCornerShape(20.dp),
-                border = BorderStroke(2.dp, RtColors.Line2),
+                shape = RoundedCornerShape(RtDimens.ButtonRadius),
+                border = BorderStroke(1.dp, RtColors.Line2),
             ) {
-                Text("괜찮아요", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = RtColors.Ink2)
+                Text("괜찮아요", style = RtType.Headline, color = RtColors.Ink2)
             }
         }
         Text(
             "말로 “좋아요”라고 해도 돼요 · 10초 뒤 자동으로 닫혀요",
-            fontSize = 17.sp,
+            style = RtType.Caption,
             color = RtColors.Sub,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
@@ -185,30 +173,30 @@ private fun headline(name: String, signal: StatusSignal): String = when (signal)
 fun VotePanel(state: DriveUiState, modifier: Modifier = Modifier) {
     val vote = state.vote ?: return
     val accepted = state.voteResult?.accepted == true
-    RtCard(modifier, padding = PaddingValues(horizontal = 30.dp, vertical = 26.dp)) {
+    RtCard(modifier, padding = PaddingValues(top = 4.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             SectionLabel("쉬어가기 투표")
             Spacer(Modifier.weight(1f))
             if (accepted) Tag("과반 동의", RtColors.AccentSoft, RtColors.AccentText, icon = Icons.Outlined.Check)
             else if (state.voteResult == null) Tag("1분 뒤 마감", RtColors.Panel, RtColors.Sub, icon = Icons.Outlined.Schedule)
         }
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(10.dp))
         Row(verticalAlignment = Alignment.Bottom) {
-            Text("${vote.yesCount}/${vote.memberIds.size}", fontSize = 56.sp, fontWeight = FontWeight.Bold)
+            Text("${vote.yesCount}/${vote.memberIds.size}", style = RtType.NumL)
             Spacer(Modifier.width(12.dp))
-            Text("명이 좋아요", fontSize = 22.sp, fontWeight = FontWeight.Medium, color = RtColors.Ink2, modifier = Modifier.padding(bottom = 8.dp))
+            Text("명이 좋아요", style = RtType.Headline, color = RtColors.Ink2, modifier = Modifier.padding(bottom = 8.dp))
         }
         Spacer(Modifier.height(14.dp))
         // 막대: 좋아요 → 괜찮아요 → 아직
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             val ordered = List(vote.yesCount) { RtColors.Accent } +
                 List(vote.noCount) { RtColors.Faint } +
                 List(vote.memberIds.size - vote.yesCount - vote.noCount) { RtColors.Pending }
             ordered.forEach { c ->
-                Box(Modifier.weight(1f).height(12.dp).clip(RoundedCornerShape(6.dp)).background(c))
+                Box(Modifier.weight(1f).height(8.dp).clip(RoundedCornerShape(4.dp)).background(c))
             }
         }
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(20.dp))
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             vote.memberIds.chunked(2).forEach { pair ->
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -219,14 +207,14 @@ fun VotePanel(state: DriveUiState, modifier: Modifier = Modifier) {
                                 MemberAvatar(member, 38.dp)
                                 Spacer(Modifier.width(10.dp))
                                 Column {
-                                    Text(member.name, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                                    Text(member.name, style = RtType.CaptionStrong)
                                     val (text, color) = when {
                                         id == vote.proposerId -> "제안 · ${state.voteSignal?.label ?: "쉬어 가요"}" to RtColors.Night
                                         vote.voteOf(id) == Vote.YES -> "좋아요" to RtColors.AccentText
                                         vote.voteOf(id) == Vote.NO -> "괜찮아요" to RtColors.Sub
                                         else -> "응답 기다리는 중" to RtColors.Muted
                                     }
-                                    Text(text, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = color)
+                                    Text(text, style = RtType.CaptionStrong, color = color)
                                 }
                             }
                         } else {
@@ -237,20 +225,18 @@ fun VotePanel(state: DriveUiState, modifier: Modifier = Modifier) {
                 }
             }
         }
-        Spacer(Modifier.height(18.dp))
-        // 어디서 얼마나 쉬자는 건지
+        Spacer(Modifier.height(20.dp))
+        // 어디서 얼마나 쉬자는 건지 (면 없이, 위쪽 가는 선)
+        HorizontalDivider(color = RtColors.Divider)
+        Spacer(Modifier.height(16.dp))
         Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(RtColors.Panel)
-                .padding(horizontal = 18.dp, vertical = 14.dp),
+            Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(Icons.Outlined.LocalCafe, contentDescription = null, tint = RtColors.AccentText, modifier = Modifier.size(26.dp))
+            Icon(Icons.Outlined.LocalCafe, contentDescription = null, tint = RtColors.Sub, modifier = Modifier.size(24.dp))
             Spacer(Modifier.width(12.dp))
             Column {
-                Text("${vote.stop.name}에서 ${vote.restMinutes}분 쉬기", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+                Text("${vote.stop.name}에서 ${vote.restMinutes}분 쉬기", style = RtType.BodyStrong)
                 val facilities = buildList {
                     if (vote.stop.hasFuel) add("주유소")
                     if (vote.stop.hasCharger) add("충전소")
@@ -258,7 +244,7 @@ fun VotePanel(state: DriveUiState, modifier: Modifier = Modifier) {
                 }.joinToString("·")
                 Text(
                     "${formatKm(state.distanceTo(vote.stop))}km · 약 ${state.minutesTo(vote.stop)}분" + if (facilities.isNotEmpty()) " · $facilities" else "",
-                    fontSize = 16.sp,
+                    style = RtType.Caption,
                     color = RtColors.Sub,
                 )
             }
@@ -268,7 +254,7 @@ fun VotePanel(state: DriveUiState, modifier: Modifier = Modifier) {
         Spacer(Modifier.height(14.dp))
         Text(
             "과반이 ‘좋아요’면 쉴 곳이 자동으로 모두의 경로에 들어가요. 투표는 1분 뒤 마감되고, 운전 중엔 말로만 답해도 돼요.",
-            fontSize = 16.sp,
+            style = RtType.Caption,
             lineHeight = 24.sp,
             color = RtColors.Sub,
         )
@@ -281,17 +267,17 @@ fun ResultCard(result: VoteResult) {
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
-            .background(RtColors.Card)
-            .padding(horizontal = 26.dp, vertical = 22.dp),
+            .clip(RoundedCornerShape(RtDimens.InnerRadius))
+            .background(if (result.accepted) RtColors.AccentSoft else RtColors.Card)
+            .padding(horizontal = 22.dp, vertical = 18.dp),
         verticalAlignment = Alignment.Top,
     ) {
         Box(
             Modifier
-                .size(44.dp)
+                .size(40.dp)
                 .clip(CircleShape)
-                .background(if (result.accepted) RtColors.Accent else RtColors.Card)
-                .border(2.dp, if (result.accepted) RtColors.Accent else RtColors.Line2, CircleShape),
+                .background(if (result.accepted) RtColors.Accent else RtColors.Bg)
+                .border(1.5.dp, if (result.accepted) RtColors.Accent else RtColors.Line2, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
@@ -303,8 +289,8 @@ fun ResultCard(result: VoteResult) {
         }
         Spacer(Modifier.width(16.dp))
         Column {
-            Text(result.title, fontSize = 21.sp, fontWeight = FontWeight.Bold, lineHeight = 28.sp)
-            Text(result.detail, fontSize = 17.sp, color = RtColors.Sub)
+            Text(result.title, style = RtType.BodyStrong)
+            Text(result.detail, style = RtType.Caption, color = RtColors.Sub)
         }
     }
 }
