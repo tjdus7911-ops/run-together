@@ -78,8 +78,8 @@ object RtColors {
     /** 고른 것의 바탕 (accent-subtle) */
     val AccentSoft = Color(0xFFEFF4FF)
     val AccentRing = Color(0x4D2563EB)
-    /** 주요 버튼의 옅은 세로 그라데이션: 위 → 아래 (흰 글자 어디서나 4.5:1 이상) */
-    val AccentHi = Color(0xFF3B7BF2)
+    /** 주요 버튼의 옅은 세로 그라데이션: 위 → 아래 (흰 글자 위쪽 4.6:1 · 아래쪽 5.2:1) */
+    val AccentHi = Color(0xFF2F6EEE)
     val AccentLo = Color(0xFF2563EB)
     /** 내 차 둘레 빛 (지도) */
     val AccentGlow = Color(0xFF3D8BFF)
@@ -105,7 +105,7 @@ object RtColors {
 
     /** 정상 · 실시간 연결됨 */
     val Good = Color(0xFF1B7F4F)
-    val GoodSoft = Color(0xFFE8F5EE)
+    val GoodSoft = Color(0xFFEEF8F2)
 
     // 지도 (밝은 내비 지도: 어두운 화면 가운데에서도 길이 잘 보이게)
     val MapLand = Color(0xFFEFEFEA)
