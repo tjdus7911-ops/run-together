@@ -84,82 +84,100 @@ export function TripScreen() {
   if (!trip.active || trip.step === 'lobby') return null
   if (trip.step === 'regroup1') return <ArriveView />
   if (trip.step === 'ended') return <EndView />
-  if (role === 'driver' && !trip.unlocked) return <DriverLock />
+  if (role === 'driver' && !trip.unlocked) return <DriverNav />
   return <PassengerMap />
 }
 
-// ---------------- M-06 운전자 모드 · 움직이는 동안 잠금 ----------------
+// ---------------- M-06 운전자 모드 · 모임 내비 (움직이는 동안 잠금) ----------------
+// 거치한 휴대폰에 지도(지리안내 영상)를 보여 주는 것은 괜찮지만, 운전 중 조작은 안 된다 (도로교통법 제49조).
+// 그래서 누르지 않아도 되는 화면: 다음 집결지 · 남은 거리 · 모임 차 위치와 간격을 크게, 소식은 소리로, 답은 말로.
 
-function DriverLock() {
+function DriverNav() {
   const trip = useApp((s) => s.trip)
   const keepAwake = useApp((s) => s.settings.keepAwake)
   const all = useMembers()
   const loc = useLocationLine()
+  const { markers, gap, gapText } = useMarkers()
   const next = nextOf(trip)
   const vote = trip.vote
   const pending = vote && !trip.voteResult
   const proposer = vote ? all.find((m) => m.id === vote.proposerId) : undefined
   const startKm = START_KM[trip.step] ?? 21
-  const prevStop = trip.step === 'drive1' ? '잠실 출발 07:30' : trip.munmak ? '횡성 가는 길' : '덕평 출발 08:35'
   const myVote = vote?.votes[ME]
+  const order = ['me', 'jiwon', 'sua', 'minji', 'junho']
   return (
-    <div className="lock">
-      <div className="spread">
-        <span className="lock-pill">
-          <Icon name="lock" size={14} /> 움직이는 동안 잠겨 있어요
-        </span>
-        <b style={{ fontSize: 15 }}>{liveClock(trip)}</b>
+    <div className="mapscreen">
+      <div className="drive-map">
+        <MockMap markers={markers} gapBetween={gap} gapText={gapText} />
       </div>
-      {next && (
-        <div className="mt16">
-          <div className="spread tiny">
-            <span>{prevStop}</span>
-            <span>
-              {next.short}까지 {next.km}km
-            </span>
-          </div>
-          <div className="mt4">
-            <Progress value={startKm - next.km + 2} max={startKm + 2} />
-          </div>
-        </div>
-      )}
-
-      {pending && vote ? (
-        <div className="mt24">
-          <span className="lock-wave">
-            <Icon name="wave" size={30} />
+      <div className="drive-card">
+        <div className="spread">
+          <span className="lock-pill">
+            <Icon name="lock" size={14} /> 움직이는 동안 잠겨 있어요
           </span>
-          <p className="mt12 row" style={{ gap: 6 }}>
-            <Chip tone="night" icon="moon">
-              {SIGNAL_LABEL.SLEEPY}
-            </Chip>
-            <span className="tiny">{proposer?.id === ME ? '내가 제안 · 방금' : `${proposer?.name}님 차에서 · 방금`}</span>
-          </p>
-          <h1 className="h1 mt12" style={{ fontSize: 28 }}>
-            {proposer?.id === ME ? '쉬어가기를 제안했어요.' : `${proposer?.name}님이 졸리대요.`}
-            <br />
-            {vote.stopName}에서 {vote.restMinutes}분 쉬었다 갈까요?
-          </h1>
-          {myVote ? (
-            <Card className="mt16 accent">
-              <p className="row" style={{ fontWeight: 700, color: 'var(--accent)' }}>
-                <Icon name="checkCircle" /> ‘{myVote === 'YES' ? '좋아요' : '괜찮아요'}’로 답했어요
+          <b style={{ fontSize: 16 }}>{liveClock(trip)}</b>
+        </div>
+        {next && (
+          <>
+            <p className="tiny mt12 row" style={{ gap: 5, color: 'var(--accent)', fontWeight: 800 }}>
+              <Icon name="flag" size={14} /> {trip.munmak ? '바뀐 집결지' : '다음 집결지'}
+            </p>
+            <div className="spread" style={{ alignItems: 'flex-end' }}>
+              <div className="grow">
+                <h1 className="h2" style={{ fontSize: 22 }}>
+                  {next.name}
+                </h1>
+                <p className="small">
+                  약 {next.minutes}분 · {trip.munmak ? '09:00' : next.eta} 도착
+                </p>
+              </div>
+              <p className="drive-km">
+                {next.km}
+                <small>km</small>
               </p>
-              <p className="tiny mt4">다른 분들의 답을 기다리고 있어요 · 결과는 소리로 알려 드려요</p>
-            </Card>
-          ) : (
-            <button className="listen mt16" onClick={() => (canListen() ? listenForVote() : setTrip((t) => ({ ...t, unlocked: true, sheet: 'vote' })))}>
-              <span className={`listen-mic${trip.listening === 'vote' ? '' : ' idle'}`}>
-                <Icon name="mic" size={26} />
-              </span>
-              <span className="grow">
-                <b style={{ fontSize: 16 }}>{trip.listening === 'vote' ? '듣고 있어요 — 말로 답해 주세요' : canListen() ? '눌러서 말로 답하기' : '이 브라우저는 음성 인식이 없어요'}</b>
-                <p className="small mt4">“좋아요” 또는 “괜찮아요” · 안 되면 동승자가 대신 답해요</p>
-              </span>
-            </button>
-          )}
-          <div className="mt16">
-            <div className="spread small">
+            </div>
+            <div className="mt8">
+              <Progress value={startKm - next.km + 2} max={startKm + 2} />
+            </div>
+            <p className="mt8" style={{ fontSize: 14, fontWeight: 800 }}>
+              따라오지 않아도 돼요 · {next.short}에서 만나요
+            </p>
+          </>
+        )}
+      </div>
+      <span className="map-demo" style={{ top: 'calc(232px + env(safe-area-inset-top))', bottom: 'auto' }}>
+        시연용 지도
+      </span>
+
+      <div className="drive-bottom">
+        {pending && vote ? (
+          <>
+            <p className="row" style={{ gap: 6 }}>
+              <Chip tone="night" icon="moon">
+                {SIGNAL_LABEL.SLEEPY}
+              </Chip>
+              <span className="tiny">{proposer?.id === ME ? '내가 제안 · 방금' : `${proposer?.name}님 차에서 · 방금`}</span>
+            </p>
+            <h2 className="h2 mt8" style={{ fontSize: 21 }}>
+              {proposer?.id === ME ? '쉬어가기를 제안했어요. ' : `${proposer?.name}님이 졸리대요. `}
+              {vote.stopName}에서 {vote.restMinutes}분 쉬었다 갈까요?
+            </h2>
+            {myVote ? (
+              <p className="small mt8 row" style={{ gap: 6, color: 'var(--accent)', fontWeight: 700 }}>
+                <Icon name="checkCircle" size={18} /> ‘{myVote === 'YES' ? '좋아요' : '괜찮아요'}’로 답했어요 · 결과는 소리로 알려 드려요
+              </p>
+            ) : (
+              <button className="listen mt12" onClick={() => (canListen() ? listenForVote() : setTrip((t) => ({ ...t, unlocked: true, sheet: 'vote' })))}>
+                <span className={`listen-mic${trip.listening === 'vote' ? '' : ' idle'}`}>
+                  <Icon name="mic" size={24} />
+                </span>
+                <span className="grow">
+                  <b>{trip.listening === 'vote' ? '듣고 있어요 — 말로 답해 주세요' : canListen() ? '말로 답하기' : '이 브라우저는 음성 인식이 없어요'}</b>
+                  <p className="tiny mt4">“좋아요” 또는 “괜찮아요” · 안 되면 동승자가 대신 답해요</p>
+                </span>
+              </button>
+            )}
+            <div className="spread small mt12">
               <b style={{ color: 'var(--accent)' }}>
                 {yesCount(vote)}/{vote.memberIds.length} 좋아요
               </b>
@@ -168,60 +186,57 @@ function DriverLock() {
             <div className="mt8">
               <Progress value={yesCount(vote)} max={vote.memberIds.length} />
             </div>
-          </div>
-          <button className="link-btn mt12" onClick={() => setTrip((t) => ({ ...t, unlocked: true, sheet: 'vote' }))}>
-            동승자가 대신 답하기
-          </button>
+            <button className="link-btn mt8" onClick={() => setTrip((t) => ({ ...t, unlocked: true, sheet: 'vote' }))}>
+              동승자가 대신 답하기
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="spread">
+              <p style={{ fontSize: 14 }}>
+                <b>모임 간격</b> <b className="accent-text" style={{ marginLeft: 4 }}>{stepOf(trip.step).gapKm ?? 3.4}km</b>
+              </p>
+              <span className="tiny">5대 같은 길 · 1대 다른 길</span>
+            </div>
+            <div className="gapbar">
+              <span className="gapbar-line" />
+              {order.map((id, i) => {
+                const m = all.find((x) => x.id === id)!
+                return (
+                  <span className="gapbar-item" key={id} style={{ left: `${[4, 26, 46, 70, 96][i]}%` }}>
+                    <Avatar m={m} size={28} dashed={id === 'minji'} />
+                    <span>{id === ME ? '나' : id === 'junho' ? `${m.name} · 선두` : id === 'minji' ? `${m.name} · 다른 길` : m.name}</span>
+                  </span>
+                )
+              })}
+            </div>
+            <button className="listen mt8" style={{ padding: '10px 12px' }} onClick={listenForSignal}>
+              <span className={`listen-mic${trip.listening === 'signal' ? '' : ' idle'}`} style={{ width: 40, height: 40 }}>
+                <Icon name={trip.listening === 'signal' ? 'mic' : 'volume'} size={20} />
+              </span>
+              <span className="grow">
+                <b style={{ fontSize: 14 }}>{trip.listening === 'signal' ? '듣고 있어요…' : '새 소식은 소리로 읽어 드려요'}</b>
+                <p className="tiny">위급할 땐 말로 “도움이 필요해요”</p>
+              </span>
+            </button>
+          </>
+        )}
+        <div className="spread mt8">
+          <p className="tiny row" style={{ gap: 0 }}>
+            <span className={`dot-live${loc.tone === 'on' ? '' : ` ${loc.tone}`}`} />
+            {loc.text}
+          </p>
         </div>
-      ) : next ? (
-        <div className="mt24">
-          {trip.munmak && (
-            <Chip tone="accent" icon="checkCircle">
-              과반이 좋다고 해서 바뀐 집결지예요
-            </Chip>
+        <div className="spread">
+          <span className="tiny">화면 켜 두기 {keepAwake ? '켜짐' : '꺼짐'} · 길 안내 음성은 쓰던 내비로</span>
+          {!pending && (
+            <button className="link-btn" style={{ fontSize: 12 }} onClick={() => setTrip((t) => ({ ...t, unlocked: true }))}>
+              동승자가 대신 쓰기
+            </button>
           )}
-          <p className="row tiny mt12" style={{ gap: 6, color: 'var(--accent)', fontWeight: 700 }}>
-            <Icon name="flag" size={15} /> 다음 집결지
-          </p>
-          <h1 className="h1 mt4" style={{ fontSize: 28 }}>
-            {next.name}
-          </h1>
-          <p className="lock-big mt12">
-            {next.km}
-            <small>km</small>
-          </p>
-          <p className="small mt8">
-            약 {next.minutes}분 · {trip.munmak ? '09:00' : next.eta} 도착
-          </p>
-          <p className="mt16" style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.4 }}>
-            따라오지 않아도 돼요.
-            <br />
-            {next.short}에서 만나요.
-          </p>
-          <button className="listen mt24" onClick={listenForSignal}>
-            <span className={`listen-mic${trip.listening === 'signal' ? '' : ' idle'}`}>
-              <Icon name={trip.listening === 'signal' ? 'mic' : 'volume'} size={24} />
-            </span>
-            <span className="grow">
-              <b>{trip.listening === 'signal' ? '듣고 있어요…' : '새 소식은 소리로 읽어 드려요'}</b>
-              <p className="small mt4">위급할 땐 말로 “도움이 필요해요”</p>
-            </span>
-          </button>
         </div>
-      ) : null}
-
-      <div className="lock-foot">
-        <p className="row" style={{ gap: 0 }}>
-          <span className={`dot-live${loc.tone === 'on' ? '' : ` ${loc.tone}`}`} />
-          {loc.text}
-        </p>
-        <p className="mt4">
-          화면이 꺼지면 위치가 멈춰요 — 거치대에 두세요 · 화면 켜 두기 {keepAwake ? '켜짐' : '꺼짐'}
-        </p>
-        <button className="link-btn mt8" style={{ fontSize: 13 }} onClick={() => setTrip((t) => ({ ...t, unlocked: true }))}>
-          동승자가 대신 쓰기
-        </button>
       </div>
+      {/* 운전자 모드에서는 누르는 시트를 띄우지 않는다 (투표는 말로, 집결지 변경은 위 카드와 소리로) */}
     </div>
   )
 }

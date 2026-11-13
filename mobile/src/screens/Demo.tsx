@@ -54,7 +54,7 @@ export function DemoTab() {
             setTrip((t) => ({ ...t, unlocked: false }))
           }}
           options={[
-            { value: 'driver', label: '운전해요', sub: 'M-06 잠금 화면' },
+            { value: 'driver', label: '운전해요', sub: 'M-06 모임 내비' },
             { value: 'passenger', label: '같이 타고 가요', sub: 'M-07 모임 지도' },
           ]}
         />

@@ -447,7 +447,7 @@ export function SetupRole() {
             </span>
             <span className="grow">
               <b>운전해요</b>
-              <p className="tiny">움직이는 동안 화면이 잠기고, 소식은 소리로 들려 드려요</p>
+              <p className="tiny">움직이는 동안은 누르지 않아도 되는 모임 지도가 떠요. 소식은 소리로 들려 드려요</p>
             </span>
             <span className="radio" />
           </button>

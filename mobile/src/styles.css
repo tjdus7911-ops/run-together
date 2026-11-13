@@ -1668,3 +1668,51 @@ p {
 
 .demo-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .demo-links .btn { width: 100%; padding: 0 6px; font-size: 13px; white-space: nowrap; gap: 4px; }
+
+/* 운전자 모드 · 모임 내비 (지도는 머리 카드 아래부터) */
+.drive-map {
+  position: absolute;
+  top: calc(176px + env(safe-area-inset-top));
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.drive-card {
+  position: absolute;
+  z-index: 3;
+  top: calc(10px + env(safe-area-inset-top));
+  left: 10px;
+  right: 10px;
+  padding: 14px 16px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #e8ecf1;
+  box-shadow: 0 8px 26px rgba(20, 24, 32, 0.12);
+}
+
+.drive-km {
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.drive-km small {
+  font-size: 18px;
+  margin-left: 3px;
+  letter-spacing: 0;
+}
+
+.drive-bottom {
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px 18px calc(10px + env(safe-area-inset-bottom));
+  border-radius: 24px 24px 0 0;
+  background: #fff;
+  box-shadow: 0 -8px 30px rgba(20, 24, 32, 0.12);
+}

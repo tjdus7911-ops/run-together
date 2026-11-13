@@ -74,7 +74,7 @@ SDK 리스너는 `data/pleos/PleosBridge.java`에서 감싸 SDK 버전 변화에
 | 참여 (M-01 ~ M-03) |
 |---|
 | ![휴대폰 참여](docs/screenshots/mobile_1_join.png) |
-| **여행 중 — 운전자는 잠금 · 소리, 동승자는 지도 · 투표 (M-06 ~ M-09)** |
+| **여행 중 — 운전자는 누르지 않아도 되는 모임 내비 · 소리 · 말로 투표, 동승자는 지도 · 투표 (M-06 ~ M-09)** |
 | ![휴대폰 여행 중](docs/screenshots/mobile_2_trip.png) |
 | **도착 · 홈 · 내 메시지 (M-10 · M-11 · M-04 · M-13 · M-14)** |
 | ![휴대폰 도착과 내 메시지](docs/screenshots/mobile_3_more.png) |
