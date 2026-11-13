@@ -2,7 +2,7 @@
 <resources>
     <!-- 화이트 × 디지털 블루 (Compose 테마 RtColors 와 같은 값) -->
     <color name="rt_bg">#FFFFFF</color>
-    <color name="rt_accent">#2F74EE</color>
+    <color name="rt_accent">#2563EB</color>
 
     <style name="Theme.RunTogether" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/rt_bg</item>

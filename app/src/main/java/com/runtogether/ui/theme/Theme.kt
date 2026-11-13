@@ -65,11 +65,11 @@ object RtColors {
     val Pending = Color(0xFFDCE1E8)
 
     // 포인트 (디지털 블루)
-    val Accent = Color(0xFF2F74EE)
-    /** 흰 바탕 위 파란 글자 (작은 글자도 읽히게 조금 깊게, 4.5:1 이상) */
-    val AccentText = Color(0xFF1F5FD6)
-    val AccentSoft = Color(0x1F2F74EE)
-    val AccentRing = Color(0x4D2F74EE)
+    /** 흰 바탕에서 흰 글자 5.2:1 · 파란 글자로도 카드 위 4.7:1 (피그마 accent/default 와 같은 값) */
+    val Accent = Color(0xFF2563EB)
+    val AccentText = Color(0xFF2563EB)
+    val AccentSoft = Color(0x1F2563EB)
+    val AccentRing = Color(0x4D2563EB)
     /** 주요 버튼 그라데이션: 왼쪽 위 밝은 디지털 블루 → 오른쪽 아래 깊은 블루 (흰 글자 3.3:1 ~ 6.2:1, 큰 버튼 글자 기준 통과) */
     val AccentHi = Color(0xFF3D8BFF)
     val AccentLo = Color(0xFF2456D6)
