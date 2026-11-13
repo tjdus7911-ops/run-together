@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 그래파이트 × 디지털 블루 (Compose 테마 RtColors 와 같은 값) -->
-    <color name="rt_bg">#30353C</color>
+    <!-- 화이트 × 디지털 블루 (Compose 테마 RtColors 와 같은 값) -->
+    <color name="rt_bg">#FFFFFF</color>
     <color name="rt_accent">#2F74EE</color>
 
-    <style name="Theme.RunTogether" parent="android:Theme.Material.NoActionBar">
+    <style name="Theme.RunTogether" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/rt_bg</item>
         <item name="android:statusBarColor">@color/rt_bg</item>
         <item name="android:navigationBarColor">@color/rt_bg</item>
-        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
         <item name="android:colorAccent">@color/rt_accent</item>
     </style>
 </resources>

@@ -4,7 +4,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
@@ -30,44 +30,46 @@ val AstaSans = FontFamily(
 )
 
 /**
- * 그래파이트 × 디지털 블루 디자인 토큰 (차량 인포테인먼트, 어두운 화면 — 이전 차콜보다 한 단계 밝게).
- * 현대차그룹 SDV 인포테인먼트 Pleos Connect 에 맞춘 디지털 콘셉트: 시스템 글꼴 Asta Sans, 차가운 그래파이트, 디지털 블루.
- * 바탕은 푸른 기가 살짝 도는 그래파이트, 글자는 차가운 흰색. 모든 글자는 놓이는 면 위에서 4.5:1 이상.
+ * 화이트 × 디지털 블루 디자인 토큰 (차량 인포테인먼트, 흰 바탕).
+ * 현대차그룹 SDV 인포테인먼트 Pleos Connect 에 맞춘 디지털 콘셉트: 시스템 글꼴 Asta Sans, 흰 바탕, 디지털 블루.
+ * 바탕은 흰색, 카드는 아주 옅은 쿨 그레이 + 얇은 테두리, 글자는 짙은 남회색. 모든 글자는 놓이는 면 위에서 4.5:1 이상
+ * (큰 버튼의 흰 글자는 3:1 이상). 이전 그래파이트(어두운) 값은 git 기록 3ace72d 의 이 파일에 있다.
  * 파랑(Accent)은 로고 · 지금 고른 것 · 주요 버튼 · 내 차 위치와 주행 경로 · 집결지 진행 · 중요한 상태에만 쓴다.
  * 주요 버튼만 그라데이션([AccentHi] → [AccentLo])과 은은한 바깥 빛([AccentGlow])을 쓴다. 움직이는 효과는 쓰지 않는다.
  * 이름은 이전 테마와 같게 두어 화면 코드가 그대로 따라온다 (Ink = 기본 글자, Card = 카드 바탕 …).
  */
 object RtColors {
     // 바탕
-    val Bg = Color(0xFF30353C)
-    val Card = Color(0xFF3D434B)
+    val Bg = Color(0xFFFFFFFF)
+    /** 카드: 흰 바탕과 구분되는 아주 옅은 쿨 그레이 (+ RtCard 의 얇은 테두리) */
+    val Card = Color(0xFFF4F6F9)
     /** 카드 안의 한 단계 낮은 면 (타일·입력 칸) */
-    val Panel = Color(0xFF353A42)
-    /** 카드 위로 올라온 면 (보조 버튼·칩) */
-    val Raised = Color(0xFF4A515A)
-    /** 지도 위에 뜨는 패널 */
-    val Overlay = Color(0xF5343A42)
+    val Panel = Color(0xFFEAEEF3)
+    /** 카드 위로 올라온 면 (보조 버튼·칩): 흰색 + 테두리 */
+    val Raised = Color(0xFFFFFFFF)
+    /** 지도 위에 뜨는 패널 (흰색, 살짝 비침) */
+    val Overlay = Color(0xF7FFFFFF)
 
     // 글자
-    val Ink = Color(0xFFF5F6F8)
-    val Ink2 = Color(0xFFE4E7EB)
-    val Sub = Color(0xFFBCC2CA)
-    val Muted = Color(0xFFAAB1BA)
-    val Faint = Color(0xFF8A919B)
+    val Ink = Color(0xFF15181E)
+    val Ink2 = Color(0xFF2A2F37)
+    val Sub = Color(0xFF4B5563)
+    val Muted = Color(0xFF5F6976)
+    val Faint = Color(0xFF9AA2AD)
 
     // 선
-    val Line = Color(0xFF59606A)
-    val Line2 = Color(0xFF677079)
-    val Divider = Color(0xFF4E555E)
+    val Line = Color(0xFFD9DEE5)
+    val Line2 = Color(0xFFC6CDD7)
+    val Divider = Color(0xFFE3E7ED)
     /** 투표 막대의 아직 답하지 않은 칸 */
-    val Pending = Color(0xFF555C66)
+    val Pending = Color(0xFFDCE1E8)
 
     // 포인트 (디지털 블루)
     val Accent = Color(0xFF2F74EE)
-    /** 어두운 바탕 위 파란 글자 (작은 글자도 읽히게 조금 밝게) */
-    val AccentText = Color(0xFF80B0FF)
-    val AccentSoft = Color(0x2E2F74EE)
-    val AccentRing = Color(0x592F74EE)
+    /** 흰 바탕 위 파란 글자 (작은 글자도 읽히게 조금 깊게, 4.5:1 이상) */
+    val AccentText = Color(0xFF1F5FD6)
+    val AccentSoft = Color(0x1F2F74EE)
+    val AccentRing = Color(0x4D2F74EE)
     /** 주요 버튼 그라데이션: 왼쪽 위 밝은 디지털 블루 → 오른쪽 아래 깊은 블루 (흰 글자 3.3:1 ~ 6.2:1, 큰 버튼 글자 기준 통과) */
     val AccentHi = Color(0xFF3D8BFF)
     val AccentLo = Color(0xFF2456D6)
@@ -76,24 +78,24 @@ object RtColors {
     val OnAccent = Color(0xFFFFFFFF)
 
     /** '졸려요' = 밤·달 */
-    val Night = Color(0xFFC3A6FF)
-    val NightSoft = Color(0x29C3A6FF)
-    val NightLine = Color(0x5CC3A6FF)
+    val Night = Color(0xFF6A4AD6)
+    val NightSoft = Color(0x1F6A4AD6)
+    val NightLine = Color(0x4D6A4AD6)
 
     /** 주의: 연료 부족 · 간격 벌어짐 */
-    val Warn = Color(0xFFF4C76E)
-    val WarnSub = Color(0xFFDCBB7C)
-    val WarnSoft = Color(0x24F4C76E)
-    val WarnIcon = Color(0xFFF4C76E)
+    val Warn = Color(0xFF9A5B00)
+    val WarnSub = Color(0xFF7A5A1E)
+    val WarnSoft = Color(0x29F2B33D)
+    val WarnIcon = Color(0xFFC27C0E)
     val WarnLine = Color(0xFFE5AC3C)
 
     /** 위험: 도움 요청 · 차에 문제 */
-    val Danger = Color(0xFFFF8F84)
-    val DangerSoft = Color(0x26FF8F84)
+    val Danger = Color(0xFFCC3B2E)
+    val DangerSoft = Color(0x1FCC3B2E)
 
     /** 정상 · 실시간 연결됨 */
-    val Good = Color(0xFF6CCB97)
-    val GoodSoft = Color(0x246CCB97)
+    val Good = Color(0xFF1B7F4F)
+    val GoodSoft = Color(0x1F1B7F4F)
 
     // 지도 (밝은 내비 지도: 어두운 화면 가운데에서도 길이 잘 보이게)
     val MapLand = Color(0xFFEFEFEA)
@@ -118,8 +120,9 @@ object RtColors {
     val TrafficSlow = Color(0xFFE8B928)
     val TrafficJam = Color(0xFFCC3340)
 
-    val Scrim = Color(0x8C141618)
-    val CaptionBg = Color(0xF51F2329)
+    val Scrim = Color(0x66141820)
+    /** 음성 자막 · 알림 띠: 흰색 (+ 테두리와 옅은 그림자) */
+    val CaptionBg = Color(0xFAFFFFFF)
 }
 
 /**
@@ -193,7 +196,7 @@ private val RtTypography = Typography().run {
 fun RunTogetherTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         typography = RtTypography,
-        colorScheme = darkColorScheme(
+        colorScheme = lightColorScheme(
             primary = RtColors.Accent,
             onPrimary = RtColors.OnAccent,
             background = RtColors.Bg,

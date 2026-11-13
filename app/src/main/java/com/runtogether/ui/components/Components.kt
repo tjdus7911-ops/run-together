@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -75,6 +76,7 @@ fun RtCard(
         modifier
             .clip(RoundedCornerShape(RtDimens.CardRadius))
             .background(RtColors.Card)
+            .border(1.dp, RtColors.Divider, RoundedCornerShape(RtDimens.CardRadius))
             .padding(padding),
         content = content,
     )
@@ -532,6 +534,7 @@ fun CaptionBar(text: String, modifier: Modifier = Modifier, speaker: Member? = n
     Row(
         modifier
             .widthIn(max = 1100.dp)
+            .shadow(6.dp, RoundedCornerShape(999.dp), ambientColor = RtColors.Ink.copy(alpha = 0.25f), spotColor = RtColors.Ink.copy(alpha = 0.25f))
             .clip(RoundedCornerShape(999.dp))
             .background(RtColors.CaptionBg)
             .border(1.dp, RtColors.Line, RoundedCornerShape(999.dp))
@@ -553,7 +556,7 @@ fun CaptionBar(text: String, modifier: Modifier = Modifier, speaker: Member? = n
 @Composable
 fun CarGlyph(
     modifier: Modifier = Modifier,
-    body: Color = RtColors.Raised,
+    body: Color = RtColors.Line2,
     glass: Color = RtColors.Panel,
     wheel: Color = RtColors.Faint,
 ) {
