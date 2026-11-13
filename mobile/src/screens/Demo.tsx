@@ -21,10 +21,10 @@ export function DemoTab() {
       <Sheet open={open} onClose={() => setOpen(false)} label="시연 패널">
         <div className="spread">
           <h2 className="h2">시연 단계</h2>
-          <span className="chip chip-neutral">서버 없는 시연판</span>
+          <span className="dev-mark">서버 없는 시연판</span>
         </div>
         <p className="small mt4">시나리오 A(6대 · 잠실 → 강릉)를 따라가요. 다른 차의 움직임과 응답은 시연 데이터예요.</p>
-        <div className="mt12">
+        <div className="mt12 lined-top">
           {STEPS.map((s) => {
             const on = p.joined && trip.active && trip.step === s.id
             return (
@@ -38,15 +38,13 @@ export function DemoTab() {
                 }}
               >
                 <b>{s.clock}</b>
-                <span className="grow" style={{ fontSize: 14, fontWeight: 600 }}>
-                  {s.title}
-                </span>
-                {on ? <Icon name="checkCircle" size={18} style={{ color: 'var(--accent)' }} /> : <Icon name="chevron" size={16} />}
+                <span className="grow">{s.title}</span>
+                {on ? <Icon name="checkCircle" size={18} /> : <Icon name="chevron" size={16} />}
               </button>
             )
           })}
         </div>
-        <p className="label mt16">이 휴대폰은</p>
+        <p className="label mt20">이 휴대폰은</p>
         <Segmented
           value={p.role}
           onChange={(role) => {
@@ -58,17 +56,14 @@ export function DemoTab() {
             { value: 'passenger', label: '같이 타고 가요', sub: 'M-07 모임 지도' },
           ]}
         />
-        <div className="setting-row mt8">
-          <span className="setting-icon">
-            <Icon name="wifiOff" size={18} />
-          </span>
+        <div className="setting-row solo mt16">
           <div className="grow">
-            <b style={{ fontSize: 14 }}>연결 끊김 보기</b>
+            <b className="name">연결 끊김 보기</b>
             <p className="tiny">M-07 오래된 위치 · 다시 연결하는 중</p>
           </div>
           <Toggle label="연결 끊김 보기" checked={trip.demoOffline} onChange={(v) => setTrip((t) => ({ ...t, demoOffline: v }))} />
         </div>
-        <div className="demo-links mt12">
+        <div className="demo-links mt16">
           <Btn kind="secondary" small icon="route" onClick={() => (setOpen(false), go('/start'))}>
             초대 화면
           </Btn>

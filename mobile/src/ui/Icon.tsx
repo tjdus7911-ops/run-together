@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from 'react'
 import type { MessageIcon } from '../domain/messages'
 import type { StatusSignal } from '../domain/korean'
 
-/** 선 아이콘 (24 격자 · 2px 선). 외부 아이콘 라이브러리 없이 필요한 것만 그린다 */
+/** 선 아이콘 (24 격자 · 1.75px 선). 외부 아이콘 라이브러리 없이 필요한 것만 그린다 */
 
 function gearPath(): string {
   const teeth = 8
@@ -304,7 +304,7 @@ const P: Record<string, ReactNode> = {
 
 export type IconName = keyof typeof P
 
-export function Icon({ name, size = 20, stroke = 2, style, className }: { name: IconName | string; size?: number; stroke?: number; style?: CSSProperties; className?: string }) {
+export function Icon({ name, size = 20, stroke = 1.75, style, className }: { name: IconName | string; size?: number; stroke?: number; style?: CSSProperties; className?: string }) {
   return (
     <svg
       className={className}

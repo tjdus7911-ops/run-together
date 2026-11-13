@@ -16,7 +16,7 @@ import { stepOf } from '../domain/scenario'
 import { back, go } from '../router'
 import { previewSpeech, setMessages, toast, useApp } from '../store'
 import { Icon, MESSAGE_ICON, SIGNAL_ICON } from '../ui/Icon'
-import { Bottom, Btn, Card } from '../ui/kit'
+import { Bottom, Btn } from '../ui/kit'
 
 /** 운전 중(모임 주행 중 · 운전자)에는 만들거나 고칠 수 없다 (MOB-134) */
 function useEditLocked() {
@@ -42,43 +42,43 @@ export function MessagesScreen() {
       </header>
       <div className="body">
         {locked ? (
-          <Card className="center-card">
-            <span className="hero-icon">
-              <Icon name="lock" size={24} />
-            </span>
+          <div className="lock-note">
+            <Icon name="lock" size={24} />
             <h2 className="h2 mt12">정차한 뒤에 고칠 수 있어요</h2>
             <p className="small mt8">모임 주행 중이고 휴대폰이 움직이고 있어요. 운전 중에는 메시지를 만들거나 고칠 수 없어요.</p>
-          </Card>
+          </div>
         ) : (
           <>
-            <p className="small">차량 화면에서 한 번 누르면 모임 전체에 바로 보내요. 운전 중에는 고칠 수 없어요.</p>
-            <Card className="mt16">
-              <div className="spread">
-                <b>기본 메시지</b>
-                <span className="tiny row" style={{ gap: 4 }}>
+            <p className="lead" style={{ marginTop: 0 }}>
+              차량 화면에서 한 번 누르면 모임 전체에 바로 보내요. 운전 중에는 고칠 수 없어요.
+            </p>
+            <section className="mt24">
+              <div className="section-head">
+                <h2 className="h3">기본 메시지</h2>
+                <span className="loc-line">
                   <Icon name="lock" size={12} /> 고칠 수 없어요
                 </span>
               </div>
-              <div className="row mt12" style={{ gap: 6, flexWrap: 'wrap' }}>
+              <div className="default-signals mt12">
                 {defaults.map((s) => (
-                  <span className="chip chip-neutral" key={s} style={{ height: 30, background: '#fff', border: '1px solid var(--divider)' }}>
-                    <Icon name={SIGNAL_ICON[s]} size={14} /> {SIGNAL_LABEL[s]}
+                  <span key={s}>
+                    <Icon name={SIGNAL_ICON[s]} size={16} /> {SIGNAL_LABEL[s]}
                   </span>
                 ))}
               </div>
-              <p className="tiny mt8">기본 메시지는 가까운 쉴 곳 추천과 쉬어가기 투표로 이어져요</p>
-            </Card>
+              <p className="tiny mt12">기본 메시지는 가까운 쉴 곳 추천과 쉬어가기 투표로 이어져요</p>
+            </section>
           </>
         )}
-        <Card className="mt12">
-          <div className="spread">
-            <b>
+        <section className="group mt24">
+          <div className="section-head">
+            <h2 className="h3">
               내 메시지{' '}
-              <span className="accent-text">
+              <span className="num" style={{ color: 'var(--text-3)', fontWeight: 500 }}>
                 {messages.length}/{MAX_MESSAGES}
               </span>
-            </b>
-            <span className="tiny row" style={{ gap: 4 }}>
+            </h2>
+            <span className="loc-line">
               {locked ? (
                 <>
                   <Icon name="lock" size={12} /> 지금은 고칠 수 없어요
@@ -93,9 +93,8 @@ export function MessagesScreen() {
           ) : (
             <MessageList messages={messages} locked={locked} />
           )}
-        </Card>
-        <p className="tiny mt12 row" style={{ gap: 6 }}>
-          <Icon name={locked ? 'car' : 'refresh'} size={14} />
+        </section>
+        <p className="tiny mt16">
           {locked ? '보내기는 차량 화면의 ‘내 메시지’에서 큰 버튼으로 계속할 수 있어요' : '이 기기에 저장돼요 · 차량 앱 동기화는 서버를 연결한 뒤 (시연판)'}
         </p>
       </div>
@@ -172,10 +171,10 @@ function MessageList({ messages, locked }: { messages: QuickMessage[]; locked: b
               </button>
             )}
             <span className="msg-icon">
-              <Icon name={MESSAGE_ICON[m.icon]} size={19} />
+              <Icon name={MESSAGE_ICON[m.icon]} size={20} />
             </span>
-            <button className="msg-body" disabled={locked} onClick={() => go(`/messages/edit/${m.id}`)} style={{ border: 0, textAlign: 'left' }}>
-              <b style={{ fontSize: 15 }}>{m.text}</b>
+            <button className="msg-body" disabled={locked} onClick={() => go(`/messages/edit/${m.id}`)}>
+              <b>{m.text}</b>
               <p className="tiny">
                 {i + 1}번째 · {textLength(m.text)}/{MAX_LENGTH}자
               </p>
@@ -242,20 +241,22 @@ export function EditMessageScreen({ id }: { id?: string }) {
         <span className="icon-btn ghost" />
       </header>
       <div className="body">
-        <Card>
-          <div className="spread">
-            <b style={{ fontSize: 14 }}>아이콘</b>
+        <section className="mt8">
+          <div className="section-head">
+            <p className="label" style={{ marginBottom: 0 }}>
+              아이콘
+            </p>
             <span className="tiny">차량 버튼에 함께 보여요</span>
           </div>
-          <div className="icon-grid mt12" role="radiogroup" aria-label="아이콘">
+          <div className="icon-grid mt8" role="radiogroup" aria-label="아이콘">
             {MESSAGE_ICONS.map((ic) => (
               <button key={ic} role="radio" aria-checked={icon === ic} className={icon === ic ? 'on' : ''} onClick={() => setIcon(ic)} aria-label={ic}>
                 <Icon name={MESSAGE_ICON[ic]} size={22} />
               </button>
             ))}
           </div>
-        </Card>
-        <label className="label mt20" htmlFor="msg" style={{ display: 'block' }}>
+        </section>
+        <label className="label mt24" htmlFor="msg">
           문장
         </label>
         <input
@@ -268,15 +269,13 @@ export function EditMessageScreen({ id }: { id?: string }) {
           onKeyDown={(e) => e.key === 'Enter' && save()}
         />
         {typed && unsafe ? (
-          <p className="mt8" style={{ color: 'var(--warn)', fontSize: 13, fontWeight: 700 }}>
-            {PROBLEM_TEXT.UNSAFE}
-          </p>
+          <p className="warn-note mt8">{PROBLEM_TEXT.UNSAFE}</p>
         ) : (
           <p className="input-help">
             {textLength(text)}/{MAX_LENGTH}자 · 글자 · 숫자 · 기본 문장부호
           </p>
         )}
-        <Card className="mt12">
+        <section className="mt20">
           <ul className="marks">
             <CheckMark state={typed ? lengthOk : null}>2~20자예요</CheckMark>
             <CheckMark state={typed ? !unsafe : null}>{unsafe ? `재촉하는 말이 있어요 · ‘${fragment}’` : '재촉하거나 위험한 운전을 권하는 말이 없어요'}</CheckMark>
@@ -287,30 +286,26 @@ export function EditMessageScreen({ id }: { id?: string }) {
             {has('UNSUPPORTED_CHARACTER') && <CheckMark state={false}>{PROBLEM_TEXT.UNSUPPORTED_CHARACTER}</CheckMark>}
             {has('LIMIT_REACHED') && <CheckMark state={false}>{PROBLEM_TEXT.LIMIT_REACHED}</CheckMark>}
           </ul>
-        </Card>
+        </section>
         {unsafe && suggestions.length > 0 ? (
-          <Card className="mt12 warn">
-            <b className="row" style={{ gap: 6, fontSize: 14 }}>
-              <Icon name="info" size={16} /> 이렇게 바꿔 보면 어때요?
-            </b>
-            <div className="row mt8" style={{ gap: 8, flexWrap: 'wrap' }}>
+          <section className="group mt20">
+            <p className="name">이렇게 바꿔 보면 어때요?</p>
+            <div className="row mt12" style={{ gap: 8, flexWrap: 'wrap' }}>
               {suggestions.map((s) => (
                 <button key={s} className="suggest-chip" onClick={() => setText(s)}>
                   <Icon name={s.includes('천천히') ? 'gauge' : 'flag'} size={15} /> {s}
                 </button>
               ))}
             </div>
-          </Card>
+          </section>
         ) : (
-          <Card className="mt12">
+          <section className="group mt20">
             <span className="tiny">받는 사람에게 이렇게 들려요</span>
-            <p className="mt4" style={{ fontWeight: 800, fontSize: 16 }}>
-              “{Announce.customMessage(name, check.ok ? check.text : text.trim() || '카페 들렀다 가요')}”
-            </p>
-            <Btn kind="secondary" small icon="volume" className="mt8" onClick={() => previewSpeech(Announce.customMessage(name, check.text || '카페 들렀다 가요'))}>
+            <p className="quote mt4">“{Announce.customMessage(name, check.ok ? check.text : text.trim() || '카페 들렀다 가요')}”</p>
+            <Btn kind="secondary" small icon="volume" className="mt12" onClick={() => previewSpeech(Announce.customMessage(name, check.text || '카페 들렀다 가요'))}>
               미리 듣기
             </Btn>
-          </Card>
+          </section>
         )}
       </div>
       <Bottom note={check.ok || !typed ? '저장하면 이 기기에 보관돼요 · 서버를 연결하면 차량 앱으로 동기화돼요' : '문제를 고치면 저장할 수 있어요'}>
@@ -319,7 +314,7 @@ export function EditMessageScreen({ id }: { id?: string }) {
             저장할 수 없어요
           </Btn>
         ) : (
-          <Btn icon="check" disabled={!check.ok} onClick={save}>
+          <Btn disabled={!check.ok} onClick={save}>
             저장
           </Btn>
         )}
@@ -331,7 +326,7 @@ export function EditMessageScreen({ id }: { id?: string }) {
 function CheckMark({ state, children }: { state: boolean | null; children: React.ReactNode }) {
   return (
     <li className={`mark ${state === null ? 'idle' : state ? 'ok' : 'bad'}`}>
-      <Icon name={state === false ? 'close' : 'check'} size={15} stroke={2.6} />
+      <Icon name={state === false ? 'close' : 'check'} size={16} stroke={2.2} />
       <span>{children}</span>
     </li>
   )

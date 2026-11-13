@@ -3,7 +3,7 @@ import type { Member } from '../domain/scenario'
 import { useApp, useMembers } from '../store'
 import { Icon, type IconName } from './Icon'
 
-/** 화면 공통 부품 (피그마 ‘06 디자인 — 모바일 앱’ · 흰 바탕 × 디지털 블루) */
+/** 화면 공통 부품 — 조용한 계기판: 선과 여백으로 나누고, 파랑은 누를 것 · 내 위치 · 고른 것에만 */
 
 export function TopBar({ title, onBack, right }: { title?: ReactNode; onBack?: () => void; right?: ReactNode }) {
   return (
@@ -60,7 +60,7 @@ export function Btn({
 }) {
   return (
     <button type="button" className={`btn btn-${kind}${small ? ' btn-small' : ''} ${className}`} onClick={onClick} disabled={disabled} style={style}>
-      {icon && <Icon name={icon} size={small ? 17 : 20} />}
+      {icon && <Icon name={icon} size={small ? 16 : 18} />}
       <span>{children}</span>
     </button>
   )
@@ -152,7 +152,6 @@ export function Segmented<T extends string>({
           className={o.value === value ? 'on' : ''}
           onClick={() => onChange(o.value)}
         >
-          {o.value === value && <Icon name="check" size={15} stroke={2.6} />}
           <span>{o.label}</span>
           {o.sub && <small>{o.sub}</small>}
         </button>
@@ -164,7 +163,7 @@ export function Segmented<T extends string>({
 export function Chip({ children, tone = 'neutral', icon, className = '' }: { children: ReactNode; tone?: 'accent' | 'neutral' | 'warn' | 'good' | 'danger' | 'night'; icon?: IconName; className?: string }) {
   return (
     <span className={`chip chip-${tone} ${className}`}>
-      {icon && <Icon name={icon} size={13} stroke={2.4} />}
+      {icon && <Icon name={icon} size={12} stroke={2} />}
       {children}
     </span>
   )
@@ -189,17 +188,12 @@ export function Sheet({ open, onClose, children, label, tall }: { open: boolean;
   )
 }
 
-/** 아래에 붙는 주요 버튼 영역 */
-export function Bottom({ children, note, noteIcon = 'info' }: { children: ReactNode; note?: ReactNode; noteIcon?: IconName }) {
+/** 아래에 붙는 주요 버튼 영역 (안내 한 줄은 아이콘 없이 회색 글자로) */
+export function Bottom({ children, note }: { children: ReactNode; note?: ReactNode }) {
   return (
     <div className="bottom">
       {children}
-      {note && (
-        <p className="bottom-note">
-          <Icon name={noteIcon} size={14} />
-          <span>{note}</span>
-        </p>
-      )}
+      {note && <p className="bottom-note">{note}</p>}
     </div>
   )
 }
@@ -239,7 +233,7 @@ export function ToastBar() {
 export function Mark({ ok, children }: { ok: boolean; children: ReactNode }) {
   return (
     <li className={`mark ${ok ? 'ok' : 'bad'}`}>
-      <Icon name={ok ? 'check' : 'close'} size={15} stroke={2.6} />
+      <Icon name={ok ? 'check' : 'close'} size={16} stroke={2.2} />
       <span>{children}</span>
     </li>
   )

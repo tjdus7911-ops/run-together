@@ -4,7 +4,7 @@ import { copyText, hasWakeLock, shareLink } from '../platform/browser'
 import { back, go } from '../router'
 import { finishJoin, leaveGroup, setProfile, setSettings, toast, useApp, useMembers } from '../store'
 import { Icon } from '../ui/Icon'
-import { Avatar, AvatarRow, Bottom, Btn, Card, Chip, Segmented, Sheet, StepBar, Toggle, TopBar } from '../ui/kit'
+import { Avatar, AvatarRow, Bottom, Btn, Chip, Segmented, Sheet, StepBar, Toggle, TopBar } from '../ui/kit'
 import { useLocationLine } from './Trip'
 
 // ---------------- M-04 홈 · 내 모임 ----------------
@@ -28,36 +28,32 @@ export function HomeScreen() {
           : '강릉 안목해변 도착'
   return (
     <div className="screen">
-      <div className="body" style={{ paddingTop: 14 }}>
+      <div className="body" style={{ paddingTop: 12 }}>
         <div className="spread">
-          <div className="row" style={{ gap: 6 }}>
+          <span className="brand">
             <span className="logo-mark">
-              <Icon name="route" size={18} stroke={2.4} />
+              <Icon name="route" size={17} stroke={2.2} />
             </span>
-            <b style={{ fontSize: 18, fontWeight: 800 }}>같이 달려</b>
-          </div>
+            같이 달려
+          </span>
           <button className="avatar-btn" aria-label="설정" onClick={() => go('/settings')}>
-            <Avatar m={me} size={34} />
+            <Avatar m={me} size={32} />
           </button>
         </div>
-        <h1 className="h1 mt16">
+        <h1 className="h1 mt24">
           {p.name}님, 오늘도
           <br />
           함께 달려요
         </h1>
         {trip.active && (
-          <div className="hero-trip mt16">
-            <span className="chip">
-              <span className="dot-live" style={{ background: '#fff' }} />
+          <div className="trip-hero mt20">
+            <span className="live">
+              <span className="dot-live" />
               진행 중 · {status}
             </span>
-            <h2 className="h2 mt8" style={{ color: '#fff' }}>
-              {trip.groupName}
-            </h2>
-            <p className="mt4" style={{ fontSize: 13, opacity: 0.92 }}>
-              {nextLine}
-            </p>
-            <div className="spread mt12">
+            <h2 className="h2 mt8">{trip.groupName}</h2>
+            <p className="hero-line mt4">{nextLine}</p>
+            <div className="spread mt16">
               <AvatarRow size={26} />
               <button className="hero-btn" onClick={() => go(trip.step === 'lobby' ? '/lobby' : '/trip')}>
                 {trip.step === 'lobby' ? '대기실' : '모임 지도'} <Icon name="chevron" size={16} />
@@ -65,77 +61,69 @@ export function HomeScreen() {
             </div>
           </div>
         )}
-        <Card className="mt16" onClick={() => go('/messages')}>
-          <div className="row">
-            <span className="setting-icon">
-              <Icon name="edit" size={18} />
-            </span>
-            <div className="grow">
-              <b style={{ fontSize: 15 }}>내 메시지</b>
-              <p className="tiny">차량 화면에서 한 번에 보내는 문장 · {messages.length}/6</p>
-            </div>
-            <Icon name="chevron" size={18} />
-          </div>
-        </Card>
-        <p className="section-title">예정된 모임</p>
-        {UPCOMING.map((u) => (
-          <Card key={u.name} onClick={() => toast('예정된 모임은 시연 화면이에요')}>
-            <div className="row">
-              <span className="date-tile">
+        <button className="list-row lined mt20" onClick={() => go('/messages')}>
+          <span className="row-icon">
+            <Icon name="edit" size={20} />
+          </span>
+          <span className="grow">
+            <b className="name">내 메시지</b>
+            <p className="tiny">차량 화면에서 한 번에 보내는 문장 · {messages.length}/6</p>
+          </span>
+          <Icon name="chevron" size={18} className="chev" />
+        </button>
+        <h2 className="section-title">예정된 모임</h2>
+        <div className="list lined-top">
+          {UPCOMING.map((u) => (
+            <button className="list-row" key={u.name} onClick={() => toast('예정된 모임은 시연 화면이에요')}>
+              <span className="date-col">
                 {u.month}
                 <small>{u.weekday}</small>
               </span>
-              <div className="grow">
-                <b>{u.name}</b>
+              <span className="grow">
+                <b className="name">{u.name}</b>
                 <p className="tiny">{u.detail}</p>
-              </div>
-              <Icon name="chevron" size={18} />
-            </div>
-          </Card>
-        ))}
-        <p className="section-title">지난 모임</p>
-        <div className="stack" style={{ gap: 8 }}>
+              </span>
+              <Icon name="chevron" size={18} className="chev" />
+            </button>
+          ))}
+        </div>
+        <h2 className="section-title">지난 모임</h2>
+        <div className="list lined-top">
           {history.map((h, i) => (
-            <Card key={`h${i}`}>
-              <div className="row">
-                <span className="date-tile">
-                  {h.date}
-                  <small>일</small>
-                </span>
-                <div className="grow">
-                  <b>{h.name}</b>
-                  <p className="tiny">
-                    함께 달린 {h.km}km · 같이 쉰 {h.rests}번 · {h.cars}대
-                  </p>
-                </div>
-              </div>
-            </Card>
-          ))}
-          {PAST.map((h) => (
-            <Card key={h.name}>
-              <div className="row">
-                <span className="date-tile" style={{ background: 'var(--panel)', color: 'var(--ink2)' }}>
-                  {h.month}
-                  <small>{h.weekday}</small>
-                </span>
-                <div className="grow">
-                  <b>{h.name}</b>
-                  <p className="tiny">{h.detail}</p>
-                </div>
-              </div>
-            </Card>
-          ))}
-          <div className="card dashed-card">
-            <div className="row">
-              <span className="setting-icon">
-                <Icon name="library" size={18} />
+            <div className="list-row" key={`h${i}`}>
+              <span className="date-col">
+                {h.date}
+                <small>일</small>
               </span>
               <div className="grow">
-                <b style={{ fontSize: 14 }}>코스 라이브러리</b>
-                <p className="tiny">다녀온 코스 저장 · 계절 추천 코스</p>
+                <b className="name">{h.name}</b>
+                <p className="tiny">
+                  함께 달린 {h.km}km · 같이 쉰 {h.rests}번 · {h.cars}대
+                </p>
               </div>
-              <span className="badge-later">출시 후</span>
             </div>
+          ))}
+          {PAST.map((h) => (
+            <div className="list-row" key={h.name}>
+              <span className="date-col">
+                {h.month}
+                <small>{h.weekday}</small>
+              </span>
+              <div className="grow">
+                <b className="name">{h.name}</b>
+                <p className="tiny">{h.detail}</p>
+              </div>
+            </div>
+          ))}
+          <div className="list-row muted-row">
+            <span className="date-col">
+              <Icon name="library" size={20} />
+            </span>
+            <div className="grow">
+              <b className="name">코스 라이브러리</b>
+              <p className="tiny">다녀온 코스 저장 · 계절 추천 코스</p>
+            </div>
+            <span className="badge-later">출시 후</span>
           </div>
         </div>
       </div>
@@ -186,38 +174,35 @@ export function CreateInfo() {
   return (
     <CreateFrame index={1} label="모임 정보">
       <div className="body">
-        <h1 className="h1">어떤 모임인가요?</h1>
-        <label className="label mt20" htmlFor="gname" style={{ display: 'block' }}>
+        <h1 className="h1 mt8">어떤 모임인가요?</h1>
+        <label className="label mt24" htmlFor="gname">
           모임 이름
         </label>
         <input id="gname" className="input" value={name} maxLength={20} onChange={(e) => setName(e.target.value)} />
         <p className="input-help">20자까지 · 초대받은 사람이 가장 먼저 봐요</p>
-        <div className="row mt16" style={{ gap: 10, alignItems: 'flex-start' }}>
+        <div className="row mt20" style={{ gap: 8, alignItems: 'flex-start' }}>
           <div className="grow">
-            <label className="label" htmlFor="gdate" style={{ display: 'block' }}>
+            <label className="label" htmlFor="gdate">
               날짜
             </label>
             <input id="gdate" type="date" className="input" value={date} onChange={(e) => setDate(e.target.value)} />
             <p className="input-help">{weekday}</p>
           </div>
-          <div style={{ width: 130 }}>
-            <label className="label" htmlFor="gtime" style={{ display: 'block' }}>
+          <div style={{ width: 132 }}>
+            <label className="label" htmlFor="gtime">
               출발 시각
             </label>
             <input id="gtime" type="time" className="input" value={time} onChange={(e) => setTime(e.target.value)} />
           </div>
         </div>
-        <Card className="mt20">
-          <b>지난 모임을 복사해서 만들기</b>
-          <p className="tiny">코스·집결지·휴식 시간을 그대로 가져와요</p>
+        <section className="group mt32">
+          <h2 className="h3">지난 모임을 복사해서 만들기</h2>
+          <p className="tiny mt4">코스·집결지·휴식 시간을 그대로 가져와요</p>
           <div className="list mt8">
             {COPY_SOURCES.map((c) => (
               <div className="list-row" key={c.name}>
-                <span className="setting-icon">
-                  <Icon name="route" size={18} />
-                </span>
                 <div className="grow">
-                  <b style={{ fontSize: 14 }}>{c.name}</b>
+                  <b className="name">{c.name}</b>
                   <p className="tiny">{c.detail}</p>
                 </div>
                 <Btn kind="secondary" small icon="copy" onClick={() => toast(`‘${c.name}’ 코스를 가져왔어요 (시연)`)}>
@@ -226,7 +211,7 @@ export function CreateInfo() {
               </div>
             ))}
           </div>
-        </Card>
+        </section>
       </div>
       <Bottom>
         <Btn
@@ -258,9 +243,9 @@ export function CreateCourse() {
   return (
     <CreateFrame index={2} label="코스">
       <div className="body">
-        <h1 className="h1">코스를 만들어 주세요</h1>
+        <h1 className="h1 mt8">코스를 만들어 주세요</h1>
         <p className="lead">출발지와 도착지만 있어도 돼요. 쉴 곳은 지금 넣거나, 여행 중에 ‘쉬어가기 투표’로 정해도 돼요.</p>
-        <Card className="mt16">
+        <div className="mt24 lined">
           <div className="course-edit">
             <div className="ce-row">
               <span className="ce-dot start">
@@ -268,7 +253,7 @@ export function CreateCourse() {
               </span>
               <div className="grow">
                 <span className="tiny">출발</span>
-                <p style={{ fontWeight: 700 }}>{COURSE[0].name}</p>
+                <b className="name">{COURSE[0].name}</b>
               </div>
             </div>
             {stops.length === 0 && (
@@ -286,19 +271,19 @@ export function CreateCourse() {
                 </span>
                 <div className="grow">
                   <span className="tiny">집결 {i + 1}</span>
-                  <p style={{ fontWeight: 700 }}>{s.name}</p>
+                  <b className="name">{s.name}</b>
                 </div>
                 <span className="stepper">
                   <button aria-label="휴식 줄이기" onClick={() => update(stops.map((x) => (x.id === s.id ? { ...x, rest: Math.max(5, x.rest - 5) } : x)))}>
-                    <Icon name="minus" size={14} />
+                    <Icon name="minus" size={16} />
                   </button>
                   <span>휴식 {s.rest}분</span>
                   <button aria-label="휴식 늘리기" onClick={() => update(stops.map((x) => (x.id === s.id ? { ...x, rest: Math.min(60, x.rest + 5) } : x)))}>
-                    <Icon name="plus" size={14} />
+                    <Icon name="plus" size={16} />
                   </button>
                 </span>
-                <button className="icon-btn" style={{ width: 32, height: 32 }} aria-label={`${s.name} 빼기`} onClick={() => update(stops.filter((x) => x.id !== s.id))}>
-                  <Icon name="close" size={16} />
+                <button className="icon-btn small" aria-label={`${s.name} 빼기`} onClick={() => update(stops.filter((x) => x.id !== s.id))}>
+                  <Icon name="close" size={18} />
                 </button>
               </div>
             ))}
@@ -308,57 +293,57 @@ export function CreateCourse() {
               </span>
               <div className="grow">
                 <span className="tiny">도착</span>
-                <p style={{ fontWeight: 700 }}>{COURSE[3].name}</p>
+                <b className="name">{COURSE[3].name}</b>
               </div>
             </div>
           </div>
-        </Card>
+        </div>
         <button className="add-stop mt12" onClick={() => toast('휴게소·졸음쉼터 검색은 지도 API 연결 후 열려요 · 아래 추천에서 골라 주세요')}>
           <Icon name="plus" size={16} /> 휴게소 · 졸음쉼터 추가
         </button>
-        <div className="spread mt20">
-          <b>경로 위 추천 쉴 곳</b>
+        <div className="section-head mt32">
+          <h2 className="h3">경로 위 추천 쉴 곳</h2>
           <span className="tiny">공공데이터</span>
         </div>
-        <div className="suggest-grid mt8">
+        <div className="list lined-top mt8">
           {SUGGESTED_STOPS.map((s) => {
             const added = stops.some((x) => x.id === s.id)
             return (
-              <div className="card white" key={s.id} style={{ padding: 12 }}>
-                <div className="spread">
-                  <b style={{ fontSize: 14 }}>{s.name}</b>
-                  <button
-                    className={`plus-btn${added ? ' on' : ''}`}
-                    aria-label={added ? `${s.name} 추가됨` : `${s.name} 추가`}
-                    onClick={() => {
-                      if (added) return
-                      const list = [...stops, { id: s.id, name: s.name, rest: 15 }]
-                      const order = ['deokpyeong', 'yeoju', 'munmak', 'hoengseong']
-                      update(list.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id)))
-                    }}
-                  >
-                    <Icon name={added ? 'check' : 'plus'} size={15} stroke={2.6} />
-                  </button>
+              <div className="list-row" key={s.id}>
+                <div className="grow">
+                  <b className="name">{s.name}</b>
+                  <p className="meta">
+                    <span className="num">
+                      {s.km}km · {s.eta} 도착
+                    </span>
+                    {s.tags.map((t) => (
+                      <span className="mi" key={t}>
+                        <span className="sep">·</span>
+                        <Icon name={t === '충전' ? 'bolt' : t === '식당' ? 'food' : 'fuel'} size={13} />
+                        {t}
+                      </span>
+                    ))}
+                  </p>
                 </div>
-                <p className="tiny">
-                  {s.km}km · {s.eta} 도착
-                </p>
-                <div className="row mt8" style={{ gap: 4, flexWrap: 'wrap' }}>
-                  {s.tags.map((t) => (
-                    <Chip key={t} icon={t === '충전' ? 'bolt' : t === '식당' ? 'food' : 'fuel'}>
-                      {t}
-                    </Chip>
-                  ))}
-                </div>
+                <button
+                  className={`plus-btn${added ? ' on' : ''}`}
+                  aria-label={added ? `${s.name} 추가됨` : `${s.name} 추가`}
+                  onClick={() => {
+                    if (added) return
+                    const list = [...stops, { id: s.id, name: s.name, rest: 15 }]
+                    const order = ['deokpyeong', 'yeoju', 'munmak', 'hoengseong']
+                    update(list.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id)))
+                  }}
+                >
+                  <Icon name={added ? 'check' : 'plus'} size={16} stroke={2.2} />
+                </button>
               </div>
             )
           })}
         </div>
-        <Card className="mt12 accent" style={{ padding: '12px 14px' }}>
-          <p className="small row" style={{ gap: 6 }}>
-            <Icon name="route" size={16} /> 총 235km · {totalText} · {restCount > 0 ? `휴식 ${restCount}번` : '휴식 없이'}
-          </p>
-        </Card>
+        <p className="summary-line mt24">
+          총 235km · {totalText} · {restCount > 0 ? `휴식 ${restCount}번` : '휴식 없이'}
+        </p>
       </div>
       <Bottom>
         <Btn onClick={() => go('/create/3')}>다음 · 초대하기</Btn>
@@ -373,15 +358,15 @@ export function CreateInvite() {
   return (
     <CreateFrame index={3} label="초대">
       <div className="body">
-        <h1 className="h1">모임원을 초대해 주세요</h1>
-        <Card className="mt16" style={{ textAlign: 'center' }}>
-          <span className="tiny">모임 코드</span>
-          <div className="code-boxes mt8" style={{ pointerEvents: 'none' }}>
+        <h1 className="h1 mt8">모임원을 초대해 주세요</h1>
+        <section className="mt24">
+          <p className="label">모임 코드</p>
+          <div className="code-boxes" style={{ pointerEvents: 'none' }}>
             {GROUP.code.split('').map((d, i) => (
               <span key={i}>{d}</span>
             ))}
           </div>
-          <div className="row mt12" style={{ justifyContent: 'center' }}>
+          <div className="row mt12">
             <Btn
               kind="secondary"
               small
@@ -392,8 +377,8 @@ export function CreateInvite() {
             </Btn>
             <span className="tiny">모임이 끝나면 링크와 코드가 만료돼요</span>
           </div>
-        </Card>
-        <Card className="mt12">
+        </section>
+        <div className="lined mt24">
           <button
             className="invite-row"
             onClick={async () => {
@@ -401,48 +386,46 @@ export function CreateInvite() {
               if (r === 'copied') toast('공유 시트가 없어 링크를 복사했어요')
             }}
           >
-            <span className="setting-icon accent">
-              <Icon name="share" size={18} />
+            <span className="row-icon accent">
+              <Icon name="share" size={20} />
             </span>
             <span className="grow">
-              <b>링크 보내기</b>
+              <b className="name">링크 보내기</b>
               <p className="tiny">카카오톡·문자 등 공유 시트로 보내요</p>
             </span>
-            <Icon name="chevron" size={18} />
+            <Icon name="chevron" size={18} className="chev" />
           </button>
           <button className="invite-row" onClick={async () => toast((await copyText(link)) ? '초대 링크를 복사했어요' : '복사하지 못했어요')}>
-            <span className="setting-icon">
-              <Icon name="link" size={18} />
+            <span className="row-icon">
+              <Icon name="link" size={20} />
             </span>
             <span className="grow">
-              <b>링크 복사</b>
+              <b className="name">링크 복사</b>
               <p className="tiny">…/join/{GROUP.code}</p>
             </span>
-            <Icon name="chevron" size={18} />
+            <Icon name="chevron" size={18} className="chev" />
           </button>
           <button className="invite-row" onClick={() => toast('Pleos 차량은 차 화면에서 모임 코드로 연결해요')}>
-            <span className="setting-icon">
-              <Icon name="car" size={18} />
+            <span className="row-icon">
+              <Icon name="car" size={20} />
             </span>
             <span className="grow">
-              <b>차량으로 보내기</b>
+              <b className="name">차량으로 보내기</b>
               <p className="tiny">Pleos 차량은 차 화면에서 코드로 연결해요 (C-00)</p>
             </span>
-            <Icon name="chevron" size={18} />
+            <Icon name="chevron" size={18} className="chev" />
           </button>
-        </Card>
-        <Card className="mt12">
-          <div className="row">
-            <AvatarRow ids={['junho', 'minji', 'sua']} size={30} />
-            <div className="grow">
-              <b style={{ fontSize: 14 }}>벌써 3대가 참여했어요</b>
-              <p className="tiny">{all.slice(0, 3).map((m) => m.name).join('·')}</p>
-            </div>
-            <Chip tone="accent" icon="users">
-              3/6
-            </Chip>
+        </div>
+        <div className="row mt24">
+          <AvatarRow ids={['junho', 'minji', 'sua']} size={30} />
+          <div className="grow">
+            <b className="name">벌써 3대가 참여했어요</b>
+            <p className="tiny">{all.slice(0, 3).map((m) => m.name).join('·')}</p>
           </div>
-        </Card>
+          <Chip tone="accent" icon="users">
+            3/6
+          </Chip>
+        </div>
       </div>
       <Bottom note="링크를 받은 사람은 설치 없이 바로 참여해요">
         <Btn
@@ -473,13 +456,10 @@ export function SettingsScreen() {
     <div className="screen">
       <TopBar title="설정" onBack={() => back('/home')} />
       <div className="body">
-        <Card className={sharingOn ? 'accent' : ''}>
+        <section className="mt8">
           <div className="row">
-            <span className="setting-icon" style={{ color: sharingOn ? 'var(--accent)' : 'var(--muted)' }}>
-              <Icon name="shield" size={18} />
-            </span>
             <div className="grow">
-              <b style={{ fontSize: 15 }}>{sharingOn ? '모임 위치 공유 중' : '위치 공유 꺼짐'}</b>
+              <h1 className="h2">{sharingOn ? '모임 위치 공유 중' : '위치 공유 꺼짐'}</h1>
               <p className="tiny">참여자에게만 · 끝나면 자동 삭제</p>
             </div>
             <Toggle
@@ -495,56 +475,57 @@ export function SettingsScreen() {
               }}
             />
           </div>
-          <p className="tiny mt8 loc-line">
-            <Icon name="phone" size={13} /> {loc.text} · 출처 휴대폰
+          <p className="loc-line mt12">
+            <span className={`dot-live${loc.tone === 'on' ? '' : ` ${loc.tone}`}`} />
+            {loc.text} · 출처 휴대폰
           </p>
-        </Card>
-        <Card className="mt12">
+        </section>
+        <div className="lined mt24">
           <div className="setting-row">
-            <span className="setting-icon">
-              <Icon name="eyeOff" size={18} />
+            <span className="row-icon">
+              <Icon name="eyeOff" size={20} />
             </span>
             <div className="grow">
-              <b style={{ fontSize: 14 }}>익명으로 알리기</b>
+              <b className="name">익명으로 알리기</b>
               <p className="tiny">이름 대신 ‘한 분이’로 알려요</p>
             </div>
             <Toggle label="익명으로 알리기" checked={s.anonymous} onChange={(v) => setSettings({ anonymous: v })} />
           </div>
           <div className="setting-row">
-            <span className="setting-icon">
-              <Icon name="volume" size={18} />
+            <span className="row-icon">
+              <Icon name="volume" size={20} />
             </span>
             <div className="grow">
-              <b style={{ fontSize: 14 }}>소리 내어 읽기</b>
+              <b className="name">소리 내어 읽기</b>
               <p className="tiny">상황 공유·투표·집결지 변경</p>
             </div>
             <Toggle label="소리 내어 읽기" checked={s.readAloud} onChange={(v) => setSettings({ readAloud: v })} />
           </div>
           <div className="setting-row">
-            <span className="setting-icon">
-              <Icon name="bell" size={18} />
+            <span className="row-icon">
+              <Icon name="bell" size={20} />
             </span>
             <div className="grow">
-              <b style={{ fontSize: 14 }}>진동</b>
+              <b className="name">진동</b>
               <p className="tiny">새 소식이 오면 짧게 진동</p>
             </div>
             <Toggle label="진동" checked={s.vibrate} onChange={(v) => setSettings({ vibrate: v })} />
           </div>
           <div className="setting-row">
-            <span className="setting-icon">
-              <Icon name="sun" size={18} />
+            <span className="row-icon">
+              <Icon name="sun" size={20} />
             </span>
             <div className="grow">
-              <b style={{ fontSize: 14 }}>화면 켜 두기</b>
+              <b className="name">화면 켜 두기</b>
               <p className="tiny">{hasWakeLock() ? '운전자 모드에서 화면이 꺼지지 않게 해요' : '이 브라우저는 화면 켜 두기를 지원하지 않아요'}</p>
             </div>
             <Toggle label="화면 켜 두기" checked={s.keepAwake} onChange={(v) => setSettings({ keepAwake: v })} disabled={!hasWakeLock()} />
           </div>
-        </Card>
-        <Card className="mt12">
-          <div className="spread">
-            <b style={{ fontSize: 14 }}>운전자 · 동승자</b>
-            <span className="tiny row" style={{ gap: 4 }}>
+        </div>
+        <section className="mt32">
+          <div className="section-head">
+            <h2 className="h3">운전자 · 동승자</h2>
+            <span className="loc-line">
               <Icon name="lock" size={12} /> 정차 중에만 바꿀 수 있어요
             </span>
           </div>
@@ -560,35 +541,33 @@ export function SettingsScreen() {
             />
           </div>
           {moving && <p className="tiny mt8">지금은 주행 중이라 바꿀 수 없어요 · 시연은 화면 왼쪽 ‘시연’ 탭에서 바꿀 수 있어요</p>}
-        </Card>
-        <Card className="mt12">
+        </section>
+        <div className="lined mt32">
           <div className="setting-row">
-            <span className="setting-icon">
-              <Icon name="pin" size={18} />
+            <span className="row-icon">
+              <Icon name="pin" size={20} />
             </span>
             <div className="grow">
-              <b style={{ fontSize: 14 }}>백그라운드 위치</b>
+              <b className="name">백그라운드 위치</b>
               <p className="tiny">화면이 꺼져도 공유 · 하이브리드</p>
             </div>
             <span className="badge-later">출시 후</span>
           </div>
           <div className="setting-row">
-            <span className="setting-icon">
-              <Icon name="info" size={18} />
+            <span className="row-icon">
+              <Icon name="info" size={20} />
             </span>
             <div className="grow">
-              <b style={{ fontSize: 14 }}>동의 내역 · 처리방침</b>
+              <b className="name">동의 내역 · 처리방침</b>
               <p className="tiny">동의·철회 이력 · 처리방침</p>
             </div>
             <span className="badge-later warn">출시 전 필수</span>
           </div>
-        </Card>
-        <Card className="mt12">
-          <p className="tiny" style={{ lineHeight: 1.6 }}>
-            <b>시연판 안내</b> · 동기화 서버가 없어 위치와 메시지는 이 기기 밖으로 나가지 않아요. 다른 차의 움직임과 응답은 시나리오 A 시연 데이터예요. 말로 답하기는 브라우저의 음성 인식(Chrome 은 Google 서버)을 써요.
-          </p>
-        </Card>
-        <div className="mt16">
+        </div>
+        <p className="tiny mt16">
+          <b>시연판 안내</b> · 동기화 서버가 없어 위치와 메시지는 이 기기 밖으로 나가지 않아요. 다른 차의 움직임과 응답은 시나리오 A 시연 데이터예요. 말로 답하기는 브라우저의 음성 인식(Chrome 은 Google 서버)을 써요.
+        </p>
+        <div className="mt24">
           <Btn
             kind="secondary"
             icon="eyeOff"
@@ -601,9 +580,11 @@ export function SettingsScreen() {
             위치 공유 끄기
           </Btn>
           {trip.active && (
-            <button className="link-btn center-block mt8" style={{ color: 'var(--danger)' }} onClick={() => setLeaving(true)}>
-              <Icon name="logout" size={15} /> 모임 나가기
-            </button>
+            <div className="row center-row mt8">
+              <button className="link-btn danger" onClick={() => setLeaving(true)}>
+                <Icon name="logout" size={15} /> 모임 나가기
+              </button>
+            </div>
           )}
         </div>
       </div>

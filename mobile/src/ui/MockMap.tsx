@@ -80,7 +80,7 @@ export function MockMap({ markers, flagF = 0.915, gapBetween, gapText }: { marke
       <rect x="40" y="410" width="80" height="60" rx="12" fill="#E5E9EE" />
       <rect x="280" y="40" width="90" height="70" rx="14" fill="#E5E9EE" />
       {/* 일반 도로 */}
-      <g stroke="#D9DEE5" strokeWidth="13" fill="none" strokeLinecap="round">
+      <g stroke="#D6DBE2" strokeWidth="13" fill="none" strokeLinecap="round">
         <path d="M-10 300 C 90 290, 200 330, 420 300" />
         <path d="M120 -10 C 140 140, 110 300, 150 520" />
         <path d="M-10 470 C 110 450, 260 500, 420 450" />
@@ -115,8 +115,8 @@ export function MockMap({ markers, flagF = 0.915, gapBetween, gapText }: { marke
         <g>
           <path d={`M${gap[0].x + 18} ${gap[0].y} L${gap[1].x + 18} ${gap[1].y}`} stroke="#C27C0E" strokeWidth="2" strokeDasharray="3 4" />
           <g transform={`translate(${(gap[0].x + gap[1].x) / 2 + 30}, ${(gap[0].y + gap[1].y) / 2 + 22})`}>
-            <rect x="0" y="-11" width={gapText ? gapText.length * 10.5 + 16 : 80} height="22" rx="11" fill="#FFFFFF" stroke="#E5AC3C" />
-            <text x="8" y="4.5" fontSize="11.5" fontWeight="700" fill="#9A5B00">
+            <rect x="0" y="-11" width={gapText ? gapText.length * 10.5 + 16 : 80} height="22" rx="6" fill="#FFFFFF" stroke="#E8C27A" />
+            <text x="8" y="4.5" fontSize="11.5" fontWeight="600" fill="#9A5B00">
               {gapText}
             </text>
           </g>
@@ -125,7 +125,7 @@ export function MockMap({ markers, flagF = 0.915, gapBetween, gapText }: { marke
 
       {/* 다음 집결지 */}
       <g transform={`translate(${flag.x - 15}, ${flag.y - 15})`}>
-        <rect width="30" height="30" rx="9" fill="#15181E" />
+        <rect width="30" height="30" rx="8" fill="#15181E" />
         <path d="M10.5 22V8.5M10.5 9h9l-1.8 3.2 1.8 3.2h-9" stroke="#fff" strokeWidth="2" fill="none" strokeLinejoin="round" strokeLinecap="round" />
       </g>
 
@@ -134,20 +134,20 @@ export function MockMap({ markers, flagF = 0.915, gapBetween, gapText }: { marke
         <g key={p.member.id} transform={`translate(${p.x}, ${p.y})`} opacity={p.stale ? 0.55 : 1}>
           {p.me && <circle r="24" fill="#2563EB" fillOpacity="0.12" />}
           <circle r={p.me ? 17 : 15} fill={p.member.color} stroke="#FFFFFF" strokeWidth="3" />
-          <text y="5" textAnchor="middle" fontSize={p.me ? 14 : 13} fontWeight="800" fill="#FFFFFF">
+          <text y="5" textAnchor="middle" fontSize={p.me ? 14 : 13} fontWeight="700" fill="#FFFFFF">
             {[...p.member.name][0]}
           </text>
           {p.me && (
             <g transform="translate(13, 11)">
-              <circle r="8.5" fill="#FFFFFF" stroke="#C6CDD7" />
+              <circle r="8.5" fill="#FFFFFF" stroke="#D6DBE2" />
               <rect x="-3.3" y="-5.2" width="6.6" height="10.4" rx="1.7" fill="#2A2F37" />
               <rect x="-2.2" y="-3.8" width="4.4" height="6" rx="0.6" fill="#FFFFFF" />
             </g>
           )}
           {p.tag && (
             <g transform="translate(19, -24)">
-              <rect width={p.tag.length * 11 + 14} height="20" rx="10" fill="#FFFFFF" stroke={p.tagTone === 'warn' ? '#E5AC3C' : '#C6D6F7'} />
-              <text x="7" y="14" fontSize="11" fontWeight="700" fill={p.tagTone === 'warn' ? '#9A5B00' : '#2563EB'}>
+              <rect width={p.tag.length * 11 + 14} height="20" rx="6" fill="#FFFFFF" stroke={p.tagTone === 'warn' ? '#E8C27A' : '#C6D6F7'} />
+              <text x="7" y="14" fontSize="11" fontWeight="600" fill={p.tagTone === 'warn' ? '#9A5B00' : '#2563EB'}>
                 {p.tag}
               </text>
             </g>

@@ -112,64 +112,68 @@ function DriverNav() {
       </div>
       <div className="drive-card">
         <div className="spread">
-          <span className="lock-pill">
+          <span className="lock-state">
             <Icon name="lock" size={14} /> 움직이는 동안 잠겨 있어요
           </span>
-          <b style={{ fontSize: 16 }}>{liveClock(trip)}</b>
+          <b className="clock">{liveClock(trip)}</b>
         </div>
         {next && (
           <>
-            <p className="tiny mt12 row" style={{ gap: 5, color: 'var(--accent)', fontWeight: 800 }}>
-              <Icon name="flag" size={14} /> {trip.munmak ? '바뀐 집결지' : '다음 집결지'}
-            </p>
-            <div className="spread" style={{ alignItems: 'flex-end' }}>
+            <div className="mt12">
+              {trip.munmak ? (
+                <Chip tone="accent" icon="flag">
+                  바뀐 집결지
+                </Chip>
+              ) : (
+                <p className="kicker">
+                  <Icon name="flag" size={14} /> 다음 집결지
+                </p>
+              )}
+            </div>
+            <div className="spread mt4" style={{ alignItems: 'flex-end' }}>
               <div className="grow">
-                <h1 className="h2" style={{ fontSize: 22 }}>
-                  {next.name}
-                </h1>
+                <h1 className="h2">{next.name}</h1>
                 <p className="small">
                   약 {next.minutes}분 · {trip.munmak ? '09:00' : next.eta} 도착
                 </p>
               </div>
-              <p className="drive-km">
+              <p className="t-num">
                 {next.km}
                 <small>km</small>
               </p>
             </div>
-            <div className="mt8">
+            <div className="mt12">
               <Progress value={startKm - next.km + 2} max={startKm + 2} />
             </div>
-            <p className="mt8" style={{ fontSize: 14, fontWeight: 800 }}>
-              따라오지 않아도 돼요 · {next.short}에서 만나요
-            </p>
+            <p className="drive-line mt12">따라오지 않아도 돼요 · {next.short}에서 만나요</p>
           </>
         )}
       </div>
-      <span className="map-demo" style={{ top: 'calc(232px + env(safe-area-inset-top))', bottom: 'auto' }}>
+      <span className="map-demo dev-mark" style={{ top: 'calc(232px + env(safe-area-inset-top))', bottom: 'auto' }}>
         시연용 지도
       </span>
 
       <div className="drive-bottom">
         {pending && vote ? (
           <>
-            <p className="row" style={{ gap: 6 }}>
+            <p className="row" style={{ gap: 8 }}>
               <Chip tone="night" icon="moon">
                 {SIGNAL_LABEL.SLEEPY}
               </Chip>
               <span className="tiny">{proposer?.id === ME ? '내가 제안 · 방금' : `${proposer?.name}님 차에서 · 방금`}</span>
             </p>
-            <h2 className="h2 mt8" style={{ fontSize: 21 }}>
+            <h2 className="h2 mt8">
               {proposer?.id === ME ? '쉬어가기를 제안했어요. ' : `${proposer?.name}님이 졸리대요. `}
               {vote.stopName}에서 {vote.restMinutes}분 쉬었다 갈까요?
             </h2>
             {myVote ? (
-              <p className="small mt8 row" style={{ gap: 6, color: 'var(--accent)', fontWeight: 700 }}>
+              <p className="status-line accent mt12">
                 <Icon name="checkCircle" size={18} /> ‘{myVote === 'YES' ? '좋아요' : '괜찮아요'}’로 답했어요 · 결과는 소리로 알려 드려요
               </p>
             ) : (
               <button className="listen mt12" onClick={() => (canListen() ? listenForVote() : setTrip((t) => ({ ...t, unlocked: true, sheet: 'vote' })))}>
                 <span className={`listen-mic${trip.listening === 'vote' ? '' : ' idle'}`}>
-                  <Icon name="mic" size={24} />
+                  <Icon name="mic" size={22} />
                 </span>
                 <span className="grow">
                   <b>{trip.listening === 'vote' ? '듣고 있어요 — 말로 답해 주세요' : canListen() ? '말로 답하기' : '이 브라우저는 음성 인식이 없어요'}</b>
@@ -177,11 +181,11 @@ function DriverNav() {
                 </span>
               </button>
             )}
-            <div className="spread small mt12">
-              <b style={{ color: 'var(--accent)' }}>
+            <div className="tally-row mt16">
+              <b className="tally">
                 {yesCount(vote)}/{vote.memberIds.length} 좋아요
               </b>
-              <span>과반 {majority(vote)}표면 확정 · 1분 뒤 마감</span>
+              <span className="tiny">과반 {majority(vote)}표면 확정 · 1분 뒤 마감</span>
             </div>
             <div className="mt8">
               <Progress value={yesCount(vote)} max={vote.memberIds.length} />
@@ -193,8 +197,9 @@ function DriverNav() {
         ) : (
           <>
             <div className="spread">
-              <p style={{ fontSize: 14 }}>
-                <b>모임 간격</b> <b className="accent-text" style={{ marginLeft: 4 }}>{stepOf(trip.step).gapKm ?? 3.4}km</b>
+              <p className="gap-title">
+                <b>모임 간격</b>
+                <b>{stepOf(trip.step).gapKm ?? 3.4}km</b>
               </p>
               <span className="tiny">5대 같은 길 · 1대 다른 길</span>
             </div>
@@ -210,27 +215,25 @@ function DriverNav() {
                 )
               })}
             </div>
-            <button className="listen mt8" style={{ padding: '10px 12px' }} onClick={listenForSignal}>
-              <span className={`listen-mic${trip.listening === 'signal' ? '' : ' idle'}`} style={{ width: 40, height: 40 }}>
+            <button className="listen compact mt8" onClick={listenForSignal}>
+              <span className={`listen-mic${trip.listening === 'signal' ? '' : ' idle'}`}>
                 <Icon name={trip.listening === 'signal' ? 'mic' : 'volume'} size={20} />
               </span>
               <span className="grow">
-                <b style={{ fontSize: 14 }}>{trip.listening === 'signal' ? '듣고 있어요…' : '새 소식은 소리로 읽어 드려요'}</b>
+                <b>{trip.listening === 'signal' ? '듣고 있어요…' : '새 소식은 소리로 읽어 드려요'}</b>
                 <p className="tiny">위급할 땐 말로 “도움이 필요해요”</p>
               </span>
             </button>
           </>
         )}
-        <div className="spread mt8">
-          <p className="tiny row" style={{ gap: 0 }}>
-            <span className={`dot-live${loc.tone === 'on' ? '' : ` ${loc.tone}`}`} />
-            {loc.text}
-          </p>
-        </div>
+        <p className="loc-line mt12">
+          <span className={`dot-live${loc.tone === 'on' ? '' : ` ${loc.tone}`}`} />
+          {loc.text}
+        </p>
         <div className="spread">
           <span className="tiny">화면 켜 두기 {keepAwake ? '켜짐' : '꺼짐'} · 길 안내 음성은 쓰던 내비로</span>
           {!pending && (
-            <button className="link-btn" style={{ fontSize: 12 }} onClick={() => setTrip((t) => ({ ...t, unlocked: true }))}>
+            <button className="link-btn" onClick={() => setTrip((t) => ({ ...t, unlocked: true }))}>
               동승자가 대신 쓰기
             </button>
           )}
@@ -280,8 +283,8 @@ function PassengerMap() {
       <MockMap markers={markers} gapBetween={gap} gapText={gapText} />
       <div className="map-head">
         <div className="grow">
-          <b style={{ fontSize: 16 }}>{trip.groupName}</b>
-          <p className="tiny row" style={{ gap: 4 }}>
+          <b className="name">{trip.groupName}</b>
+          <p className="loc-line">
             <span className={`dot-live${loc.tone === 'on' ? '' : ` ${loc.tone}`}`} />
             {p.location === 'viewOnly' ? '보기만 참여 중 · 내 위치는 보내지 않아요' : '모임 위치 공유 중 · 끝나면 자동 삭제'}
           </p>
@@ -291,12 +294,12 @@ function PassengerMap() {
             잠금
           </Btn>
         )}
-        <button className="icon-btn round" aria-label="설정" onClick={() => go('/settings')}>
-          <Icon name="gear" />
+        <button className="icon-btn" aria-label="설정" onClick={() => go('/settings')}>
+          <Icon name="gear" size={22} />
         </button>
       </div>
       {offline ? (
-        <div className="offline-banner" style={{ top: 'calc(86px + env(safe-area-inset-top))' }}>
+        <div className="offline-banner" style={{ top: 'calc(80px + env(safe-area-inset-top))' }}>
           <Icon name="wifiOff" size={18} />
           <div className="grow">
             연결이 끊겼어요 · 다시 연결하는 중…
@@ -306,18 +309,18 @@ function PassengerMap() {
         </div>
       ) : (
         next && (
-          <span className="map-chip" style={{ top: 'calc(88px + env(safe-area-inset-top))' }}>
+          <span className="map-chip" style={{ top: 'calc(80px + env(safe-area-inset-top))' }}>
             <Icon name="flag" size={14} /> {next.name} · {next.km}km
           </span>
         )
       )}
       {pendingVote && trip.sheet !== 'vote' && (
-        <button className="vote-chip" style={{ top: 'calc(136px + env(safe-area-inset-top))' }} onClick={() => openSheet('vote')}>
+        <button className="vote-chip" style={{ top: 'calc(124px + env(safe-area-inset-top))' }} onClick={() => openSheet('vote')}>
           <Icon name="moon" size={16} /> 쉬어가기 투표 {yesCount(trip.vote!)}/{trip.vote!.memberIds.length} · 1분 뒤 마감
           <Icon name="chevron" size={16} />
         </button>
       )}
-      <span className="map-demo" style={{ bottom: offline ? '47%' : '43%' }}>
+      <span className="map-demo dev-mark" style={{ bottom: offline ? '47%' : '43%' }}>
         시연용 지도
       </span>
 
@@ -327,13 +330,13 @@ function PassengerMap() {
           <OfflineList />
         ) : (
           <>
-            <div className="spread">
-              <div>
+            <div className="spread" style={{ alignItems: 'flex-end' }}>
+              <div className="grow">
                 <p className="tiny">
-                  <b className="accent-text">다음 집결지</b> · {p.role === 'driver' ? '동승자가 대신 쓰는 중' : `동승자 · ${p.name} 차`}
+                  <b className="strong-text">다음 집결지</b> · {p.role === 'driver' ? '동승자가 대신 쓰는 중' : `동승자 · ${p.name} 차`}
                 </p>
                 <h2 className="h2 mt4">{next?.name}</h2>
-                <p className="small">
+                <p className="small num">
                   {next?.km}km · 약 {next?.minutes}분 · {trip.munmak ? '09:00' : next?.eta} 도착
                 </p>
               </div>
@@ -341,10 +344,11 @@ function PassengerMap() {
                 내비로 열기
               </Btn>
             </div>
-            <Card className="mt12" style={{ padding: '12px 14px' }}>
+            <section className="group mt16" style={{ paddingTop: 16 }}>
               <div className="spread">
-                <p style={{ fontSize: 14 }}>
-                  <b>모임 간격</b> <b className="accent-text" style={{ marginLeft: 4 }}>{stepOf(trip.step).gapKm ?? 3.4}km</b>
+                <p className="gap-title">
+                  <b>모임 간격</b>
+                  <b>{stepOf(trip.step).gapKm ?? 3.4}km</b>
                 </p>
                 <span className="tiny">5대 같은 길 · 1대 다른 길</span>
               </div>
@@ -361,33 +365,37 @@ function PassengerMap() {
                   )
                 })}
               </div>
-            </Card>
-            <Btn kind="soft" icon="volume" className="mt12" onClick={() => openSheet('status')}>
+            </section>
+            <Btn icon="volume" className="mt16" onClick={() => openSheet('status')}>
               상황 공유하기
             </Btn>
-            <p className="tiny mt8 row center-row" style={{ gap: 6 }}>
+            <p className="loc-line center-row mt8">
               <Icon name="phone" size={14} /> {p.name} 차 위치는 휴대폰 GPS — 지도에 휴대폰 배지로 보여요
             </p>
             {trip.feed.length > 0 && (
-              <div className="mt16">
-                <b style={{ fontSize: 14 }}>모임 소식</b>
-                <div className="list mt4">
+              <section className="mt24">
+                <h3 className="section-title" style={{ marginTop: 0 }}>
+                  모임 소식
+                </h3>
+                <div className="list lined-top">
                   {trip.feed.slice(0, 3).map((f) => {
                     const m = all.find((x) => x.id === f.memberId)
                     return (
-                      <div className="list-row" key={f.id} style={{ padding: '8px 0' }}>
+                      <div className="list-row tight" key={f.id}>
                         {m && <Avatar m={m} size={28} />}
                         <div className="grow">
                           <span className="tiny">
                             {m?.name} · {f.kind}
                           </span>
-                          <p style={{ fontSize: 14, fontWeight: 700 }}>{f.text}</p>
+                          <p className="name" style={{ fontSize: 14, lineHeight: '20px' }}>
+                            {f.text}
+                          </p>
                         </div>
                       </div>
                     )
                   })}
                 </div>
-              </div>
+              </section>
             )}
           </>
         )}
@@ -408,11 +416,11 @@ function OfflineList() {
   ]
   return (
     <>
-      <div className="spread">
-        <b style={{ fontSize: 16 }}>참여자 6명</b>
+      <div className="section-head">
+        <h2 className="h3">참여자 6명</h2>
         <span className="tiny">마지막 상태로 보여요</span>
       </div>
-      <div className="list mt4">
+      <div className="list lined-top mt8">
         {rows.map((r) => {
           const m = all.find((x) => x.id === r.id)!
           return (
@@ -462,12 +470,17 @@ function StatusSheet() {
   const signals: StatusSignal[] = ['SLEEPY', 'REST', 'TOILET', 'ENERGY']
   return (
     <>
-      <div className="spread">
+      <div className="section-head">
         <h2 className="h2">상황 공유</h2>
-        <Chip icon="car">{name} 차 · 나</Chip>
+        <span className="meta">
+          <span className="mi">
+            <Icon name="car" size={14} />
+            {name} 차 · 나
+          </span>
+        </span>
       </div>
       <p className="small mt4">한 번 누르면 모두에게 소리로 알려요</p>
-      <div className="signal-grid mt12">
+      <div className="signal-grid mt16">
         {signals.map((s) => (
           <button key={s} className={`signal-btn${s === 'SLEEPY' ? ' sleepy' : ''}`} onClick={() => sendSignal(s)}>
             <Icon name={SIGNAL_ICON[s]} size={26} />
@@ -475,17 +488,17 @@ function StatusSheet() {
           </button>
         ))}
       </div>
-      <button className="listen mt12" onClick={listenForSignal} style={{ padding: 12 }}>
-        <span className={`listen-mic${listening === 'signal' ? '' : ' idle'}`} style={{ width: 42, height: 42 }}>
+      <button className="voice-row mt16" onClick={listenForSignal}>
+        <span className={`listen-mic${listening === 'signal' ? '' : ' idle'}`}>
           <Icon name="mic" size={20} />
         </span>
         <span className="grow">
-          <b style={{ fontSize: 15 }}>{listening === 'signal' ? '듣고 있어요…' : '말로 하기'}</b>
+          <b>{listening === 'signal' ? '듣고 있어요…' : '말로 하기'}</b>
           <p className="tiny">“천천히 갈게요” · “도움이 필요해요”</p>
         </span>
       </button>
       {!canListen() && (
-        <div className="row mt8" style={{ gap: 8 }}>
+        <div className="row mt12" style={{ gap: 8 }}>
           <Btn kind="secondary" small icon="gauge" onClick={() => sendSignal('SLOW')}>
             천천히 갈게요
           </Btn>
@@ -496,7 +509,7 @@ function StatusSheet() {
       )}
       {messages.length > 0 && (
         <>
-          <p className="label mt16">내 메시지</p>
+          <p className="label mt20">내 메시지</p>
           <div className="msg-chips">
             {messages.map((m) => (
               <button key={m.id} onClick={() => sendMyMessage(m.id)}>
@@ -507,12 +520,9 @@ function StatusSheet() {
           </div>
         </>
       )}
-      <div className="setting-row mt8">
-        <span className="setting-icon">
-          <Icon name="eyeOff" size={18} />
-        </span>
+      <div className="setting-row solo mt20">
         <div className="grow">
-          <b style={{ fontSize: 14 }}>익명으로 알리기</b>
+          <b>익명으로 알리기</b>
           <p className="tiny">이름 대신 ‘한 분이’로 알려요 · 도움 요청은 모임장에게 위치 공유</p>
         </div>
         <Toggle label="익명으로 알리기" checked={anonymous} onChange={(v) => setSettings({ anonymous: v })} />
@@ -546,47 +556,48 @@ function VoteSheet() {
   return (
     <>
       <div className="spread">
-        <b style={{ fontSize: 14 }}>쉬어가기 투표</b>
-        <span className="tiny row" style={{ gap: 4 }}>
+        <p className="kicker">쉬어가기 투표</p>
+        <span className="loc-line">
           <Icon name="clock" size={13} /> 1분 뒤 마감
         </span>
       </div>
-      <div className="row mt12">
-        <Avatar m={proposer} size={44} />
+      <div className="row mt16">
+        <Avatar m={proposer} size={40} />
         <div className="grow">
           <Chip tone="night" icon="moon">
             방금 · {SIGNAL_LABEL.SLEEPY}
           </Chip>
-          <h2 className="h2 mt4">{proposer.id === ME ? '쉬어가기를 제안했어요' : `${proposer.name}님이 졸리대요`}</h2>
+          <p className="h3 mt4">{proposer.id === ME ? '쉬어가기를 제안했어요' : `${proposer.name}님이 졸리대요`}</p>
         </div>
       </div>
-      <Card className="accent mt12">
-        <b className="row" style={{ gap: 6 }}>
-          <Icon name="coffee" size={18} /> {vote.stopName}에서 {vote.restMinutes}분 쉬었다 갈까요?
-        </b>
-        <p className="tiny mt4">
+      <h2 className="h2 mt16">
+        {vote.stopName}에서 {vote.restMinutes}분 쉬었다 갈까요?
+      </h2>
+      <p className="meta mt4">
+        <span className="mi">
+          <Icon name="coffee" size={14} />
           가장 가까운 쉴 곳 · {MUNMAK.km}km · 약 {MUNMAK.minutes}분 · {MUNMAK.amenities}
-        </p>
-      </Card>
-      <div className="spread mt16">
-        <p>
-          <b style={{ fontSize: 20 }}>
+        </span>
+      </p>
+      <div className="tally-row mt20">
+        <p className="tally">
+          <strong>
             {yesCount(vote)}/{vote.memberIds.length}
-          </b>{' '}
-          <b className="accent-text">좋아요</b>
+          </strong>
+          좋아요
         </p>
         <span className="tiny">과반 {majority(vote)}표면 확정</span>
       </div>
       <div className="mt8">
         <Progress value={yesCount(vote)} max={vote.memberIds.length} />
       </div>
-      <div className="voters mt16">
+      <div className="voters mt20">
         {['minji', 'sua', 'jiwon', 'taehyun', 'junho', ME].map((id) => {
           const m = all.find((x) => x.id === id)!
           const [text, cls] = statusOf(id)
           return (
             <div className="voter" key={id}>
-              <Avatar m={m} size={30} dashed={!vote.votes[id]} />
+              <Avatar m={m} size={28} dashed={!vote.votes[id]} />
               <span>
                 <b>{id === ME ? `${m.name} 차 · 나` : m.name}</b>
                 <small className={cls}>{text}</small>
@@ -596,23 +607,19 @@ function VoteSheet() {
         })}
       </div>
       {result ? (
-        <Card className={`mt16 ${result === 'ACCEPTED' ? 'accent' : ''}`}>
-          <b className="row" style={{ gap: 6, color: result === 'ACCEPTED' ? 'var(--accent)' : 'var(--ink)' }}>
-            <Icon name={result === 'ACCEPTED' ? 'checkCircle' : 'info'} />
+        <Card className={`mt20 ${result === 'ACCEPTED' ? 'accent' : ''}`}>
+          <p className={`status-line${result === 'ACCEPTED' ? ' accent' : ''}`}>
+            <Icon name={result === 'ACCEPTED' ? 'checkCircle' : 'info'} size={18} />
             {result === 'ACCEPTED' ? `과반이 좋다고 했어요 · ${vote.stopName}에서 쉬어요` : '이번에는 쉬지 않고 가요'}
-          </b>
-        </Card>
-      ) : mine ? (
-        <Card className="mt16">
-          <p className="small row" style={{ gap: 6 }}>
-            <Icon name="check" size={16} /> ‘{mine === 'YES' ? '좋아요' : '괜찮아요'}’로 답했어요 · 다른 분들을 기다려요
           </p>
         </Card>
+      ) : mine ? (
+        <p className="small row mt20 lined-top" style={{ gap: 6, paddingTop: 16 }}>
+          <Icon name="check" size={16} /> ‘{mine === 'YES' ? '좋아요' : '괜찮아요'}’로 답했어요 · 다른 분들을 기다려요
+        </p>
       ) : (
-        <div className="row mt16" style={{ gap: 8 }}>
-          <Btn icon="check" onClick={() => answerVote(true)}>
-            좋아요
-          </Btn>
+        <div className="row mt20" style={{ gap: 8 }}>
+          <Btn onClick={() => answerVote(true)}>좋아요</Btn>
           <Btn kind="secondary" onClick={() => answerVote(false)}>
             괜찮아요
           </Btn>
@@ -633,49 +640,44 @@ function NaviChooser({ changed }: { changed?: boolean }) {
     <>
       {changed && (
         <>
-          <div className="row" style={{ alignItems: 'flex-start' }}>
-            <span className="hero-icon small">
-              <Icon name="check" size={20} stroke={2.6} />
-            </span>
-            <div className="grow">
-              <h2 className="h2">다음 집결지가 바뀌었어요</h2>
-              <p className="small">
-                과반({vote ? `${yesCount(vote)}/${vote.memberIds.length}` : '4/6'})이 좋다고 해서 모두의 경로에 넣었어요
-              </p>
-            </div>
-          </div>
-          <Card className="mt12">
-            <div className="row" style={{ alignItems: 'flex-start' }}>
-              <span className="tl-dot on" style={{ marginTop: 4 }} />
-              <div className="grow">
-                <div className="row" style={{ gap: 6 }}>
+          <h2 className="h2">다음 집결지가 바뀌었어요</h2>
+          <p className="small mt4">
+            과반({vote ? `${yesCount(vote)}/${vote.memberIds.length}` : '4/6'})이 좋다고 해서 모두의 경로에 넣었어요
+          </p>
+          <ol className="timeline compact mt20">
+            <li>
+              <span className="tl-dot on" />
+              <div className="tl-body">
+                <div className="row" style={{ gap: 8 }}>
                   <b>{MUNMAK.name}</b>
                   <Chip tone="accent">새 집결지</Chip>
                 </div>
                 <p className="tiny">09:00 도착 · {MUNMAK.rest}분 쉬고 출발</p>
               </div>
-            </div>
-            <div className="row mt12" style={{ alignItems: 'flex-start' }}>
-              <span className="tl-dot" style={{ marginTop: 4 }} />
-              <div className="grow">
-                <b style={{ color: 'var(--sub)' }}>{COURSE[2].name}</b>
+            </li>
+            <li>
+              <span className="tl-dot off" />
+              <div className="tl-body off">
+                <b>{COURSE[2].name}</b>
                 <p className="tiny">09:40 도착 (+5분) · 그다음 집결지</p>
               </div>
-            </div>
-          </Card>
+            </li>
+          </ol>
         </>
       )}
-      <p className="label mt16">어떤 내비로 열까요?</p>
-      {(['kakao', 'naver', 'tmap'] as NaviApp[]).map((a) => (
-        <button key={a} className={`choice${app === a ? ' on' : ''}`} onClick={() => setApp(a)} aria-pressed={app === a}>
-          <Icon name="navigate" size={18} />
-          <span className="grow">
-            <b style={{ fontSize: 15 }}>{NAVI_LABEL[a]}</b>
-            <p className="tiny">{a === last ? '지난번에 쓴 내비' : a === 'naver' ? '앱이 없으면 웹 지도로 열려요' : a === 'kakao' ? '앱이 없으면 웹 지도로 열려요' : '앱이 있어야 열려요'}</p>
-          </span>
-          <span className="radio" />
-        </button>
-      ))}
+      <p className={`label${changed ? ' mt24' : ''}`}>어떤 내비로 열까요?</p>
+      <div className="lined-top">
+        {(['kakao', 'naver', 'tmap'] as NaviApp[]).map((a) => (
+          <button key={a} className={`pick-row${app === a ? ' on' : ''}`} onClick={() => setApp(a)} aria-pressed={app === a}>
+            <Icon name="navigate" size={20} />
+            <span className="grow">
+              <b>{NAVI_LABEL[a]}</b>
+              <p className="tiny">{a === last ? '지난번에 쓴 내비' : a === 'naver' ? '앱이 없으면 웹 지도로 열려요' : a === 'kakao' ? '앱이 없으면 웹 지도로 열려요' : '앱이 있어야 열려요'}</p>
+            </span>
+            <span className={`radio${app === a ? ' on' : ''}`} />
+          </button>
+        ))}
+      </div>
       <Btn
         icon="navigate"
         className="mt16"
@@ -708,44 +710,41 @@ function ArriveView() {
   const everyone = trip.arrived.length >= 6
   return (
     <div className="screen">
-      <div className="body" style={{ paddingTop: 14 }}>
+      <div className="body" style={{ paddingTop: 12 }}>
         <div className="spread">
           <Chip tone="accent" icon="parking">
             정차 중 · 덕평자연휴게소
           </Chip>
-          <button className="icon-btn round" aria-label="설정" onClick={() => go('/settings')}>
-            <Icon name="gear" />
+          <button className="icon-btn" aria-label="설정" onClick={() => go('/settings')}>
+            <Icon name="gear" size={22} />
           </button>
         </div>
-        <p className="tiny mt16 accent-text" style={{ fontWeight: 700 }}>
-          집결 1 · 덕평자연휴게소
+        <p className="kicker mt16">집결 1 · 덕평자연휴게소</p>
+        <p className="t-num mt4">
+          {trip.arrived.length}
+          <small>/6</small>
+          <span className="t-num-label">도착</span>
         </p>
-        <p className="mt4">
-          <b style={{ fontSize: 44, fontWeight: 800 }}>{trip.arrived.length}/6</b>
-          <b style={{ fontSize: 20, marginLeft: 6 }}>도착</b>
-        </p>
-        <div className="row mt8" style={{ gap: 6 }}>
+        <div className="row mt12" style={{ gap: 6 }}>
           {all.map((m) => (
             <Avatar key={m.id} m={m} size={34} dashed={!trip.arrived.includes(m.id)} />
           ))}
         </div>
         <p className="small mt8">{everyone ? '모두 모였어요' : '지원님이 약 3분 뒤 도착해요'}</p>
-        <Card className="mt16 white">
+        <section className="group mt24">
           <div className="row" style={{ gap: 16 }}>
             <span className="ring" style={{ ['--p' as string]: left / 20 }}>
               <span>{left}분</span>
             </span>
             <div>
               <span className="tiny">휴식 남은 시간</span>
-              <p style={{ fontSize: 20, fontWeight: 800 }}>08:35 출발 예정</p>
+              <p className="h3 num">08:35 출발 예정</p>
               <p className="tiny">모임장이 출발 안내를 보내면 소리로 알려 드려요</p>
             </div>
           </div>
-        </Card>
-        <Card className="mt12 white">
-          <b className="row" style={{ gap: 6 }}>
-            <Icon name="fuel" size={18} /> 주유했다면 연료를 다시 골라 주세요
-          </b>
+        </section>
+        <section className="group mt20">
+          <p className="name">주유했다면 연료를 다시 골라 주세요</p>
           <div className="mt12">
             <Segmented
               value={fuel}
@@ -761,19 +760,19 @@ function ArriveView() {
             />
           </div>
           <p className="tiny mt8">바꾸면 다음 구간 추천에 바로 반영돼요 · 출처: 직접 입력</p>
-        </Card>
-        <Card className="mt12 white">
+        </section>
+        <section className="group mt20">
           <div className="spread">
-            <div>
+            <div className="grow">
               <span className="tiny">다음 구간</span>
-              <p style={{ fontWeight: 800, fontSize: 17 }}>{COURSE[2].name}</p>
+              <p className="h3">{COURSE[2].name}</p>
               <p className="tiny">85km · 약 1시간 4분 · 09:39 도착</p>
             </div>
             <Btn kind="secondary" small icon="navigate" onClick={() => openSheet('navi')}>
               내비로 열기
             </Btn>
           </div>
-        </Card>
+        </section>
       </div>
       <Bottom>
         <Btn kind="soft" icon="volume" onClick={() => openSheet('status')}>
@@ -792,21 +791,19 @@ function EndView() {
   const stops = ['잠실', '덕평', '문막', '횡성', '강릉']
   return (
     <div className="screen">
-      <div className="body" style={{ paddingTop: 22 }}>
-        <p className="tiny accent-text" style={{ fontWeight: 700 }}>
-          강릉 안목해변 도착 · 10:49
-        </p>
-        <h1 className="h1 mt8" style={{ fontSize: 30 }}>
+      <div className="body" style={{ paddingTop: 24 }}>
+        <p className="kicker">강릉 안목해변 도착 · 10:49</p>
+        <h1 className="h1 mt8">
           모두 함께
           <br />
           도착했어요
         </h1>
-        <Card className="mt16">
-          <div className="spread">
-            <b>함께 달린 기록</b>
+        <section className="mt32">
+          <div className="section-head">
+            <h2 className="h3">함께 달린 기록</h2>
             <span className="tiny">{GROUP.date}</span>
           </div>
-          <div className="course-dots mt12">
+          <div className="course-dots mt16">
             {stops.map((s, i) => (
               <span key={s} className={`dot${i < stops.length - 1 ? ' done' : ' end'}`}>
                 <i />
@@ -814,7 +811,7 @@ function EndView() {
               </span>
             ))}
           </div>
-          <div className="stat-grid mt12">
+          <div className="stat-grid mt20">
             <div className="stat">
               <b>235km</b>
               <span>함께 달린 거리</span>
@@ -832,36 +829,33 @@ function EndView() {
               <span>함께한 차</span>
             </div>
           </div>
-          <div className="mt12">
+          <div className="mt16">
             <AvatarRow size={28} />
           </div>
-        </Card>
-        <Card className="mt12 accent">
-          <b className="row" style={{ gap: 6 }}>
-            <Icon name="shield" size={18} /> 위치 공유를 멈췄어요
-          </b>
-          <ul className="marks mt8">
+        </section>
+        <section className="group mt24">
+          <h2 className="h3">위치 공유를 멈췄어요</h2>
+          <ul className="marks mt12">
             <li className="mark ok">
-              <Icon name="check" size={15} stroke={2.6} />
+              <Icon name="check" size={16} stroke={2.2} />
               <span>모든 차·휴대폰의 위치 공유 중단</span>
             </li>
             <li className="mark ok">
-              <Icon name="check" size={15} stroke={2.6} />
+              <Icon name="check" size={16} stroke={2.2} />
               <span>모임 중 위치는 모든 기기에서 삭제</span>
             </li>
             <li className="mark ok">
-              <Icon name="check" size={15} stroke={2.6} />
+              <Icon name="check" size={16} stroke={2.2} />
               <span>초대 링크·모임 코드 만료</span>
             </li>
           </ul>
-        </Card>
-        <p className="tiny mt12 row" style={{ gap: 6 }}>
+        </section>
+        <p className="tiny mt24 row" style={{ gap: 8 }}>
           <span className="badge-later">출시 후</span> 이미지로 저장 · 코스 저장 · 다음 일정 투표
         </p>
       </div>
       <Bottom>
         <Btn
-          icon="check"
           onClick={() => {
             finishTrip(true)
             toast(`‘${trip.groupName}’ 기록을 남겼어요`)
