@@ -252,10 +252,14 @@ export function CreateCourse() {
     setStops(list)
   }
   const restCount = stops.length
+  // 쉬는 시간을 뺀 운전 시간 2시간 35분 + 집결지 휴식
+  const totalMin = 155 + stops.reduce((sum, x) => sum + x.rest, 0)
+  const totalText = `약 ${Math.floor(totalMin / 60)}시간${totalMin % 60 ? ` ${totalMin % 60}분` : ''}`
   return (
     <CreateFrame index={2} label="코스">
       <div className="body">
         <h1 className="h1">코스를 만들어 주세요</h1>
+        <p className="lead">출발지와 도착지만 있어도 돼요. 쉴 곳은 지금 넣거나, 여행 중에 ‘쉬어가기 투표’로 정해도 돼요.</p>
         <Card className="mt16">
           <div className="course-edit">
             <div className="ce-row">
@@ -267,6 +271,14 @@ export function CreateCourse() {
                 <p style={{ fontWeight: 700 }}>{COURSE[0].name}</p>
               </div>
             </div>
+            {stops.length === 0 && (
+              <div className="ce-row">
+                <span className="ce-dot">
+                  <Icon name="route" size={16} />
+                </span>
+                <p className="tiny grow">집결지 없이 출발지에서 도착지로 바로 가요</p>
+              </div>
+            )}
             {stops.map((s, i) => (
               <div className="ce-row" key={s.id}>
                 <span className="ce-dot">
@@ -344,14 +356,12 @@ export function CreateCourse() {
         </div>
         <Card className="mt12 accent" style={{ padding: '12px 14px' }}>
           <p className="small row" style={{ gap: 6 }}>
-            <Icon name="route" size={16} /> 총 235km · 약 3시간 {10 + (restCount - 2) * 15}분 · 휴식 {restCount}번
+            <Icon name="route" size={16} /> 총 235km · {totalText} · {restCount > 0 ? `휴식 ${restCount}번` : '휴식 없이'}
           </p>
         </Card>
       </div>
       <Bottom>
-        <Btn disabled={stops.length === 0} onClick={() => go('/create/3')}>
-          다음 · 초대하기
-        </Btn>
+        <Btn onClick={() => go('/create/3')}>다음 · 초대하기</Btn>
       </Bottom>
     </CreateFrame>
   )
