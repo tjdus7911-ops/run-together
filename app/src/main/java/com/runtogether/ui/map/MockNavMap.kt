@@ -456,7 +456,7 @@ private fun DrawScope.drawExpressway(v: MapView) {
     drawPath(p, RtColors.MapRoadEdge, style = Stroke(1.2.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f))))
 }
 
-/** 모임 경로: 지난 길은 옅게, 앞길은 포인트 파랑 + 은은한 빛 + 진행 방향 화살표. 막히는 구간은 테두리를 교통 색으로. */
+/** 모임 경로: 지난 길은 옅게, 앞길은 포인트 파랑 + 진행 방향 화살표. 막히는 구간은 테두리를 교통 색으로. (빛은 내 차 둘레에만) */
 private fun DrawScope.drawRoute(v: MapView, model: GroupMapModel) {
     val me = model.me ?: return
     val onRoute = model.vehicles.filter { it.onPlannedRoute }
@@ -465,11 +465,6 @@ private fun DrawScope.drawRoute(v: MapView, model: GroupMapModel) {
     if (end <= start) return
     val casing = Stroke(17.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
     val core = Stroke(10.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
-    val splitAt = me.progressKm.coerceIn(start, end)
-    // 앞길 아래 은은한 빛 (넓고 옅은 선 두 겹)
-    val ahead = v.path(splitAt, end)
-    drawPath(ahead, RtColors.AccentGlow.copy(alpha = 0.12f), style = Stroke(34.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
-    drawPath(ahead, RtColors.AccentGlow.copy(alpha = 0.16f), style = Stroke(25.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
     drawPath(v.path(start, end), Color.White, style = casing)
     for (c in model.congestion) {
         val from = max(me.progressKm + c.offsetM / 1000.0, start)

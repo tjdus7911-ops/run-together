@@ -314,32 +314,6 @@ val AccentEdge: Brush
     get() = Brush.verticalGradient(0f to Color.White.copy(alpha = 0.16f), 0.4f to Color.White.copy(alpha = 0f))
 
 /**
- * 둘레의 은은한 빛. 흐림 필터 없이 반투명 둥근 사각형을 겹쳐 그려 차량 화면과 미리보기(Paparazzi)에서 똑같이 보인다.
- * 리뉴얼 뒤에는 화면 부품에서 쓰지 않는다 (살아 있는 것의 고리는 [AccentCircle] 의 [RtColors.LiveRing]).
- */
-fun Modifier.accentGlow(
-    corner: Dp,
-    spread: Dp = 16.dp,
-    color: Color = RtColors.AccentGlow,
-    strength: Float = 0.065f,
-    layers: Int = 9,
-    offsetY: Dp = 3.dp,
-): Modifier = drawBehind {
-    val s = spread.toPx()
-    val c = corner.toPx()
-    val dy = offsetY.toPx()
-    for (i in layers downTo 1) {
-        val e = s * i / layers
-        drawRoundRect(
-            color = color.copy(alpha = strength),
-            topLeft = Offset(-e, -e + dy),
-            size = Size(size.width + 2 * e, size.height + 2 * e),
-            cornerRadius = CornerRadius(c + e, c + e),
-        )
-    }
-}
-
-/**
  * 주요 버튼 (화면의 주요 동작 하나에만).
  * 아주 옅은 세로 그라데이션 면, 바깥 빛 없음. 글자는 흰색(어디서나 4.5:1 이상).
  */
