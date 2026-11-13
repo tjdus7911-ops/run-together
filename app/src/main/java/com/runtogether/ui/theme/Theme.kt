@@ -78,9 +78,9 @@ object RtColors {
     val OnAccent = Color(0xFFFFFFFF)
 
     /** '졸려요' = 밤·달 */
-    val Night = Color(0xFF6A4AD6)
-    val NightSoft = Color(0x1F6A4AD6)
-    val NightLine = Color(0x4D6A4AD6)
+    val Night = Color(0xFF5B21B6)
+    val NightSoft = Color(0x1A5B21B6)
+    val NightLine = Color(0x475B21B6)
 
     /** 주의: 연료 부족 · 간격 벌어짐 */
     val Warn = Color(0xFF9A5B00)

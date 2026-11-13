@@ -34,13 +34,13 @@ object DemoScenario {
     const val STEP_SLEEPY = 3
     const val LAST_STEP = STEP_SLEEPY
 
-    // 회원 색은 어두운 화면과 밝은 지도 양쪽에서 보이는 중간 밝기 (나 = 포인트 파랑)
+    // 회원 색: 흰 바탕과 밝은 지도에서 잘 보이고 흰 이니셜이 읽히는 짙은 색 (피그마 member/1~6 과 같은 값, 나 = 포인트 파랑)
     val me = Member("me", "나", 0xFF2563EB, isLeader = true)
-    val minji = Member("minji", "민지", 0xFFE07A2E)
-    val sua = Member("sua", "수아", 0xFF0F94B0)
-    val taehyun = Member("taehyun", "태현", 0xFF8E5CF0, isEv = true)
-    val jiwon = Member("jiwon", "지원", 0xFFD9468A)
-    val haneul = Member("haneul", "하늘", 0xFF6F7F96, joinMode = JoinMode.PHONE)
+    val minji = Member("minji", "민지", 0xFFC2410C)
+    val sua = Member("sua", "수아", 0xFF0E7490)
+    val taehyun = Member("taehyun", "태현", 0xFF7C3AED, isEv = true)
+    val jiwon = Member("jiwon", "지원", 0xFFBE185D)
+    val haneul = Member("haneul", "하늘", 0xFF475569, joinMode = JoinMode.PHONE)
 
     /** 휴대폰 앱에서 만들어 계정에 저장된 ‘내 메시지’ (시연 값, 최대 6개) */
     val myMessages = listOf(
