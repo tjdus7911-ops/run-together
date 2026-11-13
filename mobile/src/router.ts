@@ -18,8 +18,13 @@ let depth = 0
 export function go(path: string, replace = false) {
   if (currentPath() === path) return
   if (replace) {
-    history.replaceState(null, '', `#${path}`)
-    window.dispatchEvent(new HashChangeEvent('hashchange'))
+    try {
+      history.replaceState(null, '', `#${path}`)
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+    } catch {
+      // 일부 내장 보기(샌드박스 프레임)는 주소 바꾸기를 막는다
+      window.location.hash = path
+    }
   } else {
     depth++
     window.location.hash = path
