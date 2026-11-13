@@ -131,14 +131,20 @@ class PreviewFramesTest {
             speakerId = s.sua.id,
         )
 
-        // ② 음성으로 상황 공유: 듣는 중 → 받아 적은 문장 확인 → 보냄
-        frame("voice_listening", drive.copy(voiceShare = VoiceShare(VoiceShare.Stage.LISTENING, demo = true)))
-        frame("voice_confirm", drive.copy(voiceShare = VoiceShare(VoiceShare.Stage.CONFIRM, s.DEMO_SPOKEN, demo = true)))
+        // ② 말로 메시지 보내기: 듣는 중 → 받아 적은 문장 확인 → 보냄
+        // 차량(Pleos 음성 인식)에서는 “보내”라고 말해도 보내진다. 음성 인식이 없는 기기는 _demo 처럼 ‘보내기’만
+        frame("voice_listening", drive.copy(voiceShare = VoiceShare(VoiceShare.Stage.LISTENING)))
+        frame(
+            "voice_confirm",
+            drive.copy(voiceShare = VoiceShare(VoiceShare.Stage.CONFIRM, s.DEMO_SPOKEN)),
+            Announcements.confirmSpoken(s.DEMO_SPOKEN),
+        )
+        frame("voice_confirm_demo", drive.copy(voiceShare = VoiceShare(VoiceShare.Stage.CONFIRM, s.DEMO_SPOKEN, demo = true)))
         frame(
             "voice_sent",
             drive.copy(
-                voiceShare = VoiceShare(VoiceShare.Stage.SENT, s.DEMO_SPOKEN, demo = true),
-                feed = listOf(FeedItem(drive.meId, "방금", "음성 메시지", s.DEMO_SPOKEN, readAloud = false)) + drive.feed,
+                voiceShare = VoiceShare(VoiceShare.Stage.SENT, s.DEMO_SPOKEN),
+                feed = listOf(FeedItem(drive.meId, "방금", "말로 보낸 메시지", s.DEMO_SPOKEN, readAloud = false)) + drive.feed,
             ),
             Announcements.customSent(s.DEMO_SPOKEN),
         )

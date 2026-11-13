@@ -70,7 +70,7 @@ data class AppActions(
     val onCloseMyMessages: () -> Unit = {},
     val onSendMyMessage: (String) -> Unit = {},
     val onToggleReadAloud: () -> Unit = {},
-    // 음성으로 상황 공유
+    // 말로 메시지 보내기
     val onVoiceShare: () -> Unit = {},
     val onCancelVoiceShare: () -> Unit = {},
     val onSendVoiceShareNow: () -> Unit = {},

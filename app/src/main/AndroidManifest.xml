@@ -39,5 +39,19 @@
                 android:name="distractionOptimized"
                 android:value="true" />
         </activity>
+
+        <!--
+            Gleo AI(Pleos 차량 음성 비서) 음성 명령. assets/schema.json 의 함수마다 action 을 하나씩 받는다.
+            Gleo 가 다른 앱이므로 exported=true. 패키지를 지정한 브로드캐스트(component = "service")로 들어온다.
+        -->
+        <receiver
+            android:name=".gleo.GleoActionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="SHARE_DRIVING_STATUS" />
+                <action android:name="SEND_GROUP_MESSAGE" />
+                <action android:name="ANSWER_REST_VOTE" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

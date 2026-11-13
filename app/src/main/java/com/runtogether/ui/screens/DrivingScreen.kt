@@ -125,7 +125,7 @@ import com.runtogether.ui.theme.RtType
 
 /**
  * ② 주행 중 — 왼쪽 지도(다음 안내 · 모임 차 위치 · 원터치 상황 공유), 오른쪽 모임 현황 · 내 차량 상태 · 모임 소식,
- * 아래 다음 집결지 · 코스 진행 · 내 메시지 · 음성으로 상황 공유. (④ 상황 공유 알림·투표가 이 위에 뜬다)
+ * 아래 다음 집결지 · 코스 진행 · 내 메시지 · 말로 메시지 보내기. (④ 상황 공유 알림·투표가 이 위에 뜬다)
  */
 @Composable
 fun DrivingScreen(
@@ -561,7 +561,7 @@ private fun MetricDivider() {
     Spacer(Modifier.width(16.dp))
 }
 
-/** 모임 소식: 상황 공유 · 내 메시지 · 음성 메시지. 오른쪽 위에서 받은 메시지 읽어 주기를 켜고 끈다. */
+/** 모임 소식: 상황 공유 · 내 메시지 · 말로 보낸 메시지. 오른쪽 위에서 받은 메시지 읽어 주기를 켜고 끈다. */
 @Composable
 private fun FeedCard(state: DriveUiState, onToggleReadAloud: () -> Unit, modifier: Modifier = Modifier) {
     RtCard(modifier, padding = PaddingValues(horizontal = 22.dp, vertical = 16.dp)) {
@@ -654,7 +654,7 @@ private fun DriveBottomBar(state: DriveUiState, actions: AppActions) {
         )
         Spacer(Modifier.width(12.dp))
         val listening = state.voiceShare?.stage == VoiceShare.Stage.LISTENING
-        PrimaryButton(if (listening) "듣고 있어요…" else "음성으로 상황 공유", Icons.Outlined.Mic, actions.onVoiceShare, Modifier.width(300.dp))
+        PrimaryButton(if (listening) "듣고 있어요…" else "말로 메시지 보내기", Icons.Outlined.Mic, actions.onVoiceShare, Modifier.width(300.dp))
     }
 }
 
@@ -905,9 +905,12 @@ private fun iconOf(icon: MessageIcon): ImageVector = when (icon) {
     MessageIcon.SUN -> Icons.Outlined.WbSunny
 }
 
-// ---------------- 음성으로 상황 공유 ----------------
+// ---------------- 말로 메시지 보내기 ----------------
 
-/** 듣는 중 → 받아 적은 문장 확인(3초 뒤 자동 전송, 취소 가능) → 보냄 / 다시 말하기 */
+/**
+ * 듣는 중 → 받아 적은 문장 확인 → 보냄 / 다시 말하기.
+ * 목소리는 보내지 않고 받아 적은 글자만 보낸다. 자동으로 보내지 않고 ‘보내기’(또는 “보내”)를 해야 보낸다.
+ */
 @Composable
 private fun VoiceSharePanel(share: VoiceShare, actions: AppActions, modifier: Modifier) {
     val shape = RoundedCornerShape(28.dp)
@@ -929,18 +932,25 @@ private fun VoiceSharePanel(share: VoiceShare, actions: AppActions, modifier: Mo
                 Text("듣고 있어요", style = RtType.Title)
                 Spacer(Modifier.height(6.dp))
                 Text("모임에 보낼 말을 해 주세요 · 예: “10분 뒤 도착해요”", style = RtType.Body, color = RtColors.Sub, textAlign = TextAlign.Center)
+                Spacer(Modifier.height(8.dp))
+                Text("목소리는 보내지 않아요 · 글자로 바꿔서 보내요", style = RtType.Caption, color = RtColors.Muted, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(22.dp))
                 SecondaryButton("취소", Icons.Outlined.Close, actions.onCancelVoiceShare, Modifier.width(220.dp))
             }
             VoiceShare.Stage.CONFIRM -> {
-                Text("이렇게 보낼게요", style = RtType.Label, color = RtColors.Sub)
+                Text("이렇게 보낼까요?", style = RtType.Label, color = RtColors.Sub)
                 Spacer(Modifier.height(10.dp))
                 Text("“${share.text.orEmpty()}”", fontSize = 30.sp, fontWeight = FontWeight.Bold, lineHeight = 38.sp, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(8.dp))
-                Text("3초 뒤 모두에게 보내요", style = RtType.Caption, color = RtColors.Sub)
+                Text(
+                    if (share.demo) "‘보내기’를 눌러야 모두에게 보내요" else "‘보내기’를 누르거나 “보내”라고 말해 주세요",
+                    style = RtType.Caption,
+                    color = RtColors.Sub,
+                    textAlign = TextAlign.Center,
+                )
                 Spacer(Modifier.height(22.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                    PrimaryButton("지금 보내기", Icons.AutoMirrored.Outlined.Send, actions.onSendVoiceShareNow, Modifier.weight(1f))
+                    PrimaryButton("보내기", Icons.AutoMirrored.Outlined.Send, actions.onSendVoiceShareNow, Modifier.weight(1f))
                     SecondaryButton("취소", null, actions.onCancelVoiceShare, Modifier.weight(1f))
                 }
             }

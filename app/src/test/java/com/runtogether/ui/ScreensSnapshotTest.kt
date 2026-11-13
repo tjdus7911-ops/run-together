@@ -119,7 +119,7 @@ class ScreensSnapshotTest {
     @Test
     fun voiceShare() {
         val base = DemoScenario.step(DemoScenario.STEP_DRIVING)
-        shot("2d_voice_share", base.copy(voiceShare = VoiceShare(VoiceShare.Stage.CONFIRM, DemoScenario.DEMO_SPOKEN, demo = true)))
+        shot("2d_voice_share", base.copy(voiceShare = VoiceShare(VoiceShare.Stage.CONFIRM, DemoScenario.DEMO_SPOKEN)))
     }
 
     @Test

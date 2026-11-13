@@ -34,7 +34,7 @@ data class MessageCheck(val text: String, val problems: List<MessageProblem>) {
 }
 
 /**
- * 내 메시지 · 음성 메시지 문장 검사. 휴대폰 편집 화면과 차량 앱이 같은 규칙을 쓴다.
+ * 내 메시지 · 말로 보낸 메시지 문장 검사. 휴대폰 편집 화면과 차량 앱이 같은 규칙을 쓴다.
  * 위험 표현 목록은 정책 검토용 초안이다.
  */
 object QuickMessagePolicy {
@@ -73,7 +73,7 @@ object QuickMessagePolicy {
         return MessageCheck(t, problems.distinct())
     }
 
-    /** ‘음성으로 상황 공유’로 받아 적은 문장 (글자 종류는 따지지 않는다) */
+    /** ‘말로 메시지 보내기’로 받아 적은 문장 (글자 종류는 따지지 않는다) */
     fun validateSpoken(text: String?): MessageCheck {
         val t = normalize(text.orEmpty())
         val problems = mutableListOf<MessageProblem>()
@@ -98,7 +98,7 @@ object QuickMessagePolicy {
 }
 
 /**
- * 보내는 쪽에서 과도한 전송을 막는다. 기본 상황 공유 · 내 메시지 · 음성 메시지가 같은 규칙을 쓴다.
+ * 보내는 쪽에서 과도한 전송을 막는다. 기본 상황 공유 · 내 메시지 · 말로 보낸 메시지가 같은 규칙을 쓴다.
  * - 두 번 눌림: 2초 안에 또 누르면 무시
  * - 같은 메시지: 30초 뒤에 다시
  * - 전체: 1분에 4번까지

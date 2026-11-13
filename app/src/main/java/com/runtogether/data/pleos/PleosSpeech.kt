@@ -111,7 +111,7 @@ class PleosVoiceAnswer(context: Context) {
     private var ready = false
     private var onAnswer: ((Boolean) -> Unit)? = null
 
-    /** ‘음성으로 상황 공유’: 말한 문장을 그대로 받는다 (못 알아들으면 null) */
+    /** ‘말로 메시지 보내기’: 말한 문장을 그대로 받는다 (못 알아들으면 null) */
     private var onText: ((String?) -> Unit)? = null
 
     /** 음성 인식을 쓸 수 있는지 (연결 전이거나 SDK 가 없으면 false) */
@@ -166,7 +166,7 @@ class PleosVoiceAnswer(context: Context) {
     }
 
     /**
-     * 말한 문장을 받아 적는다 (‘음성으로 상황 공유’). 끝나면 한 번만 [onText] 를 부른다 (못 알아들으면 null).
+     * 말한 문장을 받아 적는다 (‘말로 메시지 보내기’와 그 확인 답). 끝나면 한 번만 [onText] 를 부른다 (못 알아들으면 null).
      * 듣기 시작하지 못하면 false.
      */
     fun listenText(onText: (String?) -> Unit): Boolean {

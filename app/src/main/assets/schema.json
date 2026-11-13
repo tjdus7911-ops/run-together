@@ -1,0 +1,64 @@
+{
+  "packageName": "com.runtogether.app",
+  "appDescription": "A group drive app that keeps several cars traveling together and shares each driver's situation with the whole group.",
+  "invokeWord": "같이 달려",
+  "version": "0.1.0",
+  "actionCalls": [
+    {
+      "type": "function",
+      "function": {
+        "name": "SHARE_DRIVING_STATUS",
+        "description": "Share the driver's current situation with every car in the group drive.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "description": "The situation to share: SLEEPY when the driver feels drowsy, REST when the driver wants a break, TOILET when the driver needs a restroom, FUEL when the car needs fuel or charging.",
+              "enum": ["SLEEPY", "REST", "TOILET", "FUEL"]
+            }
+          },
+          "required": ["status"]
+        },
+        "component": "service"
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "SEND_GROUP_MESSAGE",
+        "description": "Send a short text message to every member of the group drive.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "The message text to send to the group, kept in the language the user spoke."
+            }
+          },
+          "required": ["message"]
+        },
+        "component": "service"
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "ANSWER_REST_VOTE",
+        "description": "Answer the ongoing group vote about stopping at a rest area.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "answer": {
+              "type": "string",
+              "description": "YES to agree to stop at the proposed rest area, NO to keep driving.",
+              "enum": ["YES", "NO"]
+            }
+          },
+          "required": ["answer"]
+        },
+        "component": "service"
+      }
+    }
+  ]
+}

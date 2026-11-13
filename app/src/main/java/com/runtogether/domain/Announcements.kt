@@ -63,15 +63,21 @@ object Announcements {
     fun departure(nextStopName: String): String =
         "곧 출발해요. 다음 집결지는 ${nextStopName}${Josa.ieyo(nextStopName)}. 따라오지 않아도 돼요, 거기서 만나요."
 
-    // ---------------- 내 메시지 · 음성 메시지 ----------------
+    // ---------------- 내 메시지 · 말로 보낸 메시지 ----------------
 
     /** 받는 차에서 읽는 문장: "민지님이 메시지를 보냈어요. 카페 들렀다 가요." */
     fun customMessage(name: String?, text: String, anonymous: Boolean = false): String =
         "${subject(name, anonymous)} 메시지를 보냈어요. ${spoken(text)}"
 
-    /** 받는 차에서 읽는 문장: "민지님이 음성 메시지를 보냈어요. 10분 뒤 도착해요." */
+    /**
+     * 말로 보낸 메시지를 받는 차에서 읽는 문장: "민지님이 메시지를 보냈어요. 10분 뒤 도착해요."
+     * 목소리가 아니라 받아 적은 글자가 오므로 내 메시지와 같은 말로 읽는다.
+     */
     fun voiceMessage(name: String?, text: String, anonymous: Boolean = false): String =
-        "${subject(name, anonymous)} 음성 메시지를 보냈어요. ${spoken(text)}"
+        customMessage(name, text, anonymous)
+
+    /** 말로 보낼 문장을 받아 적은 뒤 보내기 전에 묻는다: "10분 뒤 도착해요. 이렇게 보낼까요?" */
+    fun confirmSpoken(text: String): String = "${spoken(text)} 이렇게 보낼까요?"
 
     /** 보낸 차에서 확인: "모두에게 ‘카페 들렀다 가요’를 보냈어요." */
     fun customSent(text: String): String =

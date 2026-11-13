@@ -20,8 +20,11 @@ import com.runtogether.data.pleos.PleosNaviGateway
 import com.runtogether.data.pleos.PleosTtsAnnouncer
 import com.runtogether.data.pleos.PleosVoiceAnswer
 import com.runtogether.demo.DemoScenario
+import com.runtogether.gleo.GleoBridge
 import com.runtogether.domain.Announcements
 import com.runtogether.domain.DrivingPolicy
+import com.runtogether.domain.GleoCommand
+import com.runtogether.domain.GleoResult
 import com.runtogether.domain.GroupMessage
 import com.runtogether.domain.MeetingPointEngine
 import com.runtogether.domain.MessageIcon
@@ -33,6 +36,7 @@ import com.runtogether.domain.Recommendation
 import com.runtogether.domain.RepeatFilter
 import com.runtogether.domain.RestVoteEngine
 import com.runtogether.domain.RestVoteState
+import com.runtogether.domain.SendAnswerParser
 import com.runtogether.domain.SendGuard
 import com.runtogether.domain.StatusSignal
 import com.runtogether.domain.VehicleSnapshot
@@ -86,12 +90,12 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
     private val pleosNavigation: PleosNaviGateway? = if (automotive) PleosNaviGateway(app, log = demoNavigation) else null
     private val navigation: NavigationGateway = pleosNavigation ?: demoNavigation
 
-    /** 차량에서는 Pleos SpeechToText SDK 로 “좋아요 / 괜찮아요”를 말로 답하고, 음성으로 상황을 공유한다 */
+    /** 차량에서는 Pleos SpeechToText SDK 로 “좋아요 / 괜찮아요”를 말로 답하고, 말로 메시지를 보낸다 (받아 적은 글자만 보낸다) */
     private val voiceAnswer: PleosVoiceAnswer? = if (automotive) PleosVoiceAnswer(app) else null
 
     private val vehicleSource: VehicleDataSource? = VehicleDataSources.create(app)
 
-    /** 모임 메시지 통로 (기본 상황 공유 · 내 메시지 · 음성 메시지가 같은 통로). 동기화 서버 전까지는 시연용 */
+    /** 모임 메시지 통로 (기본 상황 공유 · 내 메시지 · 말로 보낸 메시지가 같은 통로). 동기화 서버 전까지는 시연용 */
     private val demoChannel = DemoGroupChannel()
     private val channel: GroupChannel = demoChannel
 
@@ -107,7 +111,7 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
     /** 음성 안내와 같은 문장을 화면 자막으로 */
     val caption: StateFlow<String?> = voiceQueue.caption
 
-    /** 자막에 얼굴을 함께 보여 줄 보낸 사람 (받은 내 메시지 · 음성 메시지) */
+    /** 자막에 얼굴을 함께 보여 줄 보낸 사람 (받은 내 메시지 · 말로 보낸 메시지) */
     val captionSpeakerId: StateFlow<String?> =
         voiceQueue.current.map { it?.speakerId }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
@@ -121,6 +125,9 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
     private var messagePanelJob: Job? = null
     private var voiceShareJob: Job? = null
     private val scenarioJobs = mutableListOf<Job>()
+
+    /** Gleo AI 음성 명령을 이 화면에서 처리한다 (GleoActionReceiver → GleoBridge) */
+    private val gleoHandler: (GleoCommand) -> GleoResult = { handleGleo(it) }
 
     init {
         navigation.setCourse(DemoScenario.course.drop(1).map { it.stop })
@@ -136,6 +143,7 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
                 }
             }
         }
+        GleoBridge.handler = gleoHandler
     }
 
     // ---------------- 시연 단계 ----------------
@@ -200,15 +208,22 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
     // ---------------- 내가 누르는 상황 공유 (기본 메시지) ----------------
 
     fun sendSignal(signal: StatusSignal) {
+        shareSignal(signal, confirmAloud = true)?.let { if (!it.silent) showToast(it.korean) }
+    }
+
+    /**
+     * 상황 공유를 보내고 필요하면 쉬어가기 투표를 연다. 보냈으면 null, 못 보냈으면 이유.
+     * [confirmAloud] 가 false 면 ‘보냈어요’를 읽지 않는다 (Gleo AI 가 대신 답한다).
+     */
+    private fun shareSignal(signal: StatusSignal, confirmAloud: Boolean): SendProblem? {
         val s = _state.value
         if (s.vote != null && s.voteResult == null) {
-            showToast("이미 쉬어가기 투표가 진행 중이에요")
-            return
+            return SendProblem("이미 쉬어가기 투표가 진행 중이에요", "A rest vote is already in progress.")
         }
         val message = GroupMessage.Status(newId(), s.meId, now(), signal)
-        if (!guardSend(message)) return
+        blockedReason(message)?.let { return it }
         channel.send(message)
-        say(Announcements.sentByMe(signal), VoicePriority.CONFIRM)
+        if (confirmAloud) say(Announcements.sentByMe(signal), VoicePriority.CONFIRM)
         _state.update {
             it.copy(feed = listOf(FeedItem(s.meId, "방금", "상황 공유", signal.label)) + it.feed, messagePanelOpen = false)
         }
@@ -216,19 +231,32 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
             StatusSignal.SLEEPY, StatusSignal.REST, StatusSignal.TOILET, StatusSignal.ENERGY -> startVote(s.meId, signal)
             StatusSignal.SLOW, StatusSignal.HELP -> Unit
         }
+        return null
     }
 
     /** 보내기 제한 (두 번 눌림 · 같은 메시지 30초 · 1분에 4번). 막히면 이유를 알리고 false */
-    private fun guardSend(message: GroupMessage): Boolean = when (val decision = sendGuard.tryAcquire(message.guardKey, now())) {
-        SendGuard.Decision.Allowed -> true
-        is SendGuard.Decision.Blocked -> {
-            when (decision.reason) {
-                SendGuard.Reason.DOUBLE_TAP -> Unit // 두 번 눌림은 조용히 무시
-                SendGuard.Reason.SAME_MESSAGE ->
-                    showToast("방금 보낸 메시지예요 · ${(decision.waitMs + 999) / 1000}초 뒤에 다시 보낼 수 있어요")
-                SendGuard.Reason.TOO_MANY -> showToast("잠시 뒤에 다시 보내 주세요 · 1분에 4번까지 보낼 수 있어요")
+    private fun guardSend(message: GroupMessage): Boolean {
+        val problem = blockedReason(message) ?: return true
+        if (!problem.silent) showToast(problem.korean)
+        return false
+    }
+
+    /** 보내기 제한에 걸리면 그 이유 (두 번 눌림은 화면에 알리지 않는다) */
+    private fun blockedReason(message: GroupMessage): SendProblem? = when (val decision = sendGuard.tryAcquire(message.guardKey, now())) {
+        SendGuard.Decision.Allowed -> null
+        is SendGuard.Decision.Blocked -> when (decision.reason) {
+            SendGuard.Reason.DOUBLE_TAP -> SendProblem("방금 보냈어요", "The same message was just sent.", silent = true)
+            SendGuard.Reason.SAME_MESSAGE -> {
+                val sec = (decision.waitMs + 999) / 1000
+                SendProblem(
+                    "방금 보낸 메시지예요 · ${sec}초 뒤에 다시 보낼 수 있어요",
+                    "The same message was sent moments ago. It can be sent again in $sec seconds.",
+                )
             }
-            false
+            SendGuard.Reason.TOO_MANY -> SendProblem(
+                "잠시 뒤에 다시 보내 주세요 · 1분에 4번까지 보낼 수 있어요",
+                "Too many messages were sent. Up to four messages can be sent per minute.",
+            )
         }
     }
 
@@ -271,10 +299,10 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /** 받은 내 메시지 · 음성 메시지: 소식에 남기고, 읽어 주기가 켜져 있으면 읽는다 (같은 말 반복은 한 번만) */
+    /** 받은 내 메시지 · 말로 보낸 메시지: 소식에 남기고, 읽어 주기가 켜져 있으면 읽는다 (같은 말 반복은 한 번만) */
     private fun receiveText(fromId: String, text: String, voiceMessage: Boolean) {
         val from = _state.value.member(fromId) ?: return
-        val kind = if (voiceMessage) "음성 메시지" else "내 메시지"
+        val kind = if (voiceMessage) SPOKEN_KIND else "내 메시지"
         _state.update { it.copy(feed = listOf(FeedItem(fromId, "방금", kind, text, readAloud = readAloud)) + it.feed) }
         if (!repeatFilter.shouldAnnounce(fromId, text, now())) return
         val spoken = if (voiceMessage) Announcements.voiceMessage(from.name, text) else Announcements.customMessage(from.name, text)
@@ -428,14 +456,15 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
         .map { it.removePrefix(CUSTOM_KEY) }
         .toSet()
 
-    /** 받은 내 메시지 · 음성 메시지를 읽어 줄지 (끄면 자막과 소식만, 안전 안내는 계속 읽는다) */
+    /** 받은 내 메시지 · 말로 보낸 메시지를 읽어 줄지 (끄면 자막과 소식만, 안전 안내는 계속 읽는다) */
     fun toggleReadAloud() {
         readAloud = !readAloud
         _state.update { it.copy(readMessagesAloud = readAloud) }
         showToast(if (readAloud) "받은 메시지를 읽어 드릴게요" else "받은 메시지는 자막으로만 보여 드려요 · 안전 안내는 계속 읽어요")
     }
 
-    // ---------------- 음성으로 상황 공유 ----------------
+    // ---------------- 말로 메시지 보내기 ----------------
+    // 목소리는 보내지 않는다. 받아 적은 글자를 보여 주고 읽어 준 뒤, ‘보내기’를 누르거나 “보내”라고 해야 보낸다.
 
     fun startVoiceShare() {
         val s = _state.value
@@ -489,16 +518,52 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
             return
         }
         _state.update { it.copy(voiceShare = current.copy(stage = VoiceShare.Stage.CONFIRM, text = check.text)) }
-        // 받아 적은 문장을 보여 주고 3초 뒤 자동으로 보낸다 (그 전에 취소 가능)
+        // 자동으로 보내지 않는다: 받아 적은 문장을 읽어 주고, 음성 인식이 되면 “보내 / 취소”를 듣는다
+        val question = Announcements.confirmSpoken(check.text)
+        say(question, VoicePriority.CONFIRM)
+        val stt = voiceAnswer?.takeIf { it.isReady && !current.demo }
         voiceShareJob = viewModelScope.launch {
-            delay(VOICE_CONFIRM_MS)
-            sendVoiceShare()
+            if (stt != null) {
+                launch {
+                    awaitSpoken(question)
+                    if (_state.value.voiceShare?.stage == VoiceShare.Stage.CONFIRM) {
+                        stt.listenText { answer -> onConfirmAnswer(answer) }
+                    }
+                }
+            }
+            // 답이 없으면 보내지 않고 닫는다
+            delay(VOICE_CONFIRM_TIMEOUT_MS)
+            if (_state.value.voiceShare?.stage == VoiceShare.Stage.CONFIRM) {
+                voiceAnswer?.cancel()
+                _state.update { it.copy(voiceShare = null) }
+                showToast("보내지 않았어요")
+            }
         }
     }
 
-    /** 확인 화면의 ‘지금 보내기’ */
+    /** 확인 단계에서 말로 한 답: “보내” → 보낸다, “취소” → 닫는다, 못 알아들으면 ‘보내기’를 기다린다 */
+    private fun onConfirmAnswer(answer: String?) {
+        if (_state.value.voiceShare?.stage != VoiceShare.Stage.CONFIRM) return
+        when (SendAnswerParser.parse(answer)) {
+            true -> sendVoiceShareNow()
+            false -> {
+                cancelVoiceShare()
+                showToast("보내지 않았어요")
+            }
+            null -> Unit
+        }
+    }
+
+    /** [text] 를 읽기 시작해서 다 읽을 때까지 기다린다 (내 안내 음성을 음성 인식이 듣지 않도록) */
+    private suspend fun awaitSpoken(text: String) {
+        withTimeoutOrNull(8_000L) { voiceQueue.current.first { it?.text == text } }
+        withTimeoutOrNull(10_000L) { voiceQueue.current.first { it?.text != text } }
+    }
+
+    /** 확인 화면의 ‘보내기’ (또는 “보내”) */
     fun sendVoiceShareNow() {
         voiceShareJob?.cancel()
+        voiceAnswer?.cancel()
         sendVoiceShare()
     }
 
@@ -516,7 +581,7 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
         say(Announcements.customSent(text), VoicePriority.CONFIRM)
         _state.update {
             it.copy(
-                feed = listOf(FeedItem(s.meId, "방금", "음성 메시지", text, readAloud = false)) + it.feed,
+                feed = listOf(FeedItem(s.meId, "방금", SPOKEN_KIND, text, readAloud = false)) + it.feed,
                 voiceShare = share.copy(stage = VoiceShare.Stage.SENT),
             )
         }
@@ -534,6 +599,97 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun clearVoiceShare(stage: VoiceShare.Stage) {
         _state.update { if (it.voiceShare?.stage == stage) it.copy(voiceShare = null) else it }
+    }
+
+    // ---------------- Gleo AI 음성 명령 ----------------
+    // 운전자가 Gleo AI 에게 말하면 Gleo 가 같이 달려의 기능을 부른다 (schema.json). Gleo 가 결과를 말로 답하므로
+    // 여기서는 ‘보냈어요’를 따로 읽지 않고 화면에만 잠깐 보여 준다.
+
+    private fun handleGleo(command: GleoCommand): GleoResult {
+        val result = when (command) {
+            is GleoCommand.ShareStatus -> gleoShareStatus(command.signal)
+            is GleoCommand.SendMessage -> gleoSendMessage(command.text)
+            is GleoCommand.AnswerVote -> gleoAnswerVote(command.yes)
+        }
+        result.screenText?.let { showToast(it) }
+        return result
+    }
+
+    private fun gleoShareStatus(signal: StatusSignal): GleoResult {
+        if (_state.value.phase != Phase.DRIVING) {
+            return GleoResult.fail("Status can be shared only while the group drive is under way.", "상황 공유는 주행 중에 쓸 수 있어요")
+        }
+        shareSignal(signal, confirmAloud = false)?.let { return GleoResult.fail(it.english, it.korean) }
+        val s = _state.value
+        val stop = s.vote?.takeIf { s.voteResult == null && it.proposerId == s.meId }?.stop?.name
+        val data = buildMap {
+            put("status", signal.name)
+            put("recipients", "${s.members.size - 1}")
+            if (stop != null) put("proposedRestStop", stop)
+        }
+        val message = if (stop != null) {
+            "Shared the driver's status with the group and started a vote to stop at $stop."
+        } else {
+            "Shared the driver's status with the group."
+        }
+        return GleoResult.success(message, Announcements.sentByMe(signal), data)
+    }
+
+    private fun gleoSendMessage(spoken: String): GleoResult {
+        val check = QuickMessagePolicy.validateSpoken(spoken)
+        if (!check.ok) {
+            val problem = check.problems.first()
+            if (problem == MessageProblem.EMPTY || problem == MessageProblem.TOO_SHORT) {
+                return GleoCommand.askingFor(GleoCommand.SEND_GROUP_MESSAGE)
+            }
+            return GleoResult.fail(problem.english(), problem.message)
+        }
+        val s = _state.value
+        // 저장해 둔 내 메시지와 같은 문장이면 그 메시지로 보낸다 (아이콘 · 다시 보내기 제한이 같아진다)
+        val saved = s.myMessages.firstOrNull { QuickMessagePolicy.normalize(it.text) == check.text }
+        val message = if (saved != null) {
+            GroupMessage.Custom(newId(), s.meId, now(), saved.id, saved.text, saved.icon)
+        } else {
+            GroupMessage.Voice(newId(), s.meId, now(), check.text)
+        }
+        blockedReason(message)?.let { return GleoResult.fail(it.english, it.korean) }
+        channel.send(message)
+        val kind = if (saved != null) "내 메시지" else SPOKEN_KIND
+        _state.update { it.copy(feed = listOf(FeedItem(s.meId, "방금", kind, check.text, readAloud = false)) + it.feed) }
+        return GleoResult.success(
+            "Sent the message to everyone in the group drive.",
+            Announcements.customSent(check.text),
+            mapOf("message" to check.text, "recipients" to "${s.members.size - 1}"),
+        )
+    }
+
+    private fun gleoAnswerVote(yes: Boolean): GleoResult {
+        val s = _state.value
+        val vote = s.vote
+        if (vote == null || s.voteResult != null) {
+            return GleoResult.fail("There is no rest vote in progress right now.", "지금 진행 중인 쉬어가기 투표가 없어요")
+        }
+        if (vote.voteOf(s.meId) != null) {
+            return GleoResult.fail("The driver has already answered this vote.", "이미 이 투표에 답했어요")
+        }
+        answerVote(yes)
+        val result = _state.value.voteResult
+        val outcome = when {
+            result == null -> "pending"
+            result.accepted -> "accepted"
+            else -> "rejected"
+        }
+        val stop = vote.stop.name
+        val message = when (outcome) {
+            "accepted" -> "Answered ${if (yes) "yes" else "no"}, and the group agreed to stop at $stop for ${vote.restMinutes} minutes."
+            "rejected" -> "Answered ${if (yes) "yes" else "no"}, and the group decided to keep driving."
+            else -> "Answered ${if (yes) "yes" else "no"} to stopping at $stop. Waiting for the other members."
+        }
+        return GleoResult.success(
+            message,
+            if (yes) "‘좋아요’로 답했어요" else "‘괜찮아요’로 답했어요",
+            mapOf("answer" to if (yes) "YES" else "NO", "restStop" to stop, "voteResult" to outcome),
+        )
     }
 
     // ---------------- 정차 중 기능 · 알림 ----------------
@@ -601,6 +757,7 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
     private fun newId(): String = UUID.randomUUID().toString()
 
     override fun onCleared() {
+        if (GleoBridge.handler === gleoHandler) GleoBridge.handler = null
         voiceQueue.shutdown()
         naviVoice.release()
         voiceAnswer?.release()
@@ -610,9 +767,23 @@ class GroupDriveViewModel(app: Application) : AndroidViewModel(app) {
 
     private companion object {
         const val CUSTOM_KEY = "custom:"
-        /** 음성으로 상황 공유: 듣는 시간 */
+        /** 말로 보낸 메시지가 소식에 보이는 이름 */
+        const val SPOKEN_KIND = "말로 보낸 메시지"
+        /** 말로 메시지 보내기: 듣는 시간 */
         const val VOICE_LISTEN_MS = 8_000L
-        /** 받아 적은 문장을 보여 주고 자동으로 보내기까지 */
-        const val VOICE_CONFIRM_MS = 3_000L
+        /** 받아 적은 문장 확인: 이 시간 안에 ‘보내기’(또는 “보내”)가 없으면 보내지 않고 닫는다 */
+        const val VOICE_CONFIRM_TIMEOUT_MS = 12_000L
     }
+}
+
+/** 보내지 못한 이유: 화면에 보여 줄 한국어 · Gleo AI 에 돌려줄 영어. [silent] 면 화면에 알리지 않는다 (두 번 눌림) */
+private class SendProblem(val korean: String, val english: String, val silent: Boolean = false)
+
+/** Gleo AI 에 돌려줄 영어 이유 (화면에는 [MessageProblem.message] 를 보여 준다) */
+private fun MessageProblem.english(): String = when (this) {
+    MessageProblem.TOO_LONG, MessageProblem.TOO_LONG_SPOKEN ->
+        "The message is too long. Messages can be up to ${QuickMessagePolicy.MAX_SPOKEN_LENGTH} characters."
+    MessageProblem.CONTACT_INFO -> "Phone numbers and links cannot be sent to the group."
+    MessageProblem.UNSAFE -> "Messages that rush other drivers or encourage unsafe driving cannot be sent."
+    else -> "The message could not be sent."
 }

@@ -45,7 +45,7 @@ data class IncomingAlert(
 
 data class VoteResult(val accepted: Boolean, val title: String, val detail: String)
 
-/** ‘음성으로 상황 공유’ 진행 상태: 듣는 중 → 받아 적은 문장 확인(3초 뒤 자동 전송) → 보냄 / 실패 */
+/** ‘말로 메시지 보내기’ 진행 상태: 듣는 중 → 받아 적은 문장 확인(‘보내기’ 또는 “보내”로만 보냄, 답이 없으면 닫힘) → 보냄 / 실패 */
 data class VoiceShare(
     val stage: Stage,
     val text: String? = null,
@@ -108,7 +108,7 @@ data class DriveUiState(
     val sentMessageId: String? = null,
     /** 30초 안에는 다시 보낼 수 없는 내 메시지 */
     val coolingMessageIds: Set<String> = emptySet(),
-    /** 받은 내 메시지 · 음성 메시지를 읽어 줄지 (끄면 자막과 소식만) */
+    /** 받은 내 메시지 · 말로 보낸 메시지를 읽어 줄지 (끄면 자막과 소식만) */
     val readMessagesAloud: Boolean = true,
     val voiceShare: VoiceShare? = null,
     /** 실제 차량에서 받은 내 차 값 그대로 (화면의 ‘내 차량 상태’는 실차일 때 이 값만 보여 준다) */

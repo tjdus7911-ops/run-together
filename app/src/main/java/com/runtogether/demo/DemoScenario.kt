@@ -55,7 +55,7 @@ object DemoScenario {
     /** 주행 중(08:00) 수아가 보내는 내 메시지 */
     const val SUA_MESSAGE = "주유하고 바로 따라갈게요"
 
-    /** 음성 인식이 없는 기기에서 ‘음성으로 상황 공유’를 보여 줄 예시 문장 */
+    /** 음성 인식이 없는 기기에서 ‘말로 메시지 보내기’를 보여 줄 예시 문장 */
     const val DEMO_SPOKEN = "도착하면 커피는 제가 살게요"
 
     // 좌표는 시연용 대략값입니다.
@@ -151,7 +151,7 @@ object DemoScenario {
             MemberState(haneul, VehicleSnapshot(speedKmh = 86.0), progressKm = 38.6, readiness = Readiness.READY),
         )
         val feed = listOf(
-            FeedItem(minji.id, "방금", "음성 메시지", "덕평에서 커피 한잔하고 가요"),
+            FeedItem(minji.id, "방금", "말로 보낸 메시지", "덕평에서 커피 한잔하고 가요"),
             FeedItem(sua.id, "2분 전", "상황 공유", "주유·충전이 필요해요"),
         )
         return base(STEP_DRIVING, "08:00 주행 중", clock(8, 0), Phase.DRIVING, members, nextStopIndex = 1, continuousDrivingMin = 30)

@@ -167,7 +167,8 @@ class MyMessagesTest {
     fun receivedMessageSentences() {
         assertEquals("민지님이 메시지를 보냈어요. 카페 들렀다 가요.", Announcements.customMessage("민지", "카페 들렀다 가요"))
         assertEquals("한 분이 메시지를 보냈어요. 사진 찍고 갈게요!", Announcements.customMessage("민지", "사진 찍고 갈게요!!", anonymous = true))
-        assertEquals("수아님이 음성 메시지를 보냈어요. 주유, 충전하고 갈게요.", Announcements.voiceMessage("수아", "주유·충전하고 갈게요~"))
+        assertEquals("수아님이 메시지를 보냈어요. 주유, 충전하고 갈게요.", Announcements.voiceMessage("수아", "주유·충전하고 갈게요~"))
+        assertEquals("10분 뒤 도착해요. 이렇게 보낼까요?", Announcements.confirmSpoken("10분 뒤 도착해요"))
         assertEquals("모두에게 ‘카페 들렀다 가요’를 보냈어요.", Announcements.customSent("카페 들렀다 가요"))
     }
 }

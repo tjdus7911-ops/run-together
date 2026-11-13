@@ -1,7 +1,7 @@
 package com.runtogether.domain
 
 /**
- * 모임 안에서 오가는 메시지. 기본 상황 공유 · 내 메시지 · 음성 메시지가 같은 통로(GroupChannel)로 오간다.
+ * 모임 안에서 오가는 메시지. 기본 상황 공유 · 내 메시지 · 말로 보낸 메시지가 같은 통로(GroupChannel)로 오간다.
  * 보내는 쪽은 글자와 보낸 사람만 보내고, 음성은 받는 차가 자기 음성 엔진으로 만든다.
  */
 sealed interface GroupMessage {
@@ -27,7 +27,7 @@ sealed interface GroupMessage {
         val icon: MessageIcon,
     ) : GroupMessage
 
-    /** 음성으로 상황 공유 (말한 것을 받아 적은 문장) */
+    /** 말로 메시지 보내기 (말한 것을 받아 적은 문장 — 목소리는 보내지 않는다) */
     data class Voice(
         override val id: String,
         override val fromId: String,
@@ -50,7 +50,7 @@ enum class VoicePriority(val maxWaitMs: Long) {
     SAFETY(30_000L),
     /** 투표 결과 · 출발 안내 · 휴식 제안 */
     GROUP(20_000L),
-    /** 내 메시지 · 음성 메시지 */
+    /** 내 메시지 · 말로 보낸 메시지 */
     MESSAGE(20_000L),
     /** 내가 보낸 것 확인 */
     CONFIRM(6_000L),

@@ -527,7 +527,7 @@ private fun StatusButton(
 
 /**
  * 음성 안내 자막 (소리가 안 나는 환경에서도 내용이 보이게).
- * [speaker] 가 있으면 보낸 사람 얼굴을 함께 보여 준다 (받은 내 메시지 · 음성 메시지).
+ * [speaker] 가 있으면 보낸 사람 얼굴을 함께 보여 준다 (받은 내 메시지 · 말로 보낸 메시지).
  */
 @Composable
 fun CaptionBar(text: String, modifier: Modifier = Modifier, speaker: Member? = null) {

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * 모임 메시지 통로. 기본 상황 공유 · 내 메시지 · 음성 메시지가 모두 이 통로로 오간다.
+ * 모임 메시지 통로. 기본 상황 공유 · 내 메시지 · 말로 보낸 메시지가 모두 이 통로로 오간다.
  * 실제 서비스에서는 동기화 서버(WebSocket)가 모임 단위로, 현재 모임 참여자에게만 전달한다.
  */
 interface GroupChannel {
